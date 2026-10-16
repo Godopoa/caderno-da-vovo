@@ -1,0 +1,13 @@
+{
+  "name": "caderno-da-vovo-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Plataforma de Receitas Acessível para Idosos (Web PC + Mobile Capacitor + Importer TudoGostoso)",
+  "scripts": {
+    "setup": "npm --prefix backend install && npx --prefix backend prisma db push && npm --prefix frontend install",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "mobile:sync": "npm --prefix frontend run mobile:sync"
+  }
+}

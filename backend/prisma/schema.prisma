@@ -1,0 +1,87 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  role          String    @default("USER") // "USER", "VIP", "ADMIN"
+  isVip         Boolean   @default(false)
+  vipPlan       String?   // "MENSAL", "ANUAL"
+  vipExpiresAt  DateTime?
+  avatarUrl     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Recipe {
+  id              String       @id @default(uuid())
+  title           String
+  slug            String       @unique
+  description     String?
+  chefTip         String?      // "Segredinho da Vovó"
+  sourceUrl       String?      @unique
+  imageUrl        String?
+  category        String       @default("Bolos e Tortas")
+  prepTimeMinutes Int?         @default(35)
+  servings        String?      @default("6 porções")
+  difficulty      String       @default("Fácil")
+  isFavorite      Boolean      @default(false)
+  isVipOnly       Boolean      @default(false) // Receita exclusiva para assinantes VIP
+  viewsCount      Int          @default(120)
+  likesCount      Int          @default(45)
+  rating          Float        @default(4.9)
+  ingredients     Ingredient[]
+  steps           Step[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Ingredient {
+  id          String  @id @default(uuid())
+  recipeId    String
+  recipe      Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  section     String  @default("Principal")
+  rawText     String
+  orderIndex  Int
+}
+
+model Step {
+  id               String  @id @default(uuid())
+  recipeId         String
+  recipe           Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  section          String  @default("Preparo")
+  stepNumber       Int
+  instruction      String
+  timerSeconds     Int?
+}
+
+model SiteConfig {
+  id                    String   @id @default("default")
+  siteName              String   @default("Caderno da Vovó")
+  adsenseEnabled        Boolean  @default(true)
+  adsenseClientId       String   @default("ca-pub-0000000000000000")
+  adsenseHeaderSlot     String   @default("1000000001")
+  adsenseInFeedSlot     String   @default("1000000002")
+  adsenseRecipeSlot     String   @default("1000000003")
+  vipMonthlyPrice       Float    @default(14.90)
+  vipAnnualPrice        Float    @default(119.90)
+  encryptedPixKey       String?  // Criptografado com AES-256-GCM no banco
+  updatedAt             DateTime @updatedAt
+}
+
+model SecurityAuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  actor     String
+  ipAddress String?
+  details   String?
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --senior-font-scale: 1;
+}
+
+html {
+  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+  font-size: calc(16px * var(--senior-font-scale));
+  line-height: 1.6;
+  scroll-behavior: smooth;
+}
+
+.font-serif-vovo {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Textura delicada de papel de caderno artesanal */
+.bg-notebook-paper {
+  background-color: #FDFBF7;
+  background-image: radial-gradient(#E6DEC8 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Modo de impressão para folha de caderno */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 16pt !important;
+  }
+}

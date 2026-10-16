@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Caderno da Vovó</string>
+    <string name="title_activity_main">Caderno da Vovó</string>
+    <string name="package_name">com.cadernodavovo.receitas</string>
+    <string name="custom_url_scheme">com.cadernodavovo.receitas</string>
+</resources>
