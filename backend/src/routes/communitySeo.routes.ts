@@ -250,4 +250,68 @@ export async function communitySeoRoutes(app: FastifyInstance) {
     reply.header('Content-Type', 'application/xml; charset=utf-8');
     return xml;
   });
+
+  // 7. NUVEM PERMANENTE DO USUÁRIO (Remédios, Hidratômetro, Cardápio Semanal, Feira, Livro PDF e Favoritas)
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "UserCloudData" (
+      "userId" TEXT PRIMARY KEY,
+      "payloadJson" TEXT NOT NULL,
+      "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  app.get('/api/user/cloud-sync', async (request, reply) => {
+    const authUser = extractAuthUser(request);
+    if (!authUser) {
+      return reply.status(401).send({ error: 'Faça login para carregar seus dados salvos na nuvem.' });
+    }
+
+    const rows = (await prisma.$queryRawUnsafe(
+      `SELECT payloadJson, updatedAt FROM "UserCloudData" WHERE userId = ? LIMIT 1`,
+      authUser.userId
+    )) as Array<{ payloadJson: string; updatedAt: string }>;
+
+    if (!rows || rows.length === 0) {
+      return { cloudData: null, updatedAt: null };
+    }
+
+    try {
+      return {
+        cloudData: JSON.parse(rows[0].payloadJson),
+        updatedAt: rows[0].updatedAt,
+      };
+    } catch {
+      return { cloudData: null, updatedAt: null };
+    }
+  });
+
+  app.put('/api/user/cloud-sync', async (request, reply) => {
+    const authUser = extractAuthUser(request);
+    if (!authUser) {
+      return reply.status(401).send({ error: 'Faça login para salvar seus dados permanentemente na nuvem.' });
+    }
+
+    const body = (request.body || {}) as { cloudData?: Record<string, unknown> };
+    const payloadStr = JSON.stringify(body.cloudData || {});
+    const nowIso = new Date().toISOString();
+
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO "UserCloudData" ("userId", "payloadJson", "updatedAt")
+       VALUES (?, ?, ?)
+       ON CONFLICT("userId") DO UPDATE SET
+         "payloadJson" = excluded."payloadJson",
+         "updatedAt" = excluded."updatedAt"`,
+      authUser.userId,
+      payloadStr,
+      nowIso
+    );
+
+    return {
+      ok: true,
+      cloudData: body.cloudData || {},
+      updatedAt: nowIso,
+      message: 'Seus dados foram salvos permanentemente na sua conta!',
+    };
+  });
 }
+

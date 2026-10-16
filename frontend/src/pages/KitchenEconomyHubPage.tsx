@@ -1,6 +1,8 @@
-import React, { useMemo, useState } from 'react';
-import { Recipe } from '../types';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Recipe, UserProfile } from '../types';
 import { SeniorRecipeCard } from '../components/SeniorRecipeCard';
+import { CloudSyncNotice } from '../components/CloudSyncNotice';
+import { pushLocalDataToCloudIfLoggedIn } from '../api/client';
 
 interface KitchenEconomyHubPageProps {
   recipes: Recipe[];
@@ -8,6 +10,8 @@ interface KitchenEconomyHubPageProps {
   onToggleFavorite: (recipe: Recipe) => void;
   onSpeakSummary: (recipe: Recipe) => void;
   highContrastDark: boolean;
+  user: UserProfile | null;
+  onOpenAuthModal: (mode: 'login' | 'register' | 'vip') => void;
 }
 
 type EconomySubTab = 'planner' | 'fridge' | 'converter' | 'pricing';
@@ -114,11 +118,22 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
   onToggleFavorite,
   onSpeakSummary,
   highContrastDark,
+  user,
+  onOpenAuthModal,
 }) => {
   const [subTab, setSubTab] = useState<EconomySubTab>('planner');
 
-  // --- 1. Estado do Cardápio Semanal ---
+  // --- 1. Estado do Cardápio Semanal (Local + Nuvem) ---
   const [weeklyPlan, setWeeklyPlan] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem('caderno_vovo_weekly_menu');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && Object.keys(parsed).length > 0) return parsed;
+      }
+    } catch {
+      // ignore
+    }
     const initial: Record<string, string> = {};
     DAYS_OF_WEEK.forEach((day, idx) => {
       if (recipes[idx % Math.max(1, recipes.length)]) {
@@ -127,6 +142,11 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
     });
     return initial;
   });
+
+  useEffect(() => {
+    localStorage.setItem('caderno_vovo_weekly_menu', JSON.stringify(weeklyPlan));
+    pushLocalDataToCloudIfLoggedIn();
+  }, [weeklyPlan]);
 
   const handleAutoGenerateWeek = () => {
     if (recipes.length === 0) return;
@@ -201,6 +221,30 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
   const [profitMarginPercent, setProfitMarginPercent] = useState<number>(100);
   const [daysSoldPerMonth, setDaysSoldPerMonth] = useState<number>(20);
 
+  useEffect(() => {
+    localStorage.setItem(
+      'caderno_vovo_pricing_calc',
+      JSON.stringify({
+        productName,
+        ingredientsCost: String(ingredientsCost),
+        packagingCost: String(packagingCost),
+        overheadPercent: String(overheadPercent),
+        unitsYield: String(unitsYield),
+        profitMarginPercent: String(profitMarginPercent),
+        daysSoldPerMonth: String(daysSoldPerMonth),
+      })
+    );
+    pushLocalDataToCloudIfLoggedIn();
+  }, [
+    productName,
+    ingredientsCost,
+    packagingCost,
+    overheadPercent,
+    unitsYield,
+    profitMarginPercent,
+    daysSoldPerMonth,
+  ]);
+
   const totalBatchCost =
     (ingredientsCost + packagingCost) * (1 + overheadPercent / 100);
   const unitCost = unitsYield > 0 ? totalBatchCost / unitsYield : 0;
@@ -257,6 +301,13 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Aviso de Salvamento Permanente na Nuvem vs. Modo Sem Login */}
+      <CloudSyncNotice
+        user={user}
+        onOpenAuthModal={onOpenAuthModal}
+        moduleName="seu Cardápio da Semana, Lista de Feira e Calculadora Faça e Venda"
+      />
 
       {/* SUB-ABA 1: CARDÁPIO SEMANAL + LISTA DE FEIRA INTELIGENTE */}
       {subTab === 'planner' && (

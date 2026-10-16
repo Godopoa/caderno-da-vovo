@@ -1,26 +1,66 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Recipe, UserProfile } from '../types';
+import { CloudSyncNotice } from '../components/CloudSyncNotice';
+import { pushLocalDataToCloudIfLoggedIn } from '../api/client';
 
 interface FamilyCookbookGeneratorPageProps {
   recipes: Recipe[];
   user: UserProfile | null;
   highContrastDark: boolean;
+  onOpenAuthModal: (mode: 'login' | 'register' | 'vip') => void;
 }
 
 export const FamilyCookbookGeneratorPage: React.FC<FamilyCookbookGeneratorPageProps> = ({
   recipes,
   user,
   highContrastDark,
+  onOpenAuthModal,
 }) => {
-  const [bookTitle, setBookTitle] = useState('O Livro de Ouro de Receitas da Nossa Família');
-  const [authorName, setAuthorName] = useState(user?.name || 'Vovó Helena');
-  const [dedication, setDedication] = useState(
-    'Para meus filhos e netos queridos: que o cheirinho de bolo assando e o tempero da nossa família continuem aquecendo o coração de vocês por muitas gerações. Com todo o meu amor!'
-  );
+  const [bookTitle, setBookTitle] = useState(() => {
+    try {
+      const saved = localStorage.getItem('caderno_vovo_cookbook_config');
+      if (saved) return JSON.parse(saved).bookTitle || 'O Livro de Ouro de Receitas da Nossa Família';
+    } catch {
+      // ignore
+    }
+    return 'O Livro de Ouro de Receitas da Nossa Família';
+  });
+  const [authorName, setAuthorName] = useState(() => {
+    try {
+      const saved = localStorage.getItem('caderno_vovo_cookbook_config');
+      if (saved) return JSON.parse(saved).authorName || user?.name || 'Vovó Helena';
+    } catch {
+      // ignore
+    }
+    return user?.name || 'Vovó Helena';
+  });
+  const [dedication, setDedication] = useState(() => {
+    try {
+      const saved = localStorage.getItem('caderno_vovo_cookbook_config');
+      if (saved) return JSON.parse(saved).dedication;
+    } catch {
+      // ignore
+    }
+    return 'Para meus filhos e netos queridos: que o cheirinho de bolo assando e o tempero da nossa família continuem aquecendo o coração de vocês por muitas gerações. Com todo o meu amor!';
+  });
   const [coverTheme, setCoverTheme] = useState<'berry' | 'sage' | 'gold'>('berry');
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>(() =>
     recipes.slice(0, 5).map((r) => r.id)
   );
+
+  useEffect(() => {
+    localStorage.setItem(
+      'caderno_vovo_cookbook_config',
+      JSON.stringify({
+        bookTitle,
+        authorName,
+        dedication,
+        coverTheme,
+        selectedRecipeIds,
+      })
+    );
+    pushLocalDataToCloudIfLoggedIn();
+  }, [bookTitle, authorName, dedication, coverTheme, selectedRecipeIds]);
 
   const toggleRecipeInBook = (id: string) => {
     setSelectedRecipeIds((prev) =>
@@ -39,6 +79,14 @@ export const FamilyCookbookGeneratorPage: React.FC<FamilyCookbookGeneratorPagePr
 
   return (
     <div className="space-y-8">
+      <div className="no-print">
+        <CloudSyncNotice
+          user={user}
+          onOpenAuthModal={onOpenAuthModal}
+          moduleName="o seu Livro de Receitas da Família, Dedicatória e Seleção de Pratos"
+        />
+      </div>
+
       {/* Painel de Configuração do Livro (Oculto na hora de imprimir o PDF!) */}
       <div
         className={`no-print rounded-3xl border p-6 sm:p-8 shadow-sm space-y-6 ${

@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { playKitchenAlarmSound, useVoiceReader } from '../hooks/useVoiceReader';
+import { UserProfile } from '../types';
+import { CloudSyncNotice } from '../components/CloudSyncNotice';
+import { pushLocalDataToCloudIfLoggedIn } from '../api/client';
 
 interface HealthWellnessHubPageProps {
   highContrastDark: boolean;
+  user: UserProfile | null;
+  onOpenAuthModal: (mode: 'login' | 'register' | 'vip') => void;
 }
 
 interface TeaGuideItem {
@@ -90,6 +95,8 @@ const NATURAL_TEAS: TeaGuideItem[] = [
 
 export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
   highContrastDark,
+  user,
+  onOpenAuthModal,
 }) => {
   const [selectedGoal, setSelectedGoal] = useState<string>('Todos');
   const { isSpeaking, speakText, stopSpeaking } = useVoiceReader();
@@ -102,6 +109,7 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
 
   useEffect(() => {
     localStorage.setItem('caderno_vovo_water_glasses', String(waterGlasses));
+    pushLocalDataToCloudIfLoggedIn();
   }, [waterGlasses]);
 
   // --- Estado do Despertador de Remédios ---
@@ -139,6 +147,7 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
 
   useEffect(() => {
     localStorage.setItem('caderno_vovo_pill_reminders', JSON.stringify(reminders));
+    pushLocalDataToCloudIfLoggedIn();
   }, [reminders]);
 
   const handleAddReminder = (e: React.FormEvent) => {
@@ -188,7 +197,7 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
       : NATURAL_TEAS.filter((t) => t.goalCategory === selectedGoal);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {/* Cabeçalho de Saúde & Bem-Estar */}
       <div
         className={`rounded-3xl border p-6 sm:p-8 shadow-sm ${
@@ -211,6 +220,14 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
         </div>
       </div>
 
+      {/* Aviso de Salvamento Permanente na Nuvem vs. Modo Sem Login */}
+      <CloudSyncNotice
+        user={user}
+        onOpenAuthModal={onOpenAuthModal}
+        moduleName="sua Caixinha de Remédios, Horários e Hidratômetro"
+        priorityAlert
+      />
+
       {/* SEÇÃO SUPERIOR: DESPERTADOR DE REMÉDIOS + CONTADOR DE 8 COPOS D'ÁGUA */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Coluna 1 (7 cols): Lembrete de Remédios com Aviso por Voz */}
@@ -222,13 +239,28 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
           <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-stone-100 dark:border-stone-800">
             <div>
               <h2 className="font-serif-vovo text-2xl font-bold flex items-center gap-2">
-                <i className="fa-solid fa-Notes-medical fa-capsules text-[#C83E5B]" />
+                <i className="fa-solid fa-capsules text-[#C83E5B]" />
                 <span>Caixinha de Remédios & Horários</span>
               </h2>
               <p className="text-xs sm:text-sm text-stone-500">
                 Toque no botão de som para ouvir o aviso da Vovó ou marque quando já tiver tomado.
               </p>
             </div>
+            {user ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#1E7E5A] bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                <i className="fa-solid fa-cloud-arrow-up" />
+                Salvo na conta de {user.name.split(' ')[0]}
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onOpenAuthModal('register')}
+                className="inline-flex items-center gap-1.5 text-xs font-extrabold text-amber-800 bg-amber-100 hover:bg-amber-200 border border-amber-300 px-3 py-1 rounded-full transition"
+              >
+                <i className="fa-solid fa-triangle-exclamation text-amber-600" />
+                <span>Sem Login: Salvar Remédios na Conta</span>
+              </button>
+            )}
           </div>
 
           <div className="space-y-3">

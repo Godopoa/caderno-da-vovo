@@ -260,11 +260,62 @@ export const HomeSenior: React.FC<HomeSeniorProps> = ({
                 Monte um livro com dedicatória para os netos e imprima ou salve em PDF.
               </p>
             </div>
-            <span className="text-xs font-extrabold text-stone-800 flex items-center gap-1">
+            <span className="text-xs font-extrabold text-stone-800 dark:text-stone-200 flex items-center gap-1">
               <span>Montar livro</span>
               <i className="fa-solid fa-arrow-right" />
             </span>
           </button>
+
+          {/* Aviso de Uso Sem Login + Convite para Salvar Permanentemente na Conta */}
+          <div
+            className={`sm:col-span-2 lg:col-span-4 rounded-2xl border px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 ${
+              user
+                ? 'bg-emerald-50/80 border-emerald-200 dark:bg-stone-900 dark:border-emerald-900/60'
+                : 'bg-amber-50/90 border-amber-200/90 dark:bg-stone-900 dark:border-stone-800'
+            }`}
+          >
+            <div className="flex items-center gap-3 text-xs sm:text-sm">
+              <div
+                className={`w-9 h-9 rounded-xl flex items-center justify-center text-white shrink-0 ${
+                  user ? 'bg-[#1E7E5A]' : 'bg-amber-500'
+                }`}
+              >
+                <i className={`fa-solid ${user ? 'fa-cloud-arrow-up' : 'fa-user-shield'}`} />
+              </div>
+              <div>
+                {user ? (
+                  <p className="font-bold text-stone-800 dark:text-stone-100">
+                    <span className="text-[#1E7E5A] dark:text-emerald-400 font-extrabold">
+                      Sincronização na Nuvem Ativa ({user.name.split(' ')[0]}):
+                    </span>{' '}
+                    Seus remédios, horários, cardápio semanal, lista de feira e receitas favoritas estão salvos permanentemente na sua conta!
+                  </p>
+                ) : (
+                  <p className="font-bold text-stone-800 dark:text-stone-200">
+                    <span className="text-[#C83E5B] font-extrabold">
+                      Funciona 100% Sem Login!
+                    </span>{' '}
+                    Use remédios, cardápio e receitas à vontade — mas{' '}
+                    <span className="underline decoration-amber-500 font-extrabold">
+                      crie uma conta gratuita
+                    </span>{' '}
+                    para ter seus dados salvos permanentemente na nuvem e nunca perdê-los!
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {!user && (
+              <button
+                type="button"
+                onClick={onOpenVipModal}
+                className="px-4 py-2 rounded-xl bg-[#1E7E5A] hover:bg-emerald-800 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-xs transition shrink-0"
+              >
+                <i className="fa-solid fa-cloud-arrow-up" />
+                <span>Criar Conta Grátis e Salvar Dados</span>
+              </button>
+            )}
+          </div>
         </section>
       )}
 

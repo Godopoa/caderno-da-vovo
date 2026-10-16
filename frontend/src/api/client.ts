@@ -425,3 +425,132 @@ export async function pauseAutoImporterApi(): Promise<AutoImporterStatus> {
   if (!res.ok) throw new Error('Falha ao pausar Auto-Importer.');
   return await res.json();
 }
+
+// --- NUVEM PERMANENTE DO USUÁRIO (Sincronização Sem Login -> Com Login) ---
+export interface UserCloudDataPayload {
+  medications?: unknown;
+  waterCups?: number;
+  weeklyMenu?: Record<string, string>;
+  checkedMarketItems?: Record<string, boolean>;
+  pricingCalc?: Record<string, string>;
+  cookbookConfig?: Record<string, unknown>;
+}
+
+const CLOUD_SYNC_KEYS = {
+  medications: 'caderno_vovo_pill_reminders',
+  waterCups: 'caderno_vovo_water_glasses',
+  weeklyMenu: 'caderno_vovo_weekly_menu',
+  checkedMarketItems: 'caderno_vovo_checked_market',
+  pricingCalc: 'caderno_vovo_pricing_calc',
+  cookbookConfig: 'caderno_vovo_cookbook_config',
+  lastSyncAt: 'caderno_vovo_last_cloud_sync_at',
+};
+
+export function collectLocalUserCloudData(): UserCloudDataPayload {
+  const parseSafe = (key: string) => {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const waterRaw = localStorage.getItem(CLOUD_SYNC_KEYS.waterCups);
+  return {
+    medications: parseSafe(CLOUD_SYNC_KEYS.medications),
+    waterCups: waterRaw !== null ? Number(waterRaw) : undefined,
+    weeklyMenu: parseSafe(CLOUD_SYNC_KEYS.weeklyMenu),
+    checkedMarketItems: parseSafe(CLOUD_SYNC_KEYS.checkedMarketItems),
+    pricingCalc: parseSafe(CLOUD_SYNC_KEYS.pricingCalc),
+    cookbookConfig: parseSafe(CLOUD_SYNC_KEYS.cookbookConfig),
+  };
+}
+
+export function applyCloudDataToLocalStorage(cloudData: UserCloudDataPayload): void {
+  if (cloudData.medications !== undefined) {
+    localStorage.setItem(CLOUD_SYNC_KEYS.medications, JSON.stringify(cloudData.medications));
+  }
+  if (typeof cloudData.waterCups === 'number') {
+    localStorage.setItem(CLOUD_SYNC_KEYS.waterCups, String(cloudData.waterCups));
+  }
+  if (cloudData.weeklyMenu !== undefined) {
+    localStorage.setItem(CLOUD_SYNC_KEYS.weeklyMenu, JSON.stringify(cloudData.weeklyMenu));
+  }
+  if (cloudData.checkedMarketItems !== undefined) {
+    localStorage.setItem(
+      CLOUD_SYNC_KEYS.checkedMarketItems,
+      JSON.stringify(cloudData.checkedMarketItems)
+    );
+  }
+  if (cloudData.pricingCalc !== undefined) {
+    localStorage.setItem(CLOUD_SYNC_KEYS.pricingCalc, JSON.stringify(cloudData.pricingCalc));
+  }
+  if (cloudData.cookbookConfig !== undefined) {
+    localStorage.setItem(CLOUD_SYNC_KEYS.cookbookConfig, JSON.stringify(cloudData.cookbookConfig));
+  }
+}
+
+export function getLastCloudSyncAt(): string | null {
+  return localStorage.getItem(CLOUD_SYNC_KEYS.lastSyncAt);
+}
+
+export async function pushLocalDataToCloudIfLoggedIn(): Promise<string | null> {
+  const token = getStoredToken();
+  if (!token) return null;
+
+  try {
+    const cloudData = collectLocalUserCloudData();
+    const res = await fetch(`${getApiBaseUrl()}/api/user/cloud-sync`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      body: JSON.stringify({ cloudData }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const updatedAt = data.updatedAt || new Date().toISOString();
+    localStorage.setItem(CLOUD_SYNC_KEYS.lastSyncAt, updatedAt);
+    window.dispatchEvent(new CustomEvent('vovo-cloud-synced', { detail: { updatedAt } }));
+    return updatedAt;
+  } catch {
+    return null;
+  }
+}
+
+export async function syncUserCloudDataOnLogin(): Promise<string | null> {
+  const token = getStoredToken();
+  if (!token) return null;
+
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/api/user/cloud-sync`, {
+      headers: { ...getAuthHeaders() },
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as {
+      cloudData: UserCloudDataPayload | null;
+      updatedAt: string | null;
+    };
+
+    const localData = collectLocalUserCloudData();
+    const merged: UserCloudDataPayload = {
+      medications: data.cloudData?.medications ?? localData.medications,
+      waterCups: data.cloudData?.waterCups ?? localData.waterCups,
+      weeklyMenu: {
+        ...(localData.weeklyMenu || {}),
+        ...(data.cloudData?.weeklyMenu || {}),
+      },
+      checkedMarketItems: {
+        ...(localData.checkedMarketItems || {}),
+        ...(data.cloudData?.checkedMarketItems || {}),
+      },
+      pricingCalc: data.cloudData?.pricingCalc ?? localData.pricingCalc,
+      cookbookConfig: data.cloudData?.cookbookConfig ?? localData.cookbookConfig,
+    };
+
+    applyCloudDataToLocalStorage(merged);
+    return await pushLocalDataToCloudIfLoggedIn();
+  } catch {
+    return null;
+  }
+}
+

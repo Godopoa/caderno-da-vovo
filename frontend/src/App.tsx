@@ -6,9 +6,11 @@ import {
   fetchMonetizationConfig,
   fetchRecipes,
   getStoredUser,
+  syncUserCloudDataOnLogin,
   toggleFavoriteRecipe,
 } from './api/client';
 import { AccessibilityBar, NavTab } from './components/AccessibilityBar';
+import { CloudSyncNotice } from './components/CloudSyncNotice';
 import { HomeSenior } from './pages/HomeSenior';
 import { RecipeDetail } from './pages/RecipeDetail';
 import { AdminImporterPanel } from './components/AdminImporterPanel';
@@ -81,6 +83,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     loadRecipes();
     loadMonetization();
+    syncUserCloudDataOnLogin();
   }, []);
 
   const handleToggleFavorite = async (recipe: Recipe) => {
@@ -228,9 +231,15 @@ export const App: React.FC = () => {
             onToggleFavorite={handleToggleFavorite}
             onSpeakSummary={handleSpeakSummary}
             highContrastDark={highContrastDark}
+            user={user}
+            onOpenAuthModal={openAuthModal}
           />
         ) : activeTab === 'health' ? (
-          <HealthWellnessHubPage highContrastDark={highContrastDark} />
+          <HealthWellnessHubPage
+            highContrastDark={highContrastDark}
+            user={user}
+            onOpenAuthModal={openAuthModal}
+          />
         ) : activeTab === 'crafts' ? (
           <HomeCraftsHubPage highContrastDark={highContrastDark} />
         ) : activeTab === 'cookbook' ? (
@@ -238,6 +247,7 @@ export const App: React.FC = () => {
             recipes={recipes}
             user={user}
             highContrastDark={highContrastDark}
+            onOpenAuthModal={openAuthModal}
           />
         ) : activeTab === 'admin' && user?.role === 'ADMIN' ? (
           <AdminDashboardPage
@@ -296,19 +306,28 @@ export const App: React.FC = () => {
             highContrastDark={highContrastDark}
           />
         ) : (
-          <HomeSenior
-            recipes={displayedRecipes}
-            user={user}
-            monetization={monetization}
-            highContrastDark={highContrastDark}
-            onSelectRecipe={handleSelectRecipe}
-            onToggleFavorite={handleToggleFavorite}
-            onSpeakSummary={handleSpeakSummary}
-            onOpenVipModal={() => openAuthModal('vip')}
-            onOpenImporter={() => safeSetActiveTab('importer')}
-            onOpenNews={() => setActiveTab('news')}
-            onOpenHub={(hub) => safeSetActiveTab(hub)}
-          />
+          <div className="space-y-6">
+            {activeTab === 'favorites' && (
+              <CloudSyncNotice
+                user={user}
+                onOpenAuthModal={openAuthModal}
+                moduleName="o seu Caderninho de Receitas Favoritas, Remédios e Cardápio da Semana"
+              />
+            )}
+            <HomeSenior
+              recipes={displayedRecipes}
+              user={user}
+              monetization={monetization}
+              highContrastDark={highContrastDark}
+              onSelectRecipe={handleSelectRecipe}
+              onToggleFavorite={handleToggleFavorite}
+              onSpeakSummary={handleSpeakSummary}
+              onOpenVipModal={() => openAuthModal('vip')}
+              onOpenImporter={() => safeSetActiveTab('importer')}
+              onOpenNews={() => setActiveTab('news')}
+              onOpenHub={(hub) => safeSetActiveTab(hub)}
+            />
+          </div>
         )}
       </main>
 
@@ -326,9 +345,9 @@ export const App: React.FC = () => {
               className="w-12 h-12 rounded-2xl object-cover border border-rose-200 shadow-sm"
             />
             <div>
-              <p className="font-extrabold text-base">Caderno da Vovó v4.0</p>
+              <p className="font-extrabold text-base">Caderno da Vovó v5.0</p>
               <p className="text-xs text-stone-500">
-                Portal Completo de Receitas, Economia do Lar, Saúde Sênior, Horta & Crochê
+                Portal Completo de Receitas, Economia do Lar, Saúde Sênior, Horta & Nuvem Permanente
               </p>
             </div>
           </div>

@@ -68,14 +68,23 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               <i className="fa-solid fa-heart text-rose-400" />
               <span>Portal de Receitas & Utilidades da Vovó</span>
             </span>
-            <span className="hidden md:flex items-center gap-1.5 text-emerald-200">
-              <i className="fa-solid fa-magnifying-glass-chart" />
-              <span>SEO Google Rich Snippets Ativo</span>
-            </span>
-            <span className="hidden lg:flex items-center gap-1.5 text-amber-300">
-              <i className="fa-solid fa-shield-halved" />
-              <span>Criptografia AES-256 & Captcha Próprio</span>
-            </span>
+            {user ? (
+              <span className="hidden md:flex items-center gap-1.5 text-emerald-200 font-bold">
+                <i className="fa-solid fa-cloud-arrow-up text-emerald-300" />
+                <span>Nuvem Permanente Ativa: Seus remédios, cardápio e receitas estão salvos!</span>
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onOpenAuthModal('register')}
+                className="hidden md:flex items-center gap-1.5 text-amber-300 hover:text-amber-200 font-bold underline decoration-amber-400/60 underline-offset-2"
+              >
+                <i className="fa-solid fa-cloud-arrow-up" />
+                <span>
+                  Modo Sem Login Ativo — Crie uma conta grátis para salvar remédios e cardápio permanentemente!
+                </span>
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
@@ -245,20 +254,24 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               </button>
             )}
 
-            {/* Conta do Usuário ou Botão Entrar */}
+            {/* Conta do Usuário ou Botões Criar Conta (Salvar Dados) + Entrar */}
             {user ? (
-              <div className="flex items-center gap-2 bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 px-3 py-1 rounded-xl">
+              <div className="flex items-center gap-2 bg-emerald-50/90 dark:bg-stone-800 border border-emerald-200 dark:border-stone-700 px-3 py-1 rounded-xl">
                 <button
                   type="button"
                   onClick={() => onSelectTab('profile')}
                   className="text-xs text-left hover:opacity-80"
                 >
-                  <span className="font-extrabold leading-none flex items-center gap-1">
-                    {user.isVip && <i className="fa-solid fa-crown text-amber-500" />}
+                  <span className="font-extrabold leading-none flex items-center gap-1.5 text-stone-900 dark:text-stone-100">
+                    {user.isVip ? (
+                      <i className="fa-solid fa-crown text-amber-500" />
+                    ) : (
+                      <i className="fa-solid fa-cloud-arrow-up text-[#1E7E5A]" />
+                    )}
                     {user.name.split(' ')[0]}
                   </span>
-                  <span className="text-[10px] text-stone-500 uppercase font-bold block mt-0.5">
-                    {user.role === 'ADMIN' ? 'Admin' : user.isVip ? 'Membro VIP' : 'Meu Perfil'}
+                  <span className="text-[10px] text-[#1E7E5A] dark:text-emerald-400 uppercase font-extrabold block mt-0.5">
+                    {user.role === 'ADMIN' ? 'Admin • Nuvem Ativa' : user.isVip ? 'VIP • Nuvem Ativa' : 'Salvo na Nuvem'}
                   </span>
                 </button>
                 <button
@@ -271,18 +284,30 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
                 </button>
               </div>
             ) : (
-              <button
-                type="button"
-                onClick={() => onOpenAuthModal('login')}
-                className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm ${
-                  highContrastDark
-                    ? 'bg-stone-800 hover:bg-stone-700 text-white border border-stone-700'
-                    : 'bg-stone-900 hover:bg-stone-800 text-white'
-                }`}
-              >
-                <i className="fa-regular fa-user" />
-                <span>Entrar</span>
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => onOpenAuthModal('register')}
+                  title="Crie uma conta gratuita para salvar seus remédios, cardápio e receitas para sempre"
+                  className="px-3 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm bg-[#1E7E5A] hover:bg-emerald-800 text-white flex items-center gap-1.5 transition shadow-sm"
+                >
+                  <i className="fa-solid fa-cloud-arrow-up" />
+                  <span className="hidden sm:inline">Salvar Dados</span>
+                  <span className="sm:hidden">Criar Conta</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onOpenAuthModal('login')}
+                  className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm ${
+                    highContrastDark
+                      ? 'bg-stone-800 hover:bg-stone-700 text-white border border-stone-700'
+                      : 'bg-stone-900 hover:bg-stone-800 text-white'
+                  }`}
+                >
+                  <i className="fa-regular fa-user" />
+                  <span>Entrar</span>
+                </button>
+              </div>
             )}
           </div>
         </div>

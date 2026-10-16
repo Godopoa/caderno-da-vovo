@@ -3,6 +3,7 @@ import {
   fetchCaptchaChallenge,
   loginApi,
   registerApi,
+  syncUserCloudDataOnLogin,
   upgradeToVipApi,
 } from '../api/client';
 import { UserProfile, CaptchaChallenge } from '../types';
@@ -65,6 +66,7 @@ export const AuthVipModal: React.FC<Props> = ({
     setError(null);
     try {
       const res = await loginApi(email, password);
+      await syncUserCloudDataOnLogin();
       onAuthSuccess(res.user);
       onClose();
     } catch (err: any) {
@@ -80,9 +82,12 @@ export const AuthVipModal: React.FC<Props> = ({
     setError(null);
     try {
       const res = await registerApi({ name, email, password });
+      await syncUserCloudDataOnLogin();
       onAuthSuccess(res.user);
       setTab('vip');
-      setSuccessMsg('Conta criada com sucesso! Aproveite para conhecer o Clube VIP.');
+      setSuccessMsg(
+        'Conta criada e seus remédios, cardápio e receitas já estão salvos permanentemente na nuvem!'
+      );
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -226,6 +231,20 @@ export const AuthVipModal: React.FC<Props> = ({
 
           {tab === 'register' && (
             <form onSubmit={handleRegister} className="space-y-4">
+              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-stone-700 space-y-1">
+                <p className="font-extrabold text-[#1E7E5A] flex items-center gap-1.5 text-sm">
+                  <i className="fa-solid fa-cloud-arrow-up" />
+                  <span>Por que criar sua Conta Gratuita da Vovó?</span>
+                </p>
+                <p className="leading-relaxed">
+                  Ao criar sua conta, tudo o que você já preencheu (horários de{' '}
+                  <strong>remédios</strong>, <strong>copos d’água</strong>,{' '}
+                  <strong>cardápio da semana</strong>, <strong>lista de feira</strong>,{' '}
+                  <strong>livro PDF</strong> e <strong>favoritas</strong>) fica salvo
+                  permanentemente na nuvem para nunca se perder!
+                </p>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-stone-600 uppercase mb-1">Como gosta de ser chamado(a)?</label>
                 <input
