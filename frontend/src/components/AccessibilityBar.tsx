@@ -54,7 +54,7 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
 
   return (
     <header className="no-print sticky top-0 z-40 shadow-sm">
-      {/* Faixa Superior Padronizada (Verde Sálvia Escuro #1B4332) */}
+      {/* 1. Faixa Superior de Acessibilidade & Segurança */}
       <div
         className={`text-xs py-1.5 px-4 border-b transition-colors ${
           highContrastDark
@@ -66,7 +66,7 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5 font-semibold">
               <i className="fa-solid fa-heart text-rose-400" />
-              <span>Portal de Receitas & Memórias de Família</span>
+              <span>Portal de Receitas & Utilidades da Vovó</span>
             </span>
             <span className="hidden md:flex items-center gap-1.5 text-emerald-200">
               <i className="fa-solid fa-magnifying-glass-chart" />
@@ -107,33 +107,37 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               onClick={onToggleHighContrast}
               className="flex items-center gap-1.5 bg-black/25 hover:bg-black/40 px-2.5 py-0.5 rounded-full font-semibold transition"
             >
-              <i className={highContrastDark ? 'fa-solid fa-sun text-amber-300' : 'fa-solid fa-moon'} />
+              <i
+                className={
+                  highContrastDark ? 'fa-solid fa-sun text-amber-300' : 'fa-solid fa-moon'
+                }
+              />
               <span>{highContrastDark ? 'Modo Claro' : 'Modo Noturno'}</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Navbar Principal com Paleta Padronizada (Branco Alabastro + Cereja #C83E5B + Verde Sálvia) */}
+      {/* 2. Linha Principal: Marca à Esquerda + Ações Rápidas & Conta à Direita */}
       <div
         className={`border-b transition-colors ${
           highContrastDark
             ? 'bg-stone-900/95 border-stone-800 text-stone-100'
-            : 'bg-white/95 border-stone-200/90 text-[#1E1B18]'
+            : 'bg-white/95 border-stone-200/80 text-[#1E1B18]'
         } backdrop-blur-md`}
       >
-        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
           {/* Logo Afetivo */}
           <button
             type="button"
             onClick={() => onSelectTab('home')}
-            className="flex items-center gap-3.5 text-left group focus:outline-none"
+            className="flex items-center gap-3 text-left group focus:outline-none"
           >
-            <div className="relative">
+            <div className="relative shrink-0">
               <img
                 src="/images/logo-vovo.jpg"
                 alt="Caderno da Vovó"
-                className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl object-cover border-2 border-rose-500/30 shadow-sm group-hover:scale-105 transition"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl object-cover border-2 border-rose-500/30 shadow-sm group-hover:scale-105 transition"
               />
               <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#C83E5B] text-white text-[10px] flex items-center justify-center shadow">
                 <i className="fa-solid fa-utensils" />
@@ -144,111 +148,23 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
                 Caderno da <span className="text-[#C83E5B]">Vovó</span>
               </span>
               <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 mt-1 block">
-                Receitas afetivas, porções inteligentes & voz guiada
+                Receitas afetivas, economia doméstica & bem-estar
               </span>
             </div>
           </button>
 
-          {/* Menu Principal — Botões de Admin SÓ aparecem quando logado como ADMIN! */}
-          <nav aria-label="Menu Principal" className="flex flex-wrap items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => onSelectTab('home')}
-              className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
-                activeTab === 'home'
-                  ? 'bg-[#C83E5B] text-white shadow-sm'
-                  : 'text-stone-700 dark:text-stone-200 hover:bg-rose-50 dark:hover:bg-stone-800'
-              }`}
-            >
-              <i className="fa-solid fa-utensils" />
-              <span>Receitas</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onSelectTab('cooking')}
-              className={`px-3 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
-                activeTab === 'cooking'
-                  ? 'bg-gradient-to-r from-[#C83E5B] to-rose-600 text-white shadow-sm ring-2 ring-rose-200'
-                  : 'bg-rose-50/80 text-[#C83E5B] border border-rose-200/80 hover:bg-rose-100 dark:bg-stone-800 dark:text-rose-300 dark:border-stone-700'
-              }`}
-            >
-              <i className="fa-solid fa-kitchen-set" />
-              <span>Modo Cozinha</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onSelectTab('economy')}
-              className={`px-3 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
-                activeTab === 'economy'
-                  ? 'bg-[#C83E5B] text-white shadow-sm'
-                  : 'text-stone-700 dark:text-stone-200 hover:bg-rose-50 dark:hover:bg-stone-800'
-              }`}
-            >
-              <i className="fa-solid fa-piggy-bank text-[#C83E5B] group-hover:text-white" />
-              <span>Economia & Feira</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onSelectTab('health')}
-              className={`px-3 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
-                activeTab === 'health'
-                  ? 'bg-[#1E7E5A] text-white shadow-sm'
-                  : 'text-stone-700 dark:text-stone-200 hover:bg-emerald-50 dark:hover:bg-stone-800'
-              }`}
-            >
-              <i className="fa-solid fa-Notes-medical fa-leaf text-[#1E7E5A]" />
-              <span>Saúde & Chás</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onSelectTab('crafts')}
-              className={`px-3 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
-                activeTab === 'crafts'
-                  ? 'bg-amber-600 text-white shadow-sm'
-                  : 'text-stone-700 dark:text-stone-200 hover:bg-amber-50 dark:hover:bg-stone-800'
-              }`}
-            >
-              <i className="fa-solid fa-scissors text-amber-600" />
-              <span>Casa, Horta & Crochê</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onSelectTab('cookbook')}
-              className={`px-3 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
-                activeTab === 'cookbook'
-                  ? 'bg-stone-900 text-amber-300 shadow-sm'
-                  : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
-              }`}
-            >
-              <i className="fa-solid fa-book-bookmark text-amber-600" />
-              <span>Livro PDF</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onSelectTab('news')}
-              className={`px-3 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
-                activeTab === 'news'
-                  ? 'bg-[#1E7E5A] text-white shadow-sm'
-                  : 'text-stone-700 dark:text-stone-200 hover:bg-emerald-50 dark:hover:bg-stone-800'
-              }`}
-            >
-              <i className="fa-regular fa-newspaper" />
-              <span>Jornalzinho</span>
-            </button>
-
+          {/* Ações Rápidas do Usuário (Direita da Linha 1) */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Botão Favoritas */}
             <button
               type="button"
               onClick={() => onSelectTab('favorites')}
-              className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
+              className={`px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 border transition ${
                 activeTab === 'favorites'
-                  ? 'bg-[#C83E5B] text-white shadow-sm'
-                  : 'text-stone-700 dark:text-stone-200 hover:bg-rose-50 dark:hover:bg-stone-800'
+                  ? 'bg-[#C83E5B] text-white border-[#C83E5B] shadow-sm'
+                  : highContrastDark
+                  ? 'bg-stone-800/90 border-stone-700 text-stone-200 hover:bg-stone-800'
+                  : 'bg-rose-50/70 border-rose-200/80 text-stone-700 hover:bg-rose-100/80'
               }`}
             >
               <i
@@ -259,10 +175,10 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               <span>Favoritas</span>
               {favoritesCount > 0 && (
                 <span
-                  className={`px-1.5 py-0.2 rounded-full text-xs font-extrabold ${
+                  className={`px-1.5 py-0.2 rounded-full text-[11px] font-extrabold ${
                     activeTab === 'favorites'
                       ? 'bg-white text-[#C83E5B]'
-                      : 'bg-rose-100 text-[#C83E5B]'
+                      : 'bg-[#C83E5B] text-white'
                   }`}
                 >
                   {favoritesCount}
@@ -270,34 +186,21 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               )}
             </button>
 
+            {/* Botão Enviar Receita */}
             <button
               type="button"
               onClick={() => onSelectTab('create')}
-              className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
+              className={`px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 border transition ${
                 activeTab === 'create'
-                  ? 'bg-[#1E7E5A] text-white shadow-sm'
-                  : 'text-stone-700 dark:text-stone-200 hover:bg-emerald-50 dark:hover:bg-stone-800'
+                  ? 'bg-[#1E7E5A] text-white border-[#1E7E5A] shadow-sm'
+                  : highContrastDark
+                  ? 'bg-stone-800/90 border-stone-700 text-stone-200 hover:bg-stone-800'
+                  : 'bg-emerald-50/70 border-emerald-200/80 text-[#1E7E5A] hover:bg-emerald-100/80'
               }`}
             >
               <i className="fa-solid fa-feather-pointed" />
               <span>Enviar Receita</span>
             </button>
-
-            {/* Aba Meu Perfil (Visível quando o usuário está logado) */}
-            {user && (
-              <button
-                type="button"
-                onClick={() => onSelectTab('profile')}
-                className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
-                  activeTab === 'profile'
-                    ? 'bg-stone-800 text-white shadow-sm'
-                    : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
-                }`}
-              >
-                <i className="fa-solid fa-user-pen" />
-                <span>Meu Perfil</span>
-              </button>
-            )}
 
             {/* Botões Administrativos OCULTOS para visitantes comuns — SÓ aparecem se user.role === 'ADMIN' */}
             {isAdmin && (
@@ -305,7 +208,7 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
                 <button
                   type="button"
                   onClick={() => onSelectTab('importer')}
-                  className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
+                  className={`px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
                     activeTab === 'importer'
                       ? 'bg-amber-600 text-white shadow-sm'
                       : 'bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100'
@@ -318,10 +221,10 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
                 <button
                   type="button"
                   onClick={() => onSelectTab('admin')}
-                  className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
+                  className={`px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
                     activeTab === 'admin'
-                      ? 'bg-stone-900 text-amber-300 shadow-sm'
-                      : 'bg-stone-900/90 text-amber-300 hover:bg-stone-900'
+                      ? 'bg-stone-900 text-amber-300 shadow-sm ring-2 ring-amber-400/50'
+                      : 'bg-stone-900 text-amber-300 hover:bg-stone-800'
                   }`}
                 >
                   <i className="fa-solid fa-shield-halved" />
@@ -329,41 +232,40 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
                 </button>
               </>
             )}
-          </nav>
 
-          {/* Área Direita: Clube VIP & Conta do Usuário */}
-          <div className="flex items-center gap-2.5">
+            {/* Clube VIP */}
             {!user?.isVip && (
               <button
                 type="button"
                 onClick={() => onOpenAuthModal('vip')}
-                className="px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-sm flex items-center gap-1.5 transition"
+                className="px-3.5 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-sm flex items-center gap-1.5 transition"
               >
                 <i className="fa-solid fa-crown" />
                 <span>Clube VIP</span>
               </button>
             )}
 
+            {/* Conta do Usuário ou Botão Entrar */}
             {user ? (
-              <div className="flex items-center gap-2 bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 px-3 py-1.5 rounded-xl">
+              <div className="flex items-center gap-2 bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 px-3 py-1 rounded-xl">
                 <button
                   type="button"
                   onClick={() => onSelectTab('profile')}
                   className="text-xs text-left hover:opacity-80"
                 >
-                  <span className="font-extrabold block leading-none flex items-center gap-1">
+                  <span className="font-extrabold leading-none flex items-center gap-1">
                     {user.isVip && <i className="fa-solid fa-crown text-amber-500" />}
                     {user.name.split(' ')[0]}
                   </span>
-                  <span className="text-[10px] text-stone-500 uppercase font-bold">
-                    {user.role === 'ADMIN' ? 'Admin' : user.isVip ? 'Membro VIP' : 'Membro'}
+                  <span className="text-[10px] text-stone-500 uppercase font-bold block mt-0.5">
+                    {user.role === 'ADMIN' ? 'Admin' : user.isVip ? 'Membro VIP' : 'Meu Perfil'}
                   </span>
                 </button>
                 <button
                   type="button"
                   onClick={onLogout}
                   title="Sair da conta"
-                  className="ml-1 text-stone-400 hover:text-rose-600 px-1.5 py-1"
+                  className="ml-1 text-stone-400 hover:text-rose-600 px-1 py-0.5"
                 >
                   <i className="fa-solid fa-right-from-bracket" />
                 </button>
@@ -372,13 +274,180 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               <button
                 type="button"
                 onClick={() => onOpenAuthModal('login')}
-                className="px-4 py-2 rounded-xl font-bold text-sm bg-stone-900 hover:bg-stone-800 text-white flex items-center gap-2 transition shadow-sm"
+                className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm ${
+                  highContrastDark
+                    ? 'bg-stone-800 hover:bg-stone-700 text-white border border-stone-700'
+                    : 'bg-stone-900 hover:bg-stone-800 text-white'
+                }`}
               >
                 <i className="fa-regular fa-user" />
                 <span>Entrar</span>
               </button>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* 3. Barra de Navegação de Categorias & Utilidades (Linha 2 — Alinhada e Organizada) */}
+      <div
+        className={`border-b transition-colors ${
+          highContrastDark
+            ? 'bg-stone-950/95 border-stone-800 text-stone-200'
+            : 'bg-[#FAF7F2]/95 border-stone-200/80 text-stone-700'
+        } backdrop-blur-md`}
+      >
+        <div className="max-w-7xl mx-auto px-4 py-1.5">
+          <nav
+            aria-label="Menu Principal de Módulos"
+            className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5"
+          >
+            {/* Grupo 1: Culinária */}
+            <button
+              type="button"
+              onClick={() => onSelectTab('home')}
+              className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition ${
+                activeTab === 'home'
+                  ? 'bg-[#C83E5B] text-white shadow-sm'
+                  : 'hover:bg-rose-50 dark:hover:bg-stone-800'
+              }`}
+            >
+              <i
+                className={`fa-solid fa-utensils ${
+                  activeTab === 'home' ? 'text-white' : 'text-[#C83E5B]'
+                }`}
+              />
+              <span>Receitas</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onSelectTab('cooking')}
+              className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition ${
+                activeTab === 'cooking'
+                  ? 'bg-gradient-to-r from-[#C83E5B] to-rose-600 text-white shadow-sm'
+                  : 'bg-rose-50/70 text-[#C83E5B] border border-rose-200/70 hover:bg-rose-100 dark:bg-stone-900 dark:text-rose-300 dark:border-stone-800'
+              }`}
+            >
+              <i className="fa-solid fa-kitchen-set" />
+              <span>Modo Cozinha</span>
+            </button>
+
+            <span
+              className={`h-5 w-px mx-1 shrink-0 ${
+                highContrastDark ? 'bg-stone-800' : 'bg-stone-300'
+              }`}
+            />
+
+            {/* Grupo 2: Utilidades da Dona de Casa & Vovó */}
+            <button
+              type="button"
+              onClick={() => onSelectTab('economy')}
+              className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition ${
+                activeTab === 'economy'
+                  ? 'bg-[#C83E5B] text-white shadow-sm'
+                  : 'hover:bg-rose-50 dark:hover:bg-stone-800'
+              }`}
+            >
+              <i
+                className={`fa-solid fa-piggy-bank ${
+                  activeTab === 'economy' ? 'text-white' : 'text-[#C83E5B]'
+                }`}
+              />
+              <span>Economia & Feira</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onSelectTab('health')}
+              className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition ${
+                activeTab === 'health'
+                  ? 'bg-[#1E7E5A] text-white shadow-sm'
+                  : 'hover:bg-emerald-50 dark:hover:bg-stone-800'
+              }`}
+            >
+              <i
+                className={`fa-solid fa-leaf ${
+                  activeTab === 'health' ? 'text-white' : 'text-[#1E7E5A]'
+                }`}
+              />
+              <span>Saúde & Chás</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onSelectTab('crafts')}
+              className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition ${
+                activeTab === 'crafts'
+                  ? 'bg-amber-600 text-white shadow-sm'
+                  : 'hover:bg-amber-50 dark:hover:bg-stone-800'
+              }`}
+            >
+              <i
+                className={`fa-solid fa-scissors ${
+                  activeTab === 'crafts' ? 'text-white' : 'text-amber-600'
+                }`}
+              />
+              <span>Casa, Horta & Crochê</span>
+            </button>
+
+            <span
+              className={`h-5 w-px mx-1 shrink-0 ${
+                highContrastDark ? 'bg-stone-800' : 'bg-stone-300'
+              }`}
+            />
+
+            {/* Grupo 3: Memórias & Comunidade */}
+            <button
+              type="button"
+              onClick={() => onSelectTab('cookbook')}
+              className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition ${
+                activeTab === 'cookbook'
+                  ? 'bg-stone-900 text-amber-300 shadow-sm dark:bg-amber-500 dark:text-stone-950'
+                  : 'hover:bg-stone-200/60 dark:hover:bg-stone-800'
+              }`}
+            >
+              <i
+                className={`fa-solid fa-book-bookmark ${
+                  activeTab === 'cookbook'
+                    ? 'text-amber-300 dark:text-stone-950'
+                    : 'text-amber-600'
+                }`}
+              />
+              <span>Livro PDF</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onSelectTab('news')}
+              className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition ${
+                activeTab === 'news'
+                  ? 'bg-[#1E7E5A] text-white shadow-sm'
+                  : 'hover:bg-emerald-50 dark:hover:bg-stone-800'
+              }`}
+            >
+              <i
+                className={`fa-regular fa-newspaper ${
+                  activeTab === 'news' ? 'text-white' : 'text-[#1E7E5A]'
+                }`}
+              />
+              <span>Jornalzinho</span>
+            </button>
+
+            {user && (
+              <button
+                type="button"
+                onClick={() => onSelectTab('profile')}
+                className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition ${
+                  activeTab === 'profile'
+                    ? 'bg-stone-800 text-white shadow-sm'
+                    : 'hover:bg-stone-200/60 dark:hover:bg-stone-800'
+                }`}
+              >
+                <i className="fa-solid fa-user-pen" />
+                <span>Meu Perfil</span>
+              </button>
+            )}
+          </nav>
         </div>
       </div>
     </header>
