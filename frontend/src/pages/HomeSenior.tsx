@@ -14,6 +14,7 @@ interface HomeSeniorProps {
   onOpenVipModal: () => void;
   onOpenImporter: () => void;
   onOpenNews: () => void;
+  onOpenHub?: (hub: 'economy' | 'health' | 'crafts' | 'cookbook') => void;
 }
 
 const CATEGORIES = [
@@ -36,6 +37,7 @@ export const HomeSenior: React.FC<HomeSeniorProps> = ({
   onOpenVipModal,
   onOpenImporter,
   onOpenNews,
+  onOpenHub,
 }) => {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todas');
@@ -65,7 +67,7 @@ export const HomeSenior: React.FC<HomeSeniorProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
           <div className="lg:col-span-7 p-6 sm:p-10 lg:p-12 space-y-5">
             <div className="inline-flex items-center gap-2 bg-rose-50 text-[#C83E5B] border border-rose-200 px-3.5 py-1.5 rounded-full text-xs font-bold">
-              <i className="fa-solid fa-heart" /> Portal Oficial de Receitas Caseiras & Acessíveis
+              <i className="fa-solid fa-heart" /> Portal Oficial da Dona de Casa, Receitas & Bem-Estar
             </div>
 
             <h2
@@ -73,11 +75,11 @@ export const HomeSenior: React.FC<HomeSeniorProps> = ({
                 highContrastDark ? 'text-white' : 'text-stone-800'
               }`}
             >
-              O carinho da cozinha da{' '}
+              O carinho da cozinha e da casa da{' '}
               <span className="text-[#C83E5B] underline decoration-rose-200 decoration-wavy underline-offset-4">
                 Vovó Helena
               </span>{' '}
-              em cada receita.
+              todos os dias.
             </h2>
 
             <p
@@ -85,7 +87,7 @@ export const HomeSenior: React.FC<HomeSeniorProps> = ({
                 highContrastDark ? 'text-stone-300' : 'text-stone-600'
               }`}
             >
-              Letras confortáveis, leitura em voz alta passo a passo, calculadora automática de porções e centenas de receitas testadas pela nossa comunidade.
+              Receitas narradas passo a passo, cardápio econômico da semana, farmacinha natural de chás, despertador de remédios, SOS tira-manchas e cantinho do crochê.
             </p>
 
             {/* Search Bar */}
@@ -158,12 +160,113 @@ export const HomeSenior: React.FC<HomeSeniorProps> = ({
               </div>
               <div>
                 <p className="text-xs font-extrabold text-stone-800">Narração por Voz</p>
-                <p className="text-[11px] text-stone-500">Em todas as receitas e artigos</p>
+                <p className="text-[11px] text-stone-500">Em receitas, chás e dicas</p>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* VITRINE DAS 4 GRANDES CENTRAIS PARA DONAS DE CASA & IDOSAS */}
+      {onOpenHub && !search && (
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button
+            type="button"
+            onClick={() => onOpenHub('economy')}
+            className={`p-5 rounded-3xl border text-left transition hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between gap-3 ${
+              highContrastDark
+                ? 'bg-stone-900 border-stone-800'
+                : 'bg-white border-rose-200/80 shadow-xs'
+            }`}
+          >
+            <div className="w-11 h-11 rounded-2xl bg-rose-50 text-[#C83E5B] flex items-center justify-center text-xl">
+              <i className="fa-solid fa-piggy-bank" />
+            </div>
+            <div>
+              <h3 className="font-serif-vovo text-lg font-extrabold">Economia & Feira</h3>
+              <p className="text-xs text-stone-500 mt-1">
+                Cardápio semanal, O que tem na geladeira, Conversor de xícaras e Calculadora Faça e Venda.
+              </p>
+            </div>
+            <span className="text-xs font-extrabold text-[#C83E5B] flex items-center gap-1">
+              <span>Abrir ferramentas</span>
+              <i className="fa-solid fa-arrow-right" />
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onOpenHub('health')}
+            className={`p-5 rounded-3xl border text-left transition hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between gap-3 ${
+              highContrastDark
+                ? 'bg-stone-900 border-stone-800'
+                : 'bg-white border-emerald-200/80 shadow-xs'
+            }`}
+          >
+            <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-[#1E7E5A] flex items-center justify-center text-xl">
+              <i className="fa-solid fa-leaf" />
+            </div>
+            <div>
+              <h3 className="font-serif-vovo text-lg font-extrabold">Saúde, Chás & Remédios</h3>
+              <p className="text-xs text-stone-500 mt-1">
+                Farmacinha natural de chás da Vovó, Despertador de remédios com voz e Hidratômetro.
+              </p>
+            </div>
+            <span className="text-xs font-extrabold text-[#1E7E5A] flex items-center gap-1">
+              <span>Cuidar da saúde</span>
+              <i className="fa-solid fa-arrow-right" />
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onOpenHub('crafts')}
+            className={`p-5 rounded-3xl border text-left transition hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between gap-3 ${
+              highContrastDark
+                ? 'bg-stone-900 border-stone-800'
+                : 'bg-white border-amber-200/80 shadow-xs'
+            }`}
+          >
+            <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center text-xl">
+              <i className="fa-solid fa-scissors" />
+            </div>
+            <div>
+              <h3 className="font-serif-vovo text-lg font-extrabold">Casa, Horta & Crochê</h3>
+              <p className="text-xs text-stone-500 mt-1">
+                SOS Tira-Manchas seguro, Frutas da época na feira, Horta em vasos e Bicos de crochê.
+              </p>
+            </div>
+            <span className="text-xs font-extrabold text-amber-700 flex items-center gap-1">
+              <span>Ver utilidades</span>
+              <i className="fa-solid fa-arrow-right" />
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onOpenHub('cookbook')}
+            className={`p-5 rounded-3xl border text-left transition hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between gap-3 ${
+              highContrastDark
+                ? 'bg-stone-900 border-stone-800'
+                : 'bg-white border-stone-200/90 shadow-xs'
+            }`}
+          >
+            <div className="w-11 h-11 rounded-2xl bg-stone-100 text-stone-800 flex items-center justify-center text-xl">
+              <i className="fa-solid fa-book-bookmark text-[#C83E5B]" />
+            </div>
+            <div>
+              <h3 className="font-serif-vovo text-lg font-extrabold">Livro da Família (PDF)</h3>
+              <p className="text-xs text-stone-500 mt-1">
+                Monte um livro com dedicatória para os netos e imprima ou salve em PDF.
+              </p>
+            </div>
+            <span className="text-xs font-extrabold text-stone-800 flex items-center gap-1">
+              <span>Montar livro</span>
+              <i className="fa-solid fa-arrow-right" />
+            </span>
+          </button>
+        </section>
+      )}
 
       {/* Featured Recipe of the Day */}
       {recipeOfTheDay && !search && selectedCategory === 'Todas' && (

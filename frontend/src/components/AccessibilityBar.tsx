@@ -1,7 +1,19 @@
 import React from 'react';
 import { UserProfile } from '../types';
 
-export type NavTab = 'home' | 'cooking' | 'news' | 'favorites' | 'create' | 'profile' | 'importer' | 'admin';
+export type NavTab =
+  | 'home'
+  | 'cooking'
+  | 'economy'
+  | 'health'
+  | 'crafts'
+  | 'cookbook'
+  | 'news'
+  | 'favorites'
+  | 'create'
+  | 'profile'
+  | 'importer'
+  | 'admin';
 
 interface AccessibilityBarProps {
   activeTab: NavTab;
@@ -155,7 +167,7 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
             <button
               type="button"
               onClick={() => onSelectTab('cooking')}
-              className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
+              className={`px-3 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
                 activeTab === 'cooking'
                   ? 'bg-gradient-to-r from-[#C83E5B] to-rose-600 text-white shadow-sm ring-2 ring-rose-200'
                   : 'bg-rose-50/80 text-[#C83E5B] border border-rose-200/80 hover:bg-rose-100 dark:bg-stone-800 dark:text-rose-300 dark:border-stone-700'
@@ -167,15 +179,67 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
 
             <button
               type="button"
+              onClick={() => onSelectTab('economy')}
+              className={`px-3 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
+                activeTab === 'economy'
+                  ? 'bg-[#C83E5B] text-white shadow-sm'
+                  : 'text-stone-700 dark:text-stone-200 hover:bg-rose-50 dark:hover:bg-stone-800'
+              }`}
+            >
+              <i className="fa-solid fa-piggy-bank text-[#C83E5B] group-hover:text-white" />
+              <span>Economia & Feira</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onSelectTab('health')}
+              className={`px-3 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
+                activeTab === 'health'
+                  ? 'bg-[#1E7E5A] text-white shadow-sm'
+                  : 'text-stone-700 dark:text-stone-200 hover:bg-emerald-50 dark:hover:bg-stone-800'
+              }`}
+            >
+              <i className="fa-solid fa-Notes-medical fa-leaf text-[#1E7E5A]" />
+              <span>Saúde & Chás</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onSelectTab('crafts')}
+              className={`px-3 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
+                activeTab === 'crafts'
+                  ? 'bg-amber-600 text-white shadow-sm'
+                  : 'text-stone-700 dark:text-stone-200 hover:bg-amber-50 dark:hover:bg-stone-800'
+              }`}
+            >
+              <i className="fa-solid fa-scissors text-amber-600" />
+              <span>Casa, Horta & Crochê</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onSelectTab('cookbook')}
+              className={`px-3 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
+                activeTab === 'cookbook'
+                  ? 'bg-stone-900 text-amber-300 shadow-sm'
+                  : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
+              }`}
+            >
+              <i className="fa-solid fa-book-bookmark text-amber-600" />
+              <span>Livro PDF</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => onSelectTab('news')}
-              className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
+              className={`px-3 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition ${
                 activeTab === 'news'
                   ? 'bg-[#1E7E5A] text-white shadow-sm'
                   : 'text-stone-700 dark:text-stone-200 hover:bg-emerald-50 dark:hover:bg-stone-800'
               }`}
             >
               <i className="fa-regular fa-newspaper" />
-              <span>Feed & Dicas</span>
+              <span>Jornalzinho</span>
             </button>
 
             <button

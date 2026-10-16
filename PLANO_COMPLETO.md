@@ -1,99 +1,123 @@
-# 👵🍰 Caderno da Vovó — Plano Mestre de Arquitetura, SEO, Segurança, Monetização & Robô Auto-Importer (v3.0)
+# Caderno da Vovó — Plano Mestre v4.0: Super Portal de Receitas, Lar, Saúde, Economia Doméstica & Memórias de Família
 
 > [!IMPORTANT]
 > **Repositório Oficial no GitHub:** [`https://github.com/Godopoa/caderno-da-vovo`](https://github.com/Godopoa/caderno-da-vovo)
 > **Pasta Local do Projeto:** `C:\Users\dfuto\OneDrive\Documentos\CadernoDaVovo`
-> **Servidores Ativos em Tempo Real:**
-> - **Portal Web Editorial (Vite + React):** `http://localhost:5173`
-> - **API Backend + Robô Auto-Importer + SEO (`sitemap.xml` / `robots.txt`):** `http://localhost:3333`
+> **Stack Multiplataforma:** Node.js + Express + Prisma (SQLite) + React 18 + Vite + Tailwind CSS + FontAwesome 6 + Capacitor Android
 
 ---
 
-## 1. Padronização Visual & Design Editorial Afetivo (v3.0)
+## 1. Visão Geral da Expansão v4.0 (Além de Receitas: O Portal Diário da Dona de Casa e da Idosa)
 
-O design do portal **Caderno da Vovó** foi padronizado como um **Portal Web de Receitas Editorial Afetivo**, combinando legibilidade exemplar para avós e famílias com uma paleta de cores harmônica e distinta:
-
-| Papel Visual | Cor Padronizada | Código Hex | Aplicação |
-| :--- | :--- | :--- | :--- |
-| **Primária (Framboesa / Cereja)** | Berry Rose | `#C83E5B` | Botões principais, categorias ativas, corações e destaques afetivos |
-| **Secundária (Verde Sálvia / Ervas)** | Sage Herb Green | `#1E7E5A` / `#1B4332` | Barra superior, selo de saúde/calorias, Jornalzinho da Vovó e voz |
-| **Clube VIP & Estrelas** | Warm Gold | `#D97706` | Coroas VIP, avaliações 5 estrelas e destaques especiais |
-| **Fundo Editorial** | Porcelana Quente | `#F8F6F2` | Fundo suave que evita fadiga ocular em telas grandes |
-| **Superfície de Cards** | Branco Alabastro | `#FFFFFF` | Cards de receitas limpos com sombras suaves e bordas `#E7E5E4` |
-
-### Ocultação Inteligente de Botões Administrativos
-- Os botões **`Admin`** e **`Importador`** **NÃO ficam visíveis** para visitantes comuns ou usuários gratuitos/VIP.
-- Eles aparecem na barra de navegação superior **exclusivamente quando o usuário está autenticado com `role === 'ADMIN'`**.
-- Para facilitar seus testes, o modal de **Entrar** possui o atalho **"Preencher Admin Demo"** (`admin@cadernodavovo.com.br` / `AdminVovo@2026`).
-
----
-
-## 2. Novas Funcionalidades de Comunidade, Perfil, Segurança & SEO (v3.0)
+Na versão **v4.0**, o **Caderno da Vovó** evolui de um portal de receitas para uma **Plataforma Completa de Vida Doméstica, Economia do Lar, Bem-Estar Sênior e Memórias de Família**. Todos os recursos foram desenhados com **zero emojis duplicados** (usando exclusivamente ícones vetoriais FontAwesome 6), **leitura em voz alta (Text-to-Speech)** e paleta editorial acolhedora (`#C83E5B` Framboesa, `#1E7E5A` Verde Sálvia, `#D97706` Dourado VIP e `#F8F6F2` Porcelana Quente).
 
 ```mermaid
 flowchart TD
-    subgraph Frontend["Portal Web & App Mobile (React + Vite + Tailwind + FA6)"]
-        Home["🏠 Home Editorial + Receita do Dia + Filtros Rápidos"]
-        Detail["📖 Página da Receita + Multiplicador ½x 1x 2x 3x + WhatsApp"]
-        Comments["💬 Avaliações 1-5 Estrelas + Selo 'Eu Fiz!' + Captcha Próprio"]
-        News["📰 Jornalzinho & Feed de Dicas da Vovó (com Leitura por Voz)"]
-        Profile["👵 Aba Meu Perfil (Editar Nome, Especialidade, Bio, Foto e Senha)"]
-        Admin["🛡️ Painel Admin (Apenas Logado como ADMIN)"]
+    subgraph Portal["Caderno da Vovó v4.0 — Ecossistema Completo"]
+        R["Receitas & Modo Cozinha Estúdio"]
+        E["Economia & Cozinha Inteligente"]
+        S["Saúde, Chás & Bem-Estar"]
+        C["Casa, Horta & Artesanato"]
+        L["Livro de Receitas da Família (PDF)"]
+        N["Jornalzinho & Comunidade"]
+        A["Painel Admin + Robô Auto-Importer"]
     end
 
-    subgraph SecuritySEO["Segurança Criptográfica & SEO Google Search"]
-        Captcha["🔐 Captcha Matemático SVG Próprio (HMAC-SHA256)"]
-        Crypto["🔒 Scrypt + TimingSafeEqual + AES-256-GCM"]
-        SEO["🔎 JSON-LD Schema.org/Recipe + WebSite SearchAction + Sitemap.xml"]
-    end
+    E --> E1["Cardápio Semanal + Lista de Feira por Setor"]
+    E --> E2["O Que Tem na Geladeira? (Zero Desperdício)"]
+    E --> E3["Conversor de Medidas & Substituições"]
+    E --> E4["Calculadora Faça e Venda (Renda Extra)"]
 
-    subgraph AutoRobot["🤖 Robô Auto-Importer TudoGostoso Sem Parar"]
-        Worker["Crawler Contínuo em Background (Start / Pause no Admin)"]
-        Dedup["Filtro Anti-Duplicatas Duplo (sourceUrl + Título Normalizado)"]
-    end
+    S --> S1["Farmacinha Natural & Guia de Chás da Vovó"]
+    S --> S2["Despertador de Remédios & Contador de Água"]
 
-    Home --> Detail
-    Detail --> Comments
-    Comments --> Captcha
-    Admin --> AutoRobot
-    Worker --> Dedup
+    C --> C1["SOS Tira-Manchas & Limpeza Caseira Segura"]
+    C --> C2["Calendário da Safra do Mês & Horta em Vasos"]
+    C --> C3["Cantinho do Crochê, Tricô & Artesanato"]
+
+    L --> L1["Dedicatória + Capa Clássica + Exportação PDF"]
 ```
 
-### 2.1. 🤖 Robô Auto-Importer Sem Parar (`autoImporterWorker.ts`)
-- Localizado no **Painel Admin → Aba "Robô Auto-Importer"**.
-- **Como funciona:** Vasculha automaticamente categorias e páginas do `tudogostoso.com.br`, descobre novos links de receitas e importa uma receita após a outra continuamente em background.
-- **Zero Repetição (Anti-Duplicatas):** Antes de importar qualquer URL, verifica no banco SQLite/Prisma tanto o `sourceUrl` exato quanto o `title` normalizado. Se já existir, pula automaticamente e passa para a próxima receita.
-- **Controle em Tempo Real:** Botões para **Iniciar Robô Sem Parar** e **Pausar Robô**, ajuste de intervalo em segundos e console ao vivo com contadores de fila, receitas importadas na sessão e duplicadas ignoradas.
+---
 
-### 2.2. 🔐 Captcha Próprio da Vovó (`cryptoSecurity.ts`)
-- Sistema de Captcha 100% próprio (sem depender de serviços externos):
-  - Gera desafios matemáticos amigáveis em **SVG dinâmico** com linhas de ruído suaves (`GET /api/security/captcha`).
-  - Assina a resposta esperada e o timestamp de expiração com **HMAC-SHA256**.
-  - Protege o envio de **Comentários nas Receitas** e o **Cadastro de Contas**.
+## 2. Os 10 Novos Módulos para Donas de Casa & Idosas (v4.0)
 
-### 2.3. 📰 Jornalzinho & Feed de Notícias da Vovó (`NewsFeedPage.tsx`)
-- Aba dedicada **Feed & Dicas** com matérias sobre truques de confeitaria, chás medicinais, conservação de alimentos e histórias de família.
-- Inclui botão **"Ouvir Matéria"** (Text-to-Speech em Português), contador de curtidas e editor integrado para o Admin publicar novas matérias.
+### Pilar 1: Economia do Lar & Cozinha Inteligente ([`KitchenEconomyHubPage.tsx`](file:///C:/Users/dfuto/OneDrive/Documentos/CadernoDaVovo/frontend/src/pages/KitchenEconomyHubPage.tsx))
+1. **Cardápio Semanal Automático + Lista de Feira Inteligente**:
+   - Permite planejar o almoço e o café/jantar de **Segunda a Domingo** ou clicar em **"Gerar Cardápio Econômico da Semana Automaticamente"**.
+   - Soma e organiza os ingredientes necessários e permite enviar a **Lista de Compras da Semana no WhatsApp** ou imprimir.
+2. **"O Que Tem na Geladeira?" (Combate ao Desperdício)**:
+   - Seleção rápida de ingredientes que sobraram em casa (*arroz cozido, pão amanhecido, banana madura, frango desfiado, batata, ovos, leite, tomate*) + busca inteligente no catálogo de receitas e sugestões de reaproveitamento criativo da Vovó.
+3. **Conversor de Medidas da Vovó & Guia de Substituições**:
+   - Calculadora instantânea que converte **Xícaras, Colheres de Sopa, Gramas e Mililitros** levando em conta a densidade real de cada ingrediente (*farinha de trigo, açúcar, manteiga, óleo, leite, cacau, mel*).
+   - Tabela de emergência **"Acabou um Ingrediente? Veja como Substituir"** (*ovo na massa, fermento químico, creme de leite, leite condensado, manteiga, buttermilk*).
+4. **Calculadora "Faça e Venda" (Lucro & Renda Extra em Casa)**:
+   - Ferramenta financeira simplificada para donas de casa e avós que vendem bolos caseiros, doces, pães ou salgados: calcula custo total de insumos, acréscimo de gás/luz/embalagem, margem de lucro desejada, **preço sugerido por unidade** e **estimativa de lucro mensal**.
 
-### 2.4. 💬 Sistema de Comentários, Estrelas e "Eu Fiz e Deu Certo!"
-- Em cada receita, os leitores podem avaliar de **1 a 5 estrelas**, marcar o selo **"Eu fiz essa receita e aprovou! ✅"** e publicar seu comentário validado pelo Captcha Próprio.
-- A nota média da receita é recalculada automaticamente no banco de dados.
+---
 
-### 2.5. 👵 Aba Meu Perfil & Edição de Usuário (`UserProfilePage.tsx`)
-- Permite ao usuário logado editar:
-  - Nome de exibição;
-  - Especialidade culinária (ex.: *"Bolos Caseiros & Café da Tarde"*);
-  - Biografia afetiva e foto/avatar;
-  - Alteração de senha com re-hash `Scrypt`;
-  - Galeria rápida das suas receitas favoritas salvas.
+### Pilar 2: Saúde, Chás & Rotina de Cuidado Sênior ([`HealthWellnessHubPage.tsx`](file:///C:/Users/dfuto/OneDrive/Documentos/CadernoDaVovo/frontend/src/pages/HealthWellnessHubPage.tsx))
+5. **Farmacinha Natural & Guia de Chás da Vovó**:
+   - Catálogo pesquisável por necessidade (*Dormir Melhor, Digestão e Azia, Gripe e Garganta, Calma e Ansiedade, Inchaço e Retenção, Imunidade*), com proporção exata da erva, tempo de infusão, leitura em voz alta (TTS) e avisos importantes de contraindicação (ex.: pressão alta, gestantes).
+6. **Despertador de Remédios & Hidratação Diária (8 Copos d'Água)**:
+   - Painel salvo no dispositivo (`localStorage`) onde a idosa cadastra seus medicamentos (nome, horário, dose, observação como *"Tomar após o café"*) e marca o que já tomou no dia.
+   - Monitora o relógio em tempo real e emite **alerta sonoro + voz da Vovó Helena** quando chega o horário do remédio.
+   - Inclui o **Hidratômetro da Vovó**: 8 copos interativos para acompanhar a meta diária de água.
 
-### 2.6. 🔎 SEO Completo & Integração Google Search (`SEOHead.tsx` + `sitemap.xml`)
-- **JSON-LD Estruturado (`schema.org/Recipe` e `schema.org/WebSite`):** Injeta dinamicamente metadados de receitas (tempo de preparo ISO 8601, calorias, ingredientes, passos `HowToStep` e `AggregateRating`) para aparecer nos Rich Snippets do Google com foto e estrelas.
-- **Endpoints Nativos de Indexação:**
-  - `GET http://localhost:3333/sitemap.xml` — Sitemap XML dinâmico com todas as receitas e matérias do feed.
-  - `GET http://localhost:3333/robots.txt` — Regras de indexação apontando para o Sitemap.
+---
 
-### 2.7. ⚖️ Calculadora de Porções & Lista no WhatsApp (`RecipeDetail.tsx`)
-- Inspirado nos melhores portais internacionais (NYT Cooking / BBC Good Food):
-  - Botões **`½x` (Metade)**, **`1x` (Original)**, **`2x` (Dobrar)** e **`3x` (Triplicar)** que recalculam automaticamente todas as quantidades numéricas dos ingredientes.
-  - Botão **"Enviar Lista no WhatsApp"** que formata todos os ingredientes já multiplicados para enviar no celular.
+### Pilar 3: Utilidades do Lar, Horta & Artesanato ([`HomeCraftsHubPage.tsx`](file:///C:/Users/dfuto/OneDrive/Documentos/CadernoDaVovo/frontend/src/pages/HomeCraftsHubPage.tsx))
+7. **SOS Tira-Manchas & Limpeza Caseira Segura**:
+   - Manual interativo passo a passo com soluções econômicas e ecológicas (bicarbonato de sódio, vinagre de álcool, limão, sabão de coco) para tirar manchas de vinho, café, gordura, ferrugem, limpar panelas queimadas, dar brilho em inox/prata e tirar odor da geladeira — além de um **Alerta de Segurança Química** sobre misturas proibidas.
+8. **Calendário da Safra do Mês & Guia da Horta em Vasos**:
+   - Detecta ou permite escolher o mês do ano e lista as **Frutas, Verduras e Legumes da Safra** (que estão mais frescos, nutritivos e baratos na feira).
+   - Guia de cultivo de **Temperos Caseiros em Vasos** (*Manjericão, Alecrim, Hortelã, Cebolinha, Salsinha, Orégano e Lavanda*) indicando quantidade de sol, rega e poda.
+9. **Cantinho do Crochê, Tricô & Faça Você Mesma**:
+   - Passo a passo detalhado com lista de materiais, leitura em voz alta e dicas de preço de venda para **Bico de Crochê Carreira Única em Pano de Prato**, **Sousplat Redondo de Barbante**, **Cachecol de Tricô Ponto Barra para os Netos** e **Sachês Perfumados de Lavanda para Gavetas**.
+
+---
+
+### Pilar 4: Memórias Afetivas & E-Book da Família ([`FamilyCookbookGeneratorPage.tsx`](file:///C:/Users/dfuto/OneDrive/Documentos/CadernoDaVovo/frontend/src/pages/FamilyCookbookGeneratorPage.tsx))
+10. **Gerador de "Livro de Receitas da Família" em PDF**:
+    - Permite personalizar o título do livro (ex.: *"As Receitas de Domingo da Vovó Helena"*), nome da autora, dedicatória afetuosa para os filhos e netos, estilo de capa e seleção das receitas do caderno.
+    - Renderiza uma prévia editorial completa (Capa Clássica + Folha de Dedicatória + Sumário + Páginas de Receitas) com botão de **Gerar / Imprimir Livro em PDF (`@media print`)**.
+
+---
+
+## 3. Estrutura Atualizada de Arquivos (v4.0)
+
+```text
+CadernoDaVovo/
+├── PLANO_COMPLETO.md                          # Este Plano Mestre v4.0
+├── backend/
+│   ├── prisma/schema.prisma                   # Models: Recipe, Ingredient, Step, User, Comment, NewsPost, SiteConfig, SecurityAuditLog
+│   └── src/
+│       ├── server.ts                          # Servidor Express + Sitemap/Robots + Rotas REST
+│       ├── services/
+│       │   ├── autoImporterWorker.ts          # Robô Crawler Contínuo TudoGostoso (Sem Repetir + Start/Pause)
+│       │   ├── cryptoSecurity.ts              # Scrypt + HMAC-SHA256 + AES-256-GCM + Captcha SVG Próprio
+│       │   └── tudogostosoImporter.ts         # Extrator JSON-LD + HTML Fallback TudoGostoso
+│       └── routes/
+│           ├── recipes.routes.ts              # CRUD de receitas e busca por ingredientes da geladeira
+│           ├── adminAuth.routes.ts            # Auth, Clube VIP, AdSense, PIX e Painel Admin
+│           └── communitySeo.routes.ts         # Captcha SVG, Comentários, Feed, Perfil, Sitemap.xml
+└── frontend/
+    └── src/
+        ├── App.tsx                            # Roteamento das Abas do Super Portal v4.0
+        ├── components/
+        │   ├── AccessibilityBar.tsx           # Menu Superior com Abas Organizadas e Controle de Fonte/Contraste
+        │   ├── CookingModeModal.tsx           # Estúdio Modo Cozinha Guiado (Voz + Timers + Cestinha)
+        │   ├── SeniorRecipeCard.tsx           # Card Editorial de Receita
+        │   ├── SEOHead.tsx                    # Injeção Dinâmica de JSON-LD Schema.org
+        │   └── AuthVipModal.tsx               # Login, Cadastro com Captcha Próprio e Clube VIP
+        └── pages/
+            ├── HomeSenior.tsx                 # Vitrine Principal + Atalhos para os Novos Módulos do Lar
+            ├── RecipeDetail.tsx               # Receita + Multiplicador ½x-3x + WhatsApp + Comentários
+            ├── KitchenEconomyHubPage.tsx      # [NOVO v4.0] Cardápio Semanal, Geladeira, Conversor & Faça e Venda
+            ├── HealthWellnessHubPage.tsx      # [NOVO v4.0] Farmacinha de Chás + Despertador de Remédios & Água
+            ├── HomeCraftsHubPage.tsx          # [NOVO v4.0] SOS Tira-Manchas, Safra/Horta & Crochê/Artesanato
+            ├── FamilyCookbookGeneratorPage.tsx# [NOVO v4.0] Gerador de Livro de Receitas da Família em PDF
+            ├── NewsFeedPage.tsx               # Jornalzinho & Dicas da Vovó
+            ├── UserProfilePage.tsx            # Edição de Perfil, Especialidade, Senha e Favoritos
+            └── AdminDashboardPage.tsx         # Central Admin + Robô Auto-Importer TudoGostoso Sem Parar
+```

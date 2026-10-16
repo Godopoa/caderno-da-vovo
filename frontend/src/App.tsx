@@ -15,6 +15,10 @@ import { AdminImporterPanel } from './components/AdminImporterPanel';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { NewsFeedPage } from './pages/NewsFeedPage';
 import { UserProfilePage } from './pages/UserProfilePage';
+import { KitchenEconomyHubPage } from './pages/KitchenEconomyHubPage';
+import { HealthWellnessHubPage } from './pages/HealthWellnessHubPage';
+import { HomeCraftsHubPage } from './pages/HomeCraftsHubPage';
+import { FamilyCookbookGeneratorPage } from './pages/FamilyCookbookGeneratorPage';
 import { CreateRecipeForm } from './components/CreateRecipeForm';
 import { AuthVipModal } from './components/AuthVipModal';
 import { CookingModeModal } from './components/CookingModeModal';
@@ -120,6 +124,7 @@ export const App: React.FC = () => {
     }
     setSelectedRecipe(recipe);
     setCookingTabRecipe(recipe);
+    setActiveTab('home');
   };
 
   const handleLogout = () => {
@@ -163,11 +168,19 @@ export const App: React.FC = () => {
         title={
           activeTab === 'cooking' && activeCookingRecipe
             ? `Modo Cozinha: ${activeCookingRecipe.title} — Caderno da Vovó`
+            : activeTab === 'economy'
+            ? 'Economia do Lar, Cardápio Semanal & Faça e Venda — Caderno da Vovó'
+            : activeTab === 'health'
+            ? 'Farmacinha Natural de Chás & Lembrete de Remédios — Caderno da Vovó'
+            : activeTab === 'crafts'
+            ? 'SOS Tira-Manchas, Safra do Mês & Crochê — Caderno da Vovó'
+            : activeTab === 'cookbook'
+            ? 'Gerador de Livro de Receitas da Família em PDF — Caderno da Vovó'
             : selectedRecipe
             ? `${selectedRecipe.title} — Caderno da Vovó`
             : activeTab === 'news'
             ? 'Jornalzinho & Dicas da Vovó — Caderno da Vovó'
-            : monetization?.siteName || 'Caderno da Vovó — Receitas Caseiras, Fofas e Acessíveis'
+            : monetization?.siteName || 'Caderno da Vovó — Receitas, Economia do Lar & Bem-Estar'
         }
         recipe={selectedRecipe || (activeTab === 'cooking' ? activeCookingRecipe : null)}
       />
@@ -208,6 +221,24 @@ export const App: React.FC = () => {
             highContrastDark={highContrastDark}
             isEmbeddedTab={true}
           />
+        ) : activeTab === 'economy' ? (
+          <KitchenEconomyHubPage
+            recipes={recipes}
+            onSelectRecipe={handleSelectRecipe}
+            onToggleFavorite={handleToggleFavorite}
+            onSpeakSummary={handleSpeakSummary}
+            highContrastDark={highContrastDark}
+          />
+        ) : activeTab === 'health' ? (
+          <HealthWellnessHubPage highContrastDark={highContrastDark} />
+        ) : activeTab === 'crafts' ? (
+          <HomeCraftsHubPage highContrastDark={highContrastDark} />
+        ) : activeTab === 'cookbook' ? (
+          <FamilyCookbookGeneratorPage
+            recipes={recipes}
+            user={user}
+            highContrastDark={highContrastDark}
+          />
         ) : activeTab === 'admin' && user?.role === 'ADMIN' ? (
           <AdminDashboardPage
             user={user}
@@ -247,10 +278,7 @@ export const App: React.FC = () => {
             user={user}
             favoriteRecipes={favoriteRecipes}
             onUserUpdated={setUser}
-            onOpenRecipe={(recipe) => {
-              setSelectedRecipe(recipe);
-              setActiveTab('home');
-            }}
+            onOpenRecipe={handleSelectRecipe}
             onToggleFavorite={handleToggleFavorite}
             onSpeakSummary={handleSpeakSummary}
             onOpenVipModal={() => openAuthModal('vip')}
@@ -279,13 +307,14 @@ export const App: React.FC = () => {
             onOpenVipModal={() => openAuthModal('vip')}
             onOpenImporter={() => safeSetActiveTab('importer')}
             onOpenNews={() => setActiveTab('news')}
+            onOpenHub={(hub) => safeSetActiveTab(hub)}
           />
         )}
       </main>
 
       {/* Cozy Website Footer */}
       <footer
-        className={`border-t mt-16 py-10 px-4 ${
+        className={`no-print border-t mt-16 py-10 px-4 ${
           highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200/90'
         }`}
       >
@@ -297,9 +326,9 @@ export const App: React.FC = () => {
               className="w-12 h-12 rounded-2xl object-cover border border-rose-200 shadow-sm"
             />
             <div>
-              <p className="font-extrabold text-base">Caderno da Vovó</p>
+              <p className="font-extrabold text-base">Caderno da Vovó v4.0</p>
               <p className="text-xs text-stone-500">
-                Receitas afetivas com leitura por voz, SEO Schema.org e Segurança Criptografada
+                Portal Completo de Receitas, Economia do Lar, Saúde Sênior, Horta & Crochê
               </p>
             </div>
           </div>
@@ -308,14 +337,17 @@ export const App: React.FC = () => {
             <button onClick={() => safeSetActiveTab('home')} className="hover:text-[#C83E5B]">
               <i className="fa-solid fa-house mr-1 text-[#C83E5B]" /> Início
             </button>
-            <button onClick={() => safeSetActiveTab('cooking')} className="hover:text-[#C83E5B]">
-              <i className="fa-solid fa-kitchen-set mr-1 text-[#C83E5B]" /> Estúdio Modo Cozinha
+            <button onClick={() => safeSetActiveTab('economy')} className="hover:text-[#C83E5B]">
+              <i className="fa-solid fa-piggy-bank mr-1 text-[#C83E5B]" /> Economia & Feira
             </button>
-            <button onClick={() => safeSetActiveTab('news')} className="hover:text-[#C83E5B]">
-              <i className="fa-solid fa-newspaper mr-1 text-[#1E7E5A]" /> Jornalzinho da Vovó
+            <button onClick={() => safeSetActiveTab('health')} className="hover:text-[#C83E5B]">
+              <i className="fa-solid fa-leaf mr-1 text-[#1E7E5A]" /> Saúde & Chás
             </button>
-            <button onClick={() => openAuthModal('vip')} className="hover:text-[#C83E5B]">
-              <i className="fa-solid fa-crown mr-1 text-amber-500" /> Clube VIP
+            <button onClick={() => safeSetActiveTab('crafts')} className="hover:text-[#C83E5B]">
+              <i className="fa-solid fa-scissors mr-1 text-amber-600" /> Casa & Crochê
+            </button>
+            <button onClick={() => safeSetActiveTab('cookbook')} className="hover:text-[#C83E5B]">
+              <i className="fa-solid fa-book-bookmark mr-1 text-[#C83E5B]" /> Livro PDF
             </button>
             <a
               href="http://localhost:3333/sitemap.xml"
@@ -323,7 +355,7 @@ export const App: React.FC = () => {
               rel="noreferrer"
               className="hover:text-[#C83E5B]"
             >
-              <i className="fa-solid fa-sitemap mr-1 text-[#1E7E5A]" /> Sitemap XML (Google Search)
+              <i className="fa-solid fa-sitemap mr-1 text-[#1E7E5A]" /> Sitemap XML
             </a>
           </div>
         </div>
