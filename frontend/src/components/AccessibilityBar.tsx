@@ -1,7 +1,7 @@
 import React from 'react';
 import { UserProfile } from '../types';
 
-export type NavTab = 'home' | 'news' | 'favorites' | 'create' | 'profile' | 'importer' | 'admin';
+export type NavTab = 'home' | 'cooking' | 'news' | 'favorites' | 'create' | 'profile' | 'importer' | 'admin';
 
 interface AccessibilityBarProps {
   activeTab: NavTab;
@@ -150,6 +150,19 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
             >
               <i className="fa-solid fa-utensils" />
               <span>Receitas</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onSelectTab('cooking')}
+              className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
+                activeTab === 'cooking'
+                  ? 'bg-gradient-to-r from-[#C83E5B] to-rose-600 text-white shadow-sm ring-2 ring-rose-200'
+                  : 'bg-rose-50/80 text-[#C83E5B] border border-rose-200/80 hover:bg-rose-100 dark:bg-stone-800 dark:text-rose-300 dark:border-stone-700'
+              }`}
+            >
+              <i className="fa-solid fa-kitchen-set" />
+              <span>Modo Cozinha</span>
             </button>
 
             <button

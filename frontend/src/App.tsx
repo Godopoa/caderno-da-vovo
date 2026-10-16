@@ -17,6 +17,7 @@ import { NewsFeedPage } from './pages/NewsFeedPage';
 import { UserProfilePage } from './pages/UserProfilePage';
 import { CreateRecipeForm } from './components/CreateRecipeForm';
 import { AuthVipModal } from './components/AuthVipModal';
+import { CookingModeModal } from './components/CookingModeModal';
 import { SEOHead } from './components/SEOHead';
 import { useVoiceReader } from './hooks/useVoiceReader';
 
@@ -25,6 +26,7 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<NavTab>('home');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [cookingTabRecipe, setCookingTabRecipe] = useState<Recipe | null>(null);
 
   // Accessibility State
   const [fontScale, setFontScale] = useState<number>(() => {
@@ -57,6 +59,9 @@ export const App: React.FC = () => {
     try {
       const res = await fetchRecipes();
       setRecipes(res.recipes);
+      if (res.recipes.length > 0 && !cookingTabRecipe) {
+        setCookingTabRecipe(res.recipes[0]);
+      }
     } catch (err) {
       console.error('Erro ao carregar receitas:', err);
     } finally {
@@ -114,6 +119,7 @@ export const App: React.FC = () => {
       return;
     }
     setSelectedRecipe(recipe);
+    setCookingTabRecipe(recipe);
   };
 
   const handleLogout = () => {
@@ -133,12 +139,19 @@ export const App: React.FC = () => {
       openAuthModal('login');
       return;
     }
+    if (tab === 'cooking') {
+      const target = selectedRecipe || cookingTabRecipe || recipes[0];
+      if (target) setCookingTabRecipe(target);
+      setActiveTab('cooking');
+      return;
+    }
     setActiveTab(tab);
     setSelectedRecipe(null);
   };
 
   const favoriteRecipes = recipes.filter((r) => r.isFavorite);
   const displayedRecipes = activeTab === 'favorites' ? favoriteRecipes : recipes;
+  const activeCookingRecipe = cookingTabRecipe || selectedRecipe || recipes[0] || null;
 
   return (
     <div
@@ -148,13 +161,15 @@ export const App: React.FC = () => {
     >
       <SEOHead
         title={
-          selectedRecipe
+          activeTab === 'cooking' && activeCookingRecipe
+            ? `Modo Cozinha: ${activeCookingRecipe.title} — Caderno da Vovó`
+            : selectedRecipe
             ? `${selectedRecipe.title} — Caderno da Vovó`
             : activeTab === 'news'
             ? 'Jornalzinho & Dicas da Vovó — Caderno da Vovó'
             : monetization?.siteName || 'Caderno da Vovó — Receitas Caseiras, Fofas e Acessíveis'
         }
-        recipe={selectedRecipe}
+        recipe={selectedRecipe || (activeTab === 'cooking' ? activeCookingRecipe : null)}
       />
 
       <AccessibilityBar
@@ -184,6 +199,15 @@ export const App: React.FC = () => {
               Abrindo o Caderno de Receitas da Vovó...
             </p>
           </div>
+        ) : activeTab === 'cooking' && activeCookingRecipe ? (
+          <CookingModeModal
+            recipe={activeCookingRecipe}
+            allRecipes={recipes}
+            onSelectDifferentRecipe={(r) => setCookingTabRecipe(r)}
+            onClose={() => setActiveTab('home')}
+            highContrastDark={highContrastDark}
+            isEmbeddedTab={true}
+          />
         ) : activeTab === 'admin' && user?.role === 'ADMIN' ? (
           <AdminDashboardPage
             user={user}
@@ -283,6 +307,9 @@ export const App: React.FC = () => {
           <div className="flex flex-wrap items-center gap-4 text-xs font-bold text-stone-500">
             <button onClick={() => safeSetActiveTab('home')} className="hover:text-[#C83E5B]">
               <i className="fa-solid fa-house mr-1 text-[#C83E5B]" /> Início
+            </button>
+            <button onClick={() => safeSetActiveTab('cooking')} className="hover:text-[#C83E5B]">
+              <i className="fa-solid fa-kitchen-set mr-1 text-[#C83E5B]" /> Estúdio Modo Cozinha
             </button>
             <button onClick={() => safeSetActiveTab('news')} className="hover:text-[#C83E5B]">
               <i className="fa-solid fa-newspaper mr-1 text-[#1E7E5A]" /> Jornalzinho da Vovó
