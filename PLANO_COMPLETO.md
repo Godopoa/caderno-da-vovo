@@ -1,60 +1,99 @@
-# 👵 Caderno da Vovó — Plano Arquitetural Completo (v2.0 — Portal Afetivo, Clube VIP, AdSense, Criptografia & Mobile)
+# 👵🍰 Caderno da Vovó — Plano Mestre de Arquitetura, SEO, Segurança, Monetização & Robô Auto-Importer (v3.0)
 
-> **Pasta Oficial do Projeto:** [`C:/Users/dfuto/OneDrive/Documentos/CadernoDaVovo`](file:///C:/Users/dfuto/OneDrive/Documentos/CadernoDaVovo)
-
----
-
-## 1. Nova Direção Visual: Portal Culinário Afetivo ("Fofo que Combine com Avós")
-
-Reformulação completa da estética: em vez de parecer uma tela de celular agigantada, o **Caderno da Vovó** agora é um **portal web culinário completo, charmoso, aconchegante e delicado**, inspirado em cadernos de receitas de família, confeitarias artesanais e grandes portais como o *TudoGostoso*:
-
-- **Tipografia Editorial & Acolhedora:** Títulos em **Playfair Display** (serifada clássica de livros de culinária) combinada com **Nunito** e textura sutil de papel pontilhado artesanal (`#FDFBF7`).
-- **Ícones FontAwesome 6 (`fa-solid`, `fa-regular`, `fa-brands`):** Integrados em toda a navegação, categorias, selos VIP, ingredientes, painel administrativo e auditoria de segurança.
-- **Ilustrações Exclusivas Geradas por IA:**
-  - **Logo Mascote (`/images/logo-vovo.jpg`):** Emblema circular da vovó chef com fouet e corações em tons terracota, creme e verde-sálvia.
-  - **Banner Hero (`/images/hero-vovo.jpg`):** Ilustração estilo animação de uma vovó brasileira sorridente segurando um bolo caseiro quentinho em sua cozinha iluminada.
-- **Conforto Visual Inteligente:** Barra superior discreta com ajuste opcional de letra (`A-` / `A+`) e alternância entre **Modo Claro (Papel de Caderno)** e **Modo Noturno**, sem deformar o layout desktop!
+> [!IMPORTANT]
+> **Repositório Oficial no GitHub:** [`https://github.com/Godopoa/caderno-da-vovo`](https://github.com/Godopoa/caderno-da-vovo)
+> **Pasta Local do Projeto:** `C:\Users\dfuto\OneDrive\Documentos\CadernoDaVovo`
+> **Servidores Ativos em Tempo Real:**
+> - **Portal Web Editorial (Vite + React):** `http://localhost:5173`
+> - **API Backend + Robô Auto-Importer + SEO (`sitemap.xml` / `robots.txt`):** `http://localhost:3333`
 
 ---
 
-## 2. Segurança Criptográfica & Autenticação (`backend/src/services/cryptoSecurity.ts`)
+## 1. Padronização Visual & Design Editorial Afetivo (v3.0)
 
-1. **Hash de Senhas Resistente a Força Bruta:**
-   - Algoritmo **`Scrypt` (`crypto.scryptSync`)** com **Salt aleatório de 16 bytes (128 bits)** por usuário.
-   - Verificação de senha em tempo constante via **`crypto.timingSafeEqual`** (prevenção total contra *Timing Attacks*).
-2. **Tokens Assinados Digitalmente (`HMAC-SHA256`):**
-   - Sessões stateless assinadas com **HMAC-SHA256** contendo `userId`, `role` (`USER`, `VIP`, `ADMIN`), `isVip` e timestamp de expiração (`exp`).
-3. **Cofre de Dados com Criptografia Simétrica Autenticada (`AES-256-GCM`):**
-   - Dados sensíveis de monetização (como a **Chave PIX Oficial**) são criptografados no banco SQLite/Postgres usando **AES-256-GCM** com Vetor de Inicialização (`IV` de 96 bits) e Tag de Autenticação (`AuthTag` de 128 bits).
-4. **Headers HTTP de Segurança & Log de Auditoria (`SecurityAuditLog`):**
-   - Proteção ativa `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`, `X-XSS-Protection` e sanitização de inputs.
-   - Tabela `SecurityAuditLog` registrando cada login, falha de autenticação, ativação VIP e alteração administrativa com carimbo de data/hora e IP.
+O design do portal **Caderno da Vovó** foi padronizado como um **Portal Web de Receitas Editorial Afetivo**, combinando legibilidade exemplar para avós e famílias com uma paleta de cores harmônica e distinta:
+
+| Papel Visual | Cor Padronizada | Código Hex | Aplicação |
+| :--- | :--- | :--- | :--- |
+| **Primária (Framboesa / Cereja)** | Berry Rose | `#C83E5B` | Botões principais, categorias ativas, corações e destaques afetivos |
+| **Secundária (Verde Sálvia / Ervas)** | Sage Herb Green | `#1E7E5A` / `#1B4332` | Barra superior, selo de saúde/calorias, Jornalzinho da Vovó e voz |
+| **Clube VIP & Estrelas** | Warm Gold | `#D97706` | Coroas VIP, avaliações 5 estrelas e destaques especiais |
+| **Fundo Editorial** | Porcelana Quente | `#F8F6F2` | Fundo suave que evita fadiga ocular em telas grandes |
+| **Superfície de Cards** | Branco Alabastro | `#FFFFFF` | Cards de receitas limpos com sombras suaves e bordas `#E7E5E4` |
+
+### Ocultação Inteligente de Botões Administrativos
+- Os botões **`Admin`** e **`Importador`** **NÃO ficam visíveis** para visitantes comuns ou usuários gratuitos/VIP.
+- Eles aparecem na barra de navegação superior **exclusivamente quando o usuário está autenticado com `role === 'ADMIN'`**.
+- Para facilitar seus testes, o modal de **Entrar** possui o atalho **"Preencher Admin Demo"** (`admin@cadernodavovo.com.br` / `AdminVovo@2026`).
 
 ---
 
-## 3. Monetização Dupla: Clube VIP da Vovó + Google AdSense
+## 2. Novas Funcionalidades de Comunidade, Perfil, Segurança & SEO (v3.0)
 
 ```mermaid
 flowchart TD
-    V["👩‍🦳 Visitante / Usuário no Site ou App"] --> CHECK{"É Membro do\nClube VIP da Vovó?"}
-    CHECK -- "Não (Conta Gratuita)" --> ADS["📢 Exibe Banners Google AdSense\n(Topo, In-Feed e Página da Receita)"]
-    CHECK -- "Não (Conta Gratuita)" --> LOCK["🔒 Receitas Exclusivas VIP exibem\nConvite para Assinar o Clube VIP"]
-    CHECK -- "Sim (Assinante VIP / Admin)" --> NOADS["✨ Zero Anúncios (AdSense Oculto)\n+ Acesso Total às Receitas VIP e Segredos da Vovó"]
+    subgraph Frontend["Portal Web & App Mobile (React + Vite + Tailwind + FA6)"]
+        Home["🏠 Home Editorial + Receita do Dia + Filtros Rápidos"]
+        Detail["📖 Página da Receita + Multiplicador ½x 1x 2x 3x + WhatsApp"]
+        Comments["💬 Avaliações 1-5 Estrelas + Selo 'Eu Fiz!' + Captcha Próprio"]
+        News["📰 Jornalzinho & Feed de Dicas da Vovó (com Leitura por Voz)"]
+        Profile["👵 Aba Meu Perfil (Editar Nome, Especialidade, Bio, Foto e Senha)"]
+        Admin["🛡️ Painel Admin (Apenas Logado como ADMIN)"]
+    end
+
+    subgraph SecuritySEO["Segurança Criptográfica & SEO Google Search"]
+        Captcha["🔐 Captcha Matemático SVG Próprio (HMAC-SHA256)"]
+        Crypto["🔒 Scrypt + TimingSafeEqual + AES-256-GCM"]
+        SEO["🔎 JSON-LD Schema.org/Recipe + WebSite SearchAction + Sitemap.xml"]
+    end
+
+    subgraph AutoRobot["🤖 Robô Auto-Importer TudoGostoso Sem Parar"]
+        Worker["Crawler Contínuo em Background (Start / Pause no Admin)"]
+        Dedup["Filtro Anti-Duplicatas Duplo (sourceUrl + Título Normalizado)"]
+    end
+
+    Home --> Detail
+    Detail --> Comments
+    Comments --> Captcha
+    Admin --> AutoRobot
+    Worker --> Dedup
 ```
 
-1. **Google AdSense (`AdSenseBanner.tsx`):**
-   - Slots estratégicos configuráveis pelo Painel Admin (`Header Slot`, `In-Feed Slot`, `Recipe Detail Slot`) + `Publisher Client ID (ca-pub-...)`.
-   - **Ocultação Automática para VIPs:** Assim que o usuário ativa o Clube VIP, 100% dos anúncios desaparecem instantaneamente.
-2. **Clube VIP da Vovó (`AuthVipModal.tsx`):**
-   - Planos **Mensal (`R$ 14,90/mês`)** e **Anual (`R$ 119,90/ano`)** com pagamento via PIX (chave descriptografada sob demanda do cofre AES-256) ou Cartão.
-   - Desbloqueia receitas marcadas como `isVipOnly: true` e os *"Segredinhos da Vovó"*.
+### 2.1. 🤖 Robô Auto-Importer Sem Parar (`autoImporterWorker.ts`)
+- Localizado no **Painel Admin → Aba "Robô Auto-Importer"**.
+- **Como funciona:** Vasculha automaticamente categorias e páginas do `tudogostoso.com.br`, descobre novos links de receitas e importa uma receita após a outra continuamente em background.
+- **Zero Repetição (Anti-Duplicatas):** Antes de importar qualquer URL, verifica no banco SQLite/Prisma tanto o `sourceUrl` exato quanto o `title` normalizado. Se já existir, pula automaticamente e passa para a próxima receita.
+- **Controle em Tempo Real:** Botões para **Iniciar Robô Sem Parar** e **Pausar Robô**, ajuste de intervalo em segundos e console ao vivo com contadores de fila, receitas importadas na sessão e duplicadas ignoradas.
 
----
+### 2.2. 🔐 Captcha Próprio da Vovó (`cryptoSecurity.ts`)
+- Sistema de Captcha 100% próprio (sem depender de serviços externos):
+  - Gera desafios matemáticos amigáveis em **SVG dinâmico** com linhas de ruído suaves (`GET /api/security/captcha`).
+  - Assina a resposta esperada e o timestamp de expiração com **HMAC-SHA256**.
+  - Protege o envio de **Comentários nas Receitas** e o **Cadastro de Contas**.
 
-## 4. Painel Administrativo Completo (`AdminDashboardPage.tsx`)
+### 2.3. 📰 Jornalzinho & Feed de Notícias da Vovó (`NewsFeedPage.tsx`)
+- Aba dedicada **Feed & Dicas** com matérias sobre truques de confeitaria, chás medicinais, conservação de alimentos e histórias de família.
+- Inclui botão **"Ouvir Matéria"** (Text-to-Speech em Português), contador de curtidas e editor integrado para o Admin publicar novas matérias.
 
-Acessível pelo menu **`Painel Admin`** no topo do site (com botão de login rápido de 1 clique para demonstração):
-- **Aba 1 — Visão Geral & Finanças:** Receita Mensal Estimada (MRR de Assinaturas VIP + CPM estimado do Google AdSense), total de receitas, visualizações, curtidas e botão de 1 clique para tornar qualquer receita **Exclusiva VIP** ou **Gratuita**.
-- **Aba 2 — Google AdSense & Preços VIP:** Edição em tempo real do `ca-pub-...`, slots de anúncios, preços dos planos e chave PIX (criptografada ao salvar).
-- **Aba 3 — Gestão de Usuários & Assinantes:** Tabela de usuários cadastrados permitindo conceder ou revogar o status **VIP** em 1 clique.
-- **Aba 4 — Criptografia & Auditoria:** Painel técnico mostrando os algoritmos ativos (`Scrypt`, `HMAC-SHA256`, `AES-256-GCM`) e o feed ao vivo do `SecurityAuditLog`.
+### 2.4. 💬 Sistema de Comentários, Estrelas e "Eu Fiz e Deu Certo!"
+- Em cada receita, os leitores podem avaliar de **1 a 5 estrelas**, marcar o selo **"Eu fiz essa receita e aprovou! ✅"** e publicar seu comentário validado pelo Captcha Próprio.
+- A nota média da receita é recalculada automaticamente no banco de dados.
+
+### 2.5. 👵 Aba Meu Perfil & Edição de Usuário (`UserProfilePage.tsx`)
+- Permite ao usuário logado editar:
+  - Nome de exibição;
+  - Especialidade culinária (ex.: *"Bolos Caseiros & Café da Tarde"*);
+  - Biografia afetiva e foto/avatar;
+  - Alteração de senha com re-hash `Scrypt`;
+  - Galeria rápida das suas receitas favoritas salvas.
+
+### 2.6. 🔎 SEO Completo & Integração Google Search (`SEOHead.tsx` + `sitemap.xml`)
+- **JSON-LD Estruturado (`schema.org/Recipe` e `schema.org/WebSite`):** Injeta dinamicamente metadados de receitas (tempo de preparo ISO 8601, calorias, ingredientes, passos `HowToStep` e `AggregateRating`) para aparecer nos Rich Snippets do Google com foto e estrelas.
+- **Endpoints Nativos de Indexação:**
+  - `GET http://localhost:3333/sitemap.xml` — Sitemap XML dinâmico com todas as receitas e matérias do feed.
+  - `GET http://localhost:3333/robots.txt` — Regras de indexação apontando para o Sitemap.
+
+### 2.7. ⚖️ Calculadora de Porções & Lista no WhatsApp (`RecipeDetail.tsx`)
+- Inspirado nos melhores portais internacionais (NYT Cooking / BBC Good Food):
+  - Botões **`½x` (Metade)**, **`1x` (Original)**, **`2x` (Dobrar)** e **`3x` (Triplicar)** que recalculam automaticamente todas as quantidades numéricas dos ingredientes.
+  - Botão **"Enviar Lista no WhatsApp"** que formata todos os ingredientes já multiplicados para enviar no celular.

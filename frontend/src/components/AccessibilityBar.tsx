@@ -1,9 +1,11 @@
 import React from 'react';
 import { UserProfile } from '../types';
 
+export type NavTab = 'home' | 'news' | 'favorites' | 'create' | 'profile' | 'importer' | 'admin';
+
 interface AccessibilityBarProps {
-  activeTab: 'home' | 'favorites' | 'create' | 'importer' | 'admin';
-  onSelectTab: (tab: 'home' | 'favorites' | 'create' | 'importer' | 'admin') => void;
+  activeTab: NavTab;
+  onSelectTab: (tab: NavTab) => void;
   fontScale: number;
   onChangeFontScale: (newScale: number) => void;
   highContrastDark: boolean;
@@ -26,6 +28,8 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
   onOpenAuthModal,
   onLogout,
 }) => {
+  const isAdmin = user?.role === 'ADMIN';
+
   const decreaseFont = () => {
     const next = Math.max(0.9, Number((fontScale - 0.08).toFixed(2)));
     onChangeFontScale(next);
@@ -38,34 +42,33 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
 
   return (
     <header className="no-print sticky top-0 z-40 shadow-sm">
-      {/* Faixa Fina de Utilidades, Acessibilidade Discreta e Segurança */}
+      {/* Faixa Superior Padronizada (Verde Sálvia Escuro #1B4332) */}
       <div
         className={`text-xs py-1.5 px-4 border-b transition-colors ${
           highContrastDark
-            ? 'bg-stone-950 border-stone-800 text-amber-200'
-            : 'bg-[#4A3525] border-[#3A281B] text-amber-50'
+            ? 'bg-stone-950 border-stone-800 text-stone-300'
+            : 'bg-[#1B4332] border-[#143325] text-emerald-50'
         }`}
       >
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5 font-semibold">
               <i className="fa-solid fa-heart text-rose-400" />
-              <span>Receitas Afetivas de Família</span>
+              <span>Portal de Receitas & Memórias de Família</span>
             </span>
-            <span className="hidden md:flex items-center gap-1.5 text-amber-200/90">
-              <i className="fa-solid fa-handshake" />
-              <span>Parceria Oficial TudoGostoso</span>
+            <span className="hidden md:flex items-center gap-1.5 text-emerald-200">
+              <i className="fa-solid fa-magnifying-glass-chart" />
+              <span>SEO Google Rich Snippets Ativo</span>
             </span>
-            <span className="hidden lg:flex items-center gap-1.5 text-emerald-300">
+            <span className="hidden lg:flex items-center gap-1.5 text-amber-300">
               <i className="fa-solid fa-shield-halved" />
-              <span>Conexão Segura AES-256</span>
+              <span>Criptografia AES-256 & Captcha Próprio</span>
             </span>
           </div>
 
-          {/* Controles Elegantes de Conforto de Leitura */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 bg-black/20 px-2.5 py-0.5 rounded-full">
-              <span className="opacity-80 mr-1 hidden sm:inline">Letra:</span>
+            <div className="flex items-center gap-1 bg-black/25 px-2.5 py-0.5 rounded-full">
+              <span className="opacity-80 mr-1 hidden sm:inline">Fonte:</span>
               <button
                 type="button"
                 onClick={decreaseFont}
@@ -74,7 +77,7 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               >
                 A-
               </button>
-              <span className="text-[11px] opacity-75 px-1">
+              <span className="text-[11px] opacity-80 px-1">
                 {Math.round(fontScale * 100)}%
               </span>
               <button
@@ -90,7 +93,7 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
             <button
               type="button"
               onClick={onToggleHighContrast}
-              className="flex items-center gap-1.5 bg-black/20 hover:bg-black/30 px-2.5 py-0.5 rounded-full font-semibold transition"
+              className="flex items-center gap-1.5 bg-black/25 hover:bg-black/40 px-2.5 py-0.5 rounded-full font-semibold transition"
             >
               <i className={highContrastDark ? 'fa-solid fa-sun text-amber-300' : 'fa-solid fa-moon'} />
               <span>{highContrastDark ? 'Modo Claro' : 'Modo Noturno'}</span>
@@ -99,16 +102,16 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
         </div>
       </div>
 
-      {/* Navbar Principal Estilo Portal Culinário Acolhedor */}
+      {/* Navbar Principal com Paleta Padronizada (Branco Alabastro + Cereja #C83E5B + Verde Sálvia) */}
       <div
         className={`border-b transition-colors ${
           highContrastDark
             ? 'bg-stone-900/95 border-stone-800 text-stone-100'
-            : 'bg-[#FFFDF9]/95 border-amber-200/80 text-[#2D241E]'
+            : 'bg-white/95 border-stone-200/90 text-[#1E1B18]'
         } backdrop-blur-md`}
       >
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
-          {/* Logo Afetivo + Título do Site */}
+          {/* Logo Afetivo */}
           <button
             type="button"
             onClick={() => onSelectTab('home')}
@@ -118,35 +121,48 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               <img
                 src="/images/logo-vovo.jpg"
                 alt="Caderno da Vovó"
-                className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl object-cover border-2 border-amber-600/40 shadow-sm group-hover:scale-105 transition"
+                className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl object-cover border-2 border-rose-500/30 shadow-sm group-hover:scale-105 transition"
               />
-              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-amber-600 text-white text-[10px] flex items-center justify-center shadow">
+              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#C83E5B] text-white text-[10px] flex items-center justify-center shadow">
                 <i className="fa-solid fa-utensils" />
               </span>
             </div>
             <div>
-              <span className="font-serif-vovo text-2xl sm:text-3xl font-extrabold tracking-tight text-amber-900 dark:text-amber-300 block leading-none">
-                Caderno da Vovó
+              <span className="font-serif-vovo text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1E1B18] dark:text-amber-300 block leading-none">
+                Caderno da <span className="text-[#C83E5B]">Vovó</span>
               </span>
-              <span className="text-xs font-bold text-stone-500 dark:text-stone-400 mt-1 block">
-                Sabores de infância, voz guiada & carinho de vó
+              <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 mt-1 block">
+                Receitas afetivas, porções inteligentes & voz guiada
               </span>
             </div>
           </button>
 
-          {/* Links Centrais de Navegação */}
-          <nav aria-label="Menu do Portal" className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          {/* Menu Principal — Botões de Admin SÓ aparecem quando logado como ADMIN! */}
+          <nav aria-label="Menu Principal" className="flex flex-wrap items-center gap-1.5">
             <button
               type="button"
               onClick={() => onSelectTab('home')}
               className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
                 activeTab === 'home'
-                  ? 'bg-amber-700 text-white shadow-sm'
-                  : 'hover:bg-amber-100/70 dark:hover:bg-stone-800'
+                  ? 'bg-[#C83E5B] text-white shadow-sm'
+                  : 'text-stone-700 dark:text-stone-200 hover:bg-rose-50 dark:hover:bg-stone-800'
               }`}
             >
-              <i className="fa-solid fa-book-open" />
+              <i className="fa-solid fa-utensils" />
               <span>Receitas</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onSelectTab('news')}
+              className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
+                activeTab === 'news'
+                  ? 'bg-[#1E7E5A] text-white shadow-sm'
+                  : 'text-stone-700 dark:text-stone-200 hover:bg-emerald-50 dark:hover:bg-stone-800'
+              }`}
+            >
+              <i className="fa-regular fa-newspaper" />
+              <span>Feed & Dicas</span>
             </button>
 
             <button
@@ -154,14 +170,24 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               onClick={() => onSelectTab('favorites')}
               className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
                 activeTab === 'favorites'
-                  ? 'bg-rose-600 text-white shadow-sm'
-                  : 'hover:bg-rose-50 dark:hover:bg-stone-800'
+                  ? 'bg-[#C83E5B] text-white shadow-sm'
+                  : 'text-stone-700 dark:text-stone-200 hover:bg-rose-50 dark:hover:bg-stone-800'
               }`}
             >
-              <i className="fa-solid fa-heart text-rose-500" />
+              <i
+                className={`fa-solid fa-heart ${
+                  activeTab === 'favorites' ? 'text-white' : 'text-[#C83E5B]'
+                }`}
+              />
               <span>Favoritas</span>
               {favoritesCount > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full text-xs bg-rose-100 text-rose-800 font-extrabold">
+                <span
+                  className={`px-1.5 py-0.2 rounded-full text-xs font-extrabold ${
+                    activeTab === 'favorites'
+                      ? 'bg-white text-[#C83E5B]'
+                      : 'bg-rose-100 text-[#C83E5B]'
+                  }`}
+                >
                   {favoritesCount}
                 </span>
               )}
@@ -172,70 +198,95 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               onClick={() => onSelectTab('create')}
               className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
                 activeTab === 'create'
-                  ? 'bg-emerald-700 text-white shadow-sm'
-                  : 'hover:bg-emerald-50 dark:hover:bg-stone-800'
+                  ? 'bg-[#1E7E5A] text-white shadow-sm'
+                  : 'text-stone-700 dark:text-stone-200 hover:bg-emerald-50 dark:hover:bg-stone-800'
               }`}
             >
-              <i className="fa-solid fa-feather-pointed text-emerald-700" />
+              <i className="fa-solid fa-feather-pointed" />
               <span>Enviar Receita</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => onSelectTab('importer')}
-              className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
-                activeTab === 'importer'
-                  ? 'bg-orange-600 text-white shadow-sm'
-                  : 'hover:bg-orange-50 dark:hover:bg-stone-800'
-              }`}
-            >
-              <i className="fa-solid fa-cloud-arrow-down text-orange-600" />
-              <span>TudoGostoso</span>
-            </button>
+            {/* Aba Meu Perfil (Visível quando o usuário está logado) */}
+            {user && (
+              <button
+                type="button"
+                onClick={() => onSelectTab('profile')}
+                className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
+                  activeTab === 'profile'
+                    ? 'bg-stone-800 text-white shadow-sm'
+                    : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
+                }`}
+              >
+                <i className="fa-solid fa-user-pen" />
+                <span>Meu Perfil</span>
+              </button>
+            )}
 
-            <button
-              type="button"
-              onClick={() => onSelectTab('admin')}
-              className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
-                activeTab === 'admin'
-                  ? 'bg-stone-900 text-amber-300 shadow-sm'
-                  : 'hover:bg-stone-200/70 dark:hover:bg-stone-800'
-              }`}
-            >
-              <i className="fa-solid fa-gauge-high text-amber-600" />
-              <span>Painel Admin</span>
-            </button>
+            {/* Botões Administrativos OCULTOS para visitantes comuns — SÓ aparecem se user.role === 'ADMIN' */}
+            {isAdmin && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onSelectTab('importer')}
+                  className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
+                    activeTab === 'importer'
+                      ? 'bg-amber-600 text-white shadow-sm'
+                      : 'bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100'
+                  }`}
+                >
+                  <i className="fa-solid fa-robot" />
+                  <span>Importer</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onSelectTab('admin')}
+                  className={`px-3.5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition ${
+                    activeTab === 'admin'
+                      ? 'bg-stone-900 text-amber-300 shadow-sm'
+                      : 'bg-stone-900/90 text-amber-300 hover:bg-stone-900'
+                  }`}
+                >
+                  <i className="fa-solid fa-shield-halved" />
+                  <span>Admin</span>
+                </button>
+              </>
+            )}
           </nav>
 
-          {/* Área de Conta / Clube VIP */}
+          {/* Área Direita: Clube VIP & Conta do Usuário */}
           <div className="flex items-center gap-2.5">
             {!user?.isVip && (
               <button
                 type="button"
                 onClick={() => onOpenAuthModal('vip')}
-                className="px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-sm flex items-center gap-1.5 transition"
+                className="px-3.5 py-2 rounded-xl font-extrabold text-xs sm:text-sm bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-sm flex items-center gap-1.5 transition"
               >
                 <i className="fa-solid fa-crown" />
-                <span>Seja VIP</span>
+                <span>Clube VIP</span>
               </button>
             )}
 
             {user ? (
-              <div className="flex items-center gap-2 bg-amber-50 dark:bg-stone-800 border border-amber-200 dark:border-stone-700 px-3 py-1.5 rounded-xl">
-                <div className="text-xs">
+              <div className="flex items-center gap-2 bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 px-3 py-1.5 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => onSelectTab('profile')}
+                  className="text-xs text-left hover:opacity-80"
+                >
                   <span className="font-extrabold block leading-none flex items-center gap-1">
                     {user.isVip && <i className="fa-solid fa-crown text-amber-500" />}
                     {user.name.split(' ')[0]}
                   </span>
-                  <span className="text-[10px] opacity-75 uppercase font-bold">
-                    {user.role}
+                  <span className="text-[10px] text-stone-500 uppercase font-bold">
+                    {user.role === 'ADMIN' ? 'Admin' : user.isVip ? 'Membro VIP' : 'Membro'}
                   </span>
-                </div>
+                </button>
                 <button
                   type="button"
                   onClick={onLogout}
                   title="Sair da conta"
-                  className="ml-1 text-stone-500 hover:text-rose-600 px-1.5 py-1"
+                  className="ml-1 text-stone-400 hover:text-rose-600 px-1.5 py-1"
                 >
                   <i className="fa-solid fa-right-from-bracket" />
                 </button>
@@ -244,7 +295,7 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               <button
                 type="button"
                 onClick={() => onOpenAuthModal('login')}
-                className="px-4 py-2 rounded-xl font-bold text-sm border border-amber-700/40 text-amber-900 dark:text-amber-200 hover:bg-amber-50 dark:hover:bg-stone-800 flex items-center gap-2 transition"
+                className="px-4 py-2 rounded-xl font-bold text-sm bg-stone-900 hover:bg-stone-800 text-white flex items-center gap-2 transition shadow-sm"
               >
                 <i className="fa-regular fa-user" />
                 <span>Entrar</span>

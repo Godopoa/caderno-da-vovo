@@ -1,6 +1,48 @@
 import { prisma } from './db';
 import { encryptAES256, hashPassword } from './services/cryptoSecurity';
 
+export const INITIAL_NEWS_POSTS = [
+  {
+    title: '5 Segredos da Vovó Helena para o Bolo Caseiro Nunca Solar e Crescer Fofinho',
+    slug: '5-segredos-bolo-caseiro-nunca-solar-101',
+    summary:
+      'Descubra por que a temperatura dos ovos, o jeito de peneirar a farinha e o momento certo de abrir o forno mudam completamente a textura do seu bolo!',
+    content:
+      'Todo mundo ama aquele cheirinho de bolo saindo do forno no fim da tarde. Mas para que a massa fique leve como uma nuvem, a Vovó Helena guarda 5 regrinhas de ouro:\n\n1. Tire os ovos e o leite da geladeira 30 minutos antes de começar.\n2. Peneire a farinha de trigo junto com uma pitadinha mínima de sal (realça o sabor doce!).\n3. Nunca bata a farinha de trigo no liquidificador em velocidade alta — incorpore à mão com um batedor de arame.\n4. Pré-aqueça o forno por pelo menos 15 minutos a 180 graus antes de colocar a forma.\n5. Nunca abra a porta do forno antes dos primeiros 30 minutos de cozimento!',
+    category: 'Dicas da Vovó',
+    imageUrl: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80',
+    authorName: 'Vovó Helena',
+    readMinutes: 3,
+    likesCount: 142,
+  },
+  {
+    title: 'Chás, Caldos e Ervas Frescas que Ajudam na Digestão e Aquecem o Coração',
+    slug: 'chas-caldos-ervas-digestao-bem-estar-102',
+    summary:
+      'Como usar hortelã, erva-doce, gengibre e alecrim nas suas receitas do dia a dia para deixar as refeições mais leves, cheirosas e saudáveis.',
+    content:
+      'Na cozinha das nossas avós, cada tempero tinha um propósito especial além do sabor. O alecrim fresco nas batatas assadas estimula a memória e o bem-estar; já algumas folhinhas de hortelã na canja de galinha deixam o caldo super digestivo para o jantar.\n\nExperimente também finalizar o arroz doce com casquinha de laranja e canela em pau — além de reduzir a necessidade de açúcar, perfuma a casa inteira!',
+    category: 'Saúde & Bem-Estar',
+    imageUrl: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=900&q=80',
+    authorName: 'Dra. Clara & Vovó Helena',
+    readMinutes: 4,
+    likesCount: 98,
+  },
+  {
+    title: 'Como Funciona o Novo Modo Cozinha Falado e o Relógio Automático do Portal',
+    slug: 'como-funciona-modo-cozinha-falado-relogio-103',
+    summary:
+      'Agora você pode cozinhar sem precisar tocar na tela com as mãos cheias de farinha! Veja como ativar a leitura em voz alta e a calculadora de porções.',
+    content:
+      'Criamos o Modo Cozinha Guiado pensando na praticidade real na bancada: ao abrir qualquer receita do Caderno da Vovó, você pode multiplicar os ingredientes (Metade, Normal, Dobro ou Triplo) com 1 clique.\n\nAlém disso, clicando em "Iniciar Modo Cozinha Guiado", o site lê cada etapa em voz alta e já deixa o relógio regressivo pronto com alarme sonoro para o seu bolo nunca passar do ponto!',
+    category: 'Novidades',
+    imageUrl: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=900&q=80',
+    authorName: 'Equipe Caderno da Vovó',
+    readMinutes: 2,
+    likesCount: 215,
+  },
+];
+
 export const INITIAL_RECIPES = [
   {
     title: 'Bolo de Cenoura Fofinho da Vovó com Casquinha Crocante de Chocolate',
@@ -13,8 +55,9 @@ export const INITIAL_RECIPES = [
     imageUrl: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80',
     category: 'Bolos e Tortas',
     prepTimeMinutes: 45,
-    servings: '10 fatias generosas',
+    servings: '10 fatias',
     difficulty: 'Fácil',
+    caloriesPerServ: 265,
     isFavorite: true,
     isVipOnly: false,
     viewsCount: 1420,
@@ -23,9 +66,9 @@ export const INITIAL_RECIPES = [
     ingredients: [
       { section: 'Massa do Bolo', rawText: '3 cenouras médias descascadas e picadas em rodelas', orderIndex: 1 },
       { section: 'Massa do Bolo', rawText: '4 ovos inteiros em temperatura ambiente', orderIndex: 2 },
-      { section: 'Massa do Bolo', rawText: 'meia xícara de chá de óleo de girassol ou milho', orderIndex: 3 },
+      { section: 'Massa do Bolo', rawText: '0.5 xícara de chá de óleo de girassol ou milho', orderIndex: 3 },
       { section: 'Massa do Bolo', rawText: '2 xícaras de chá de açúcar refinado', orderIndex: 4 },
-      { section: 'Massa do Bolo', rawText: '2 xícaras e meia de chá de farinha de trigo peneirada', orderIndex: 5 },
+      { section: 'Massa do Bolo', rawText: '2.5 xícaras de chá de farinha de trigo peneirada', orderIndex: 5 },
       { section: 'Massa do Bolo', rawText: '1 colher de sopa de fermento químico em pó', orderIndex: 6 },
       { section: 'Calda Crocante', rawText: '2 colheres de sopa de manteiga sem sal', orderIndex: 7 },
       { section: 'Calda Crocante', rawText: '4 colheres de sopa de chocolate em pó 50%', orderIndex: 8 },
@@ -68,6 +111,22 @@ export const INITIAL_RECIPES = [
         timerSeconds: 480,
       },
     ],
+    comments: [
+      {
+        authorName: 'Dona Aparecida (Minas Gerais)',
+        authorIsVip: true,
+        rating: 5,
+        content: 'Fiz para os meus netos hoje à tarde! A dica de não bater o trigo no liquidificador deixou o bolo mais fofinho que já fiz na vida!',
+        madeIt: true,
+      },
+      {
+        authorName: 'Seu Carlos Alberto',
+        authorIsVip: false,
+        rating: 5,
+        content: 'Usei o modo cozinha falado e o relógio de 40 minutos me avisou certinho. A calda ficou crocante igual a da minha mãe!',
+        madeIt: true,
+      },
+    ],
   },
   {
     title: 'Canja Dourada da Vovó com Frango Desfiado e Hortelã',
@@ -80,8 +139,9 @@ export const INITIAL_RECIPES = [
     imageUrl: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=900&q=80',
     category: 'Sopas e Caldos',
     prepTimeMinutes: 35,
-    servings: '6 tigelas quentinhas',
+    servings: '6 tigelas',
     difficulty: 'Fácil',
+    caloriesPerServ: 185,
     isFavorite: true,
     isVipOnly: false,
     viewsCount: 980,
@@ -93,7 +153,7 @@ export const INITIAL_RECIPES = [
       { section: 'Principal', rawText: '2 batatas médias em cubos pequenos', orderIndex: 3 },
       { section: 'Principal', rawText: '1 cenoura média cortada em cubinhos delicados', orderIndex: 4 },
       { section: 'Principal', rawText: '1 cebola picadinha e 2 dentes de alho dourados', orderIndex: 5 },
-      { section: 'Principal', rawText: '1 litro e meio de caldo caseiro do cozimento do frango', orderIndex: 6 },
+      { section: 'Principal', rawText: '1.5 litro de caldo caseiro do cozimento do frango', orderIndex: 6 },
       { section: 'Principal', rawText: 'Salsinha, cebolinha e sal a gosto', orderIndex: 7 },
     ],
     steps: [
@@ -118,6 +178,15 @@ export const INITIAL_RECIPES = [
           'Finalize com cheiro-verde fresco picadinho e sirva bem quentinha com torradas amanteigadas.',
       },
     ],
+    comments: [
+      {
+        authorName: 'Vovó Lúcia',
+        authorIsVip: true,
+        rating: 5,
+        content: 'Essa canja levanta qualquer ânimo! O toque de hortelã no final faz toda a diferença.',
+        madeIt: true,
+      },
+    ],
   },
   {
     title: 'Pudim Imperial de Leite Condensado Lisinho (Sem Furinhos)',
@@ -132,14 +201,15 @@ export const INITIAL_RECIPES = [
     prepTimeMinutes: 60,
     servings: '10 fatias',
     difficulty: 'Fácil',
+    caloriesPerServ: 290,
     isFavorite: true,
     isVipOnly: true,
     viewsCount: 2150,
     likesCount: 612,
     rating: 5.0,
     ingredients: [
-      { section: 'Calda Âmbar', rawText: '1 xícara e meia de chá de açúcar cristal ou refinado', orderIndex: 1 },
-      { section: 'Calda Âmbar', rawText: 'meia xícara de chá de água quente', orderIndex: 2 },
+      { section: 'Calda Âmbar', rawText: '1.5 xícara de chá de açúcar cristal ou refinado', orderIndex: 1 },
+      { section: 'Calda Âmbar', rawText: '0.5 xícara de chá de água quente', orderIndex: 2 },
       { section: 'Creme do Pudim', rawText: '2 latas de leite condensado integral', orderIndex: 3 },
       { section: 'Creme do Pudim', rawText: '2 medidas da lata de leite integral morno', orderIndex: 4 },
       { section: 'Creme do Pudim', rawText: '4 ovos inteiros peneirados', orderIndex: 5 },
@@ -168,6 +238,7 @@ export const INITIAL_RECIPES = [
         timerSeconds: 3000,
       },
     ],
+    comments: [],
   },
   {
     title: 'Pão de Queijo Mineiro da Fazenda Recheado',
@@ -182,6 +253,7 @@ export const INITIAL_RECIPES = [
     prepTimeMinutes: 30,
     servings: '18 pãezinhos',
     difficulty: 'Fácil',
+    caloriesPerServ: 145,
     isFavorite: false,
     isVipOnly: false,
     viewsCount: 890,
@@ -190,7 +262,7 @@ export const INITIAL_RECIPES = [
     ingredients: [
       { section: 'Principal', rawText: '500 gramas de polvilho azedo ou meio a meio com doce', orderIndex: 1 },
       { section: 'Principal', rawText: '1 xícara de chá de leite integral', orderIndex: 2 },
-      { section: 'Principal', rawText: 'meia xícara de chá de óleo', orderIndex: 3 },
+      { section: 'Principal', rawText: '0.5 xícara de chá de óleo', orderIndex: 3 },
       { section: 'Principal', rawText: '2 ovos grandes', orderIndex: 4 },
       { section: 'Principal', rawText: '250 gramas de queijo meia-cura ou parmesão ralado grosso', orderIndex: 5 },
       { section: 'Principal', rawText: '1 colher de chá de sal', orderIndex: 6 },
@@ -217,6 +289,7 @@ export const INITIAL_RECIPES = [
         timerSeconds: 1500,
       },
     ],
+    comments: [],
   },
   {
     title: 'Escondidinho Cremoso de Carne Seca com Mandioquinha Gratinada',
@@ -231,6 +304,7 @@ export const INITIAL_RECIPES = [
     prepTimeMinutes: 45,
     servings: '8 porções',
     difficulty: 'Médio',
+    caloriesPerServ: 340,
     isFavorite: true,
     isVipOnly: true,
     viewsCount: 1640,
@@ -259,6 +333,7 @@ export const INITIAL_RECIPES = [
         timerSeconds: 1200,
       },
     ],
+    comments: [],
   },
   {
     title: 'Bolinho de Chuva Assado ou Frito com Açúcar e Canela da Vovó',
@@ -273,6 +348,7 @@ export const INITIAL_RECIPES = [
     prepTimeMinutes: 20,
     servings: '20 bolinhos',
     difficulty: 'Fácil',
+    caloriesPerServ: 110,
     isFavorite: false,
     isVipOnly: false,
     viewsCount: 1120,
@@ -282,7 +358,7 @@ export const INITIAL_RECIPES = [
       { section: 'Massa', rawText: '2 ovos inteiros', orderIndex: 1 },
       { section: 'Massa', rawText: '1 xícara de chá de açúcar', orderIndex: 2 },
       { section: 'Massa', rawText: '1 xícara de chá de leite morno', orderIndex: 3 },
-      { section: 'Massa', rawText: '2 xícaras e meia de chá de farinha de trigo', orderIndex: 4 },
+      { section: 'Massa', rawText: '2.5 xícaras de chá de farinha de trigo', orderIndex: 4 },
       { section: 'Massa', rawText: '1 colher de sopa de fermento em pó', orderIndex: 5 },
       { section: 'Finalização', rawText: 'Açúcar e canela em pó para polvilhar', orderIndex: 6 },
     ],
@@ -301,11 +377,11 @@ export const INITIAL_RECIPES = [
         timerSeconds: 240,
       },
     ],
+    comments: [],
   },
 ];
 
 export async function ensureSeededDatabase() {
-  // 1. Garante usuários padrão (Admin e VIP) com criptografia Scrypt
   const adminExists = await prisma.user.findUnique({
     where: { email: 'admin@cadernodavovo.com.br' },
   });
@@ -313,9 +389,11 @@ export async function ensureSeededDatabase() {
   if (!adminExists) {
     await prisma.user.create({
       data: {
-        name: 'Vovó Administradora (Dona Helena)',
+        name: 'Vovó Helena (Administradora)',
         email: 'admin@cadernodavovo.com.br',
         passwordHash: hashPassword('vovo123'),
+        bio: 'Cozinheira de mão cheia há 45 anos, guardiã dos cadernos de receita da família.',
+        specialty: 'Bolos Caseiros, Pudins & Assados de Domingo',
         role: 'ADMIN',
         isVip: true,
         vipPlan: 'ANUAL',
@@ -327,6 +405,8 @@ export async function ensureSeededDatabase() {
         name: 'Dona Maria (Membro Clube VIP)',
         email: 'vip@cadernodavovo.com.br',
         passwordHash: hashPassword('vip123'),
+        bio: 'Adoro testar receitas doces para os meus 6 netinhos no fim de semana!',
+        specialty: 'Doces Caseiros & Pães de Queijo',
         role: 'VIP',
         isVip: true,
         vipPlan: 'ANUAL',
@@ -339,12 +419,11 @@ export async function ensureSeededDatabase() {
         action: 'SYSTEM_CRYPTO_BOOTSTRAP',
         actor: 'system',
         ipAddress: '127.0.0.1',
-        details: 'Contas iniciais protegidas com Scrypt + AES-256-GCM inicializadas.',
+        details: 'Contas iniciais protegidas com Scrypt + AES-256-GCM + Captcha HMAC inicializadas.',
       },
     });
   }
 
-  // 2. Garante configuração de Monetização e Google AdSense
   const configExists = await prisma.siteConfig.findUnique({ where: { id: 'default' } });
   if (!configExists) {
     await prisma.siteConfig.create({
@@ -363,10 +442,15 @@ export async function ensureSeededDatabase() {
     });
   }
 
-  // 3. Garante receitas iniciais
+  const newsCount = await prisma.newsPost.count();
+  if (newsCount === 0) {
+    for (const post of INITIAL_NEWS_POSTS) {
+      await prisma.newsPost.create({ data: post });
+    }
+  }
+
   const count = await prisma.recipe.count();
   if (count === 0) {
-    console.log('🌱 Populando o Caderno da Vovó com receitas iniciais...');
     for (const r of INITIAL_RECIPES) {
       await prisma.recipe.create({
         data: {
@@ -380,6 +464,7 @@ export async function ensureSeededDatabase() {
           prepTimeMinutes: r.prepTimeMinutes,
           servings: r.servings,
           difficulty: r.difficulty,
+          caloriesPerServ: r.caloriesPerServ,
           isFavorite: r.isFavorite,
           isVipOnly: r.isVipOnly,
           viewsCount: r.viewsCount,
@@ -387,9 +472,9 @@ export async function ensureSeededDatabase() {
           rating: r.rating,
           ingredients: { create: r.ingredients },
           steps: { create: r.steps },
+          comments: r.comments && r.comments.length > 0 ? { create: r.comments } : undefined,
         },
       });
     }
-    console.log('✅ Receitas iniciais cadastradas com sucesso!');
   }
 }

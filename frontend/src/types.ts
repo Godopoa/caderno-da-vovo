@@ -15,6 +15,20 @@ export interface Step {
   timerSeconds?: number | null;
 }
 
+export interface CommentItem {
+  id: string;
+  recipeId: string;
+  userId?: string | null;
+  authorName: string;
+  authorAvatar?: string | null;
+  authorIsVip: boolean;
+  rating: number;
+  content: string;
+  madeIt: boolean;
+  likesCount: number;
+  createdAt: string;
+}
+
 export interface Recipe {
   id: string;
   title: string;
@@ -27,6 +41,7 @@ export interface Recipe {
   prepTimeMinutes?: number | null;
   servings?: string | null;
   difficulty: string;
+  caloriesPerServ?: number | null;
   isFavorite: boolean;
   isVipOnly?: boolean;
   viewsCount?: number;
@@ -34,13 +49,57 @@ export interface Recipe {
   rating?: number;
   ingredients: Ingredient[];
   steps: Step[];
+  comments?: CommentItem[];
   createdAt?: string;
+}
+
+export interface NewsPostItem {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string;
+  content: string;
+  category: string;
+  imageUrl?: string | null;
+  authorName: string;
+  readMinutes: number;
+  likesCount: number;
+  createdAt: string;
+}
+
+export interface CaptchaChallenge {
+  svgDataUri: string;
+  promptText: string;
+  captchaToken: string;
+}
+
+export interface AutoImporterLog {
+  id: string;
+  timestamp: string;
+  type: 'IMPORTED' | 'SKIPPED' | 'CRAWLED' | 'INFO' | 'ERROR';
+  title?: string;
+  url?: string;
+  message: string;
+}
+
+export interface AutoImporterStatus {
+  isRunning: boolean;
+  intervalSeconds: number;
+  queueSize: number;
+  visitedCount: number;
+  totalImportedInSession: number;
+  totalSkippedDuplicates: number;
+  currentAction: string;
+  recentLogs: AutoImporterLog[];
 }
 
 export interface UserProfile {
   id: string;
   name: string;
   email: string;
+  bio?: string | null;
+  specialty?: string | null;
+  avatarUrl?: string | null;
   role: 'USER' | 'VIP' | 'ADMIN';
   isVip: boolean;
   vipPlan?: string | null;

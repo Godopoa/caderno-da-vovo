@@ -7,7 +7,6 @@ import {
 } from '../services/tudogostosoImporter';
 
 export async function recipesRoutes(app: FastifyInstance) {
-  // Listagem e busca inteligente (por título, categoria, favoritos ou ingredientes da geladeira)
   app.get('/api/recipes', async (request) => {
     const query = request.query as {
       search?: string;
@@ -31,6 +30,7 @@ export async function recipesRoutes(app: FastifyInstance) {
       where.OR = [
         { title: { contains: term } },
         { category: { contains: term } },
+        { description: { contains: term } },
         { ingredients: { some: { rawText: { contains: term } } } },
       ];
     }
@@ -59,6 +59,7 @@ export async function recipesRoutes(app: FastifyInstance) {
       include: {
         ingredients: { orderBy: { orderIndex: 'asc' } },
         steps: { orderBy: { stepNumber: 'asc' } },
+        comments: { orderBy: { createdAt: 'desc' } },
       },
       orderBy: [{ isFavorite: 'desc' }, { createdAt: 'desc' }],
     });
@@ -66,7 +67,6 @@ export async function recipesRoutes(app: FastifyInstance) {
     return { recipes };
   });
 
-  // Detalhe de uma receita por ID ou Slug
   app.get('/api/recipes/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
 
@@ -77,6 +77,7 @@ export async function recipesRoutes(app: FastifyInstance) {
       include: {
         ingredients: { orderBy: { orderIndex: 'asc' } },
         steps: { orderBy: { stepNumber: 'asc' } },
+        comments: { orderBy: { createdAt: 'desc' } },
       },
     });
 
@@ -84,10 +85,14 @@ export async function recipesRoutes(app: FastifyInstance) {
       return reply.status(404).send({ error: 'Receita não encontrada.' });
     }
 
+    await prisma.recipe.update({
+      where: { id: recipe.id },
+      data: { viewsCount: { increment: 1 } },
+    });
+
     return { recipe };
   });
 
-  // Alternar Favorito (❤️)
   app.post('/api/recipes/:id/favorite', async (request, reply) => {
     const { id } = request.params as { id: string };
 
@@ -102,16 +107,18 @@ export async function recipesRoutes(app: FastifyInstance) {
       include: {
         ingredients: { orderBy: { orderIndex: 'asc' } },
         steps: { orderBy: { stepNumber: 'asc' } },
+        comments: { orderBy: { createdAt: 'desc' } },
       },
     });
 
     return { recipe: updated };
   });
 
-  // Cadastrar nova receita manualmente (Caderno da Família)
   app.post('/api/recipes', async (request, reply) => {
     const body = request.body as {
       title: string;
+      description?: string;
+      chefTip?: string;
       category?: string;
       prepTimeMinutes?: number;
       servings?: string;
@@ -130,6 +137,10 @@ export async function recipesRoutes(app: FastifyInstance) {
       data: {
         title: body.title.trim(),
         slug: createSlug(body.title),
+        description:
+          body.description ||
+          'Receita especial enviada para o Caderno da Vovó, testada com carinho em família.',
+        chefTip: body.chefTip || null,
         category: body.category || 'Receitas Caseiras',
         prepTimeMinutes: body.prepTimeMinutes || 30,
         servings: body.servings || '6 porções',
@@ -165,13 +176,13 @@ export async function recipesRoutes(app: FastifyInstance) {
       include: {
         ingredients: { orderBy: { orderIndex: 'asc' } },
         steps: { orderBy: { stepNumber: 'asc' } },
+        comments: { orderBy: { createdAt: 'desc' } },
       },
     });
 
     return { recipe: created };
   });
 
-  // Excluir uma receita
   app.delete('/api/recipes/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
     try {

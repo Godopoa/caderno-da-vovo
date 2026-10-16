@@ -1,7 +1,11 @@
 import {
   AdminDashboardData,
+  AutoImporterStatus,
+  CaptchaChallenge,
+  CommentItem,
   DiscoveredSuggestion,
   MonetizationConfig,
+  NewsPostItem,
   Recipe,
   SystemInfo,
   UserProfile,
@@ -44,6 +48,10 @@ export function getStoredUser(): UserProfile | null {
 
 export function saveAuthSession(token: string, user: UserProfile): void {
   localStorage.setItem(STORAGE_AUTH_TOKEN_KEY, token);
+  localStorage.setItem(STORAGE_AUTH_USER_KEY, JSON.stringify(user));
+}
+
+export function updateStoredUserOnly(user: UserProfile): void {
   localStorage.setItem(STORAGE_AUTH_USER_KEY, JSON.stringify(user));
 }
 
@@ -139,6 +147,8 @@ export async function toggleFavoriteRecipe(id: string): Promise<Recipe> {
 
 export async function createManualRecipe(payload: {
   title: string;
+  description?: string;
+  chefTip?: string;
   category: string;
   prepTimeMinutes: number;
   servings: string;
@@ -208,8 +218,73 @@ export async function fetchSystemInfo(): Promise<SystemInfo | null> {
   }
 }
 
-// --- AUTENTICAÇÃO E CLUBE VIP ---
+// --- CAPTCHA PRÓPRIO DA VOVÓ ---
+export async function fetchCaptchaChallenge(): Promise<CaptchaChallenge> {
+  const res = await fetch(`${getApiBaseUrl()}/api/security/captcha`);
+  return await res.json();
+}
 
+// --- COMENTÁRIOS E AVALIAÇÕES ---
+export async function postRecipeCommentApi(
+  recipeId: string,
+  payload: {
+    authorName?: string;
+    rating: number;
+    content: string;
+    madeIt: boolean;
+    captchaToken: string;
+    captchaAnswer: string;
+  }
+): Promise<{ comment: CommentItem; message: string }> {
+  const res = await fetch(`${getApiBaseUrl()}/api/recipes/${recipeId}/comments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Erro ao enviar comentário.');
+  return data;
+}
+
+// --- FEED DE NOTÍCIAS E DICAS ---
+export async function fetchNewsPostsApi(): Promise<NewsPostItem[]> {
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/api/news`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.posts || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function createNewsPostApi(payload: {
+  title: string;
+  summary: string;
+  content: string;
+  category: string;
+  imageUrl?: string;
+  readMinutes?: number;
+}): Promise<NewsPostItem> {
+  const res = await fetch(`${getApiBaseUrl()}/api/news`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Erro ao publicar notícia.');
+  return data.post;
+}
+
+export async function likeNewsPostApi(id: string): Promise<NewsPostItem> {
+  const res = await fetch(`${getApiBaseUrl()}/api/news/${id}/like`, {
+    method: 'POST',
+  });
+  const data = await res.json();
+  return data.post;
+}
+
+// --- AUTENTICAÇÃO, PERFIL E CLUBE VIP ---
 export async function loginApi(email: string, password: string): Promise<{ token: string; user: UserProfile }> {
   const res = await fetch(`${getApiBaseUrl()}/api/auth/login`, {
     method: 'POST',
@@ -240,6 +315,24 @@ export async function registerApi(payload: {
   return data;
 }
 
+export async function updateUserProfileApi(payload: {
+  name: string;
+  bio: string;
+  specialty: string;
+  avatarUrl?: string;
+  newPassword?: string;
+}): Promise<{ user: UserProfile; message: string }> {
+  const res = await fetch(`${getApiBaseUrl()}/api/auth/profile`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Erro ao salvar perfil.');
+  updateStoredUserOnly(data.user);
+  return data;
+}
+
 export async function upgradeToVipApi(
   plan: 'MENSAL' | 'ANUAL',
   paymentMethod: string
@@ -255,8 +348,7 @@ export async function upgradeToVipApi(
   return data;
 }
 
-// --- MONETIZAÇÃO, GOOGLE ADSENSE E PAINEL ADMIN ---
-
+// --- MONETIZAÇÃO, ADMIN E ROBÔ AUTO-IMPORTER ---
 export async function fetchMonetizationConfig(): Promise<MonetizationConfig | null> {
   try {
     const res = await fetch(`${getApiBaseUrl()}/api/monetization/config`);
@@ -305,4 +397,31 @@ export async function toggleRecipeVipAdminApi(recipeId: string): Promise<Recipe>
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Erro ao alterar status VIP da receita.');
   return data.recipe;
+}
+
+export async function fetchAutoImporterStatusApi(): Promise<AutoImporterStatus> {
+  const res = await fetch(`${getApiBaseUrl()}/api/admin/auto-importer/status`, {
+    headers: { ...getAuthHeaders() },
+  });
+  if (!res.ok) throw new Error('Falha ao consultar status do Auto-Importer.');
+  return await res.json();
+}
+
+export async function startAutoImporterApi(intervalSeconds?: number): Promise<AutoImporterStatus> {
+  const res = await fetch(`${getApiBaseUrl()}/api/admin/auto-importer/start`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify({ intervalSeconds }),
+  });
+  if (!res.ok) throw new Error('Falha ao iniciar Auto-Importer.');
+  return await res.json();
+}
+
+export async function pauseAutoImporterApi(): Promise<AutoImporterStatus> {
+  const res = await fetch(`${getApiBaseUrl()}/api/admin/auto-importer/pause`, {
+    method: 'POST',
+    headers: { ...getAuthHeaders() },
+  });
+  if (!res.ok) throw new Error('Falha ao pausar Auto-Importer.');
+  return await res.json();
 }

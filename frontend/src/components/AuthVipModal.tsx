@@ -1,36 +1,63 @@
-import React, { useState } from 'react';
-import { loginApi, registerApi, upgradeToVipApi } from '../api/client';
-import { MonetizationConfig, UserProfile } from '../types';
+import React, { useState, useEffect } from 'react';
+import {
+  fetchCaptchaChallenge,
+  loginApi,
+  registerApi,
+  upgradeToVipApi,
+} from '../api/client';
+import { UserProfile, CaptchaChallenge } from '../types';
 
-interface AuthVipModalProps {
-  initialMode: 'login' | 'register' | 'vip';
+interface Props {
+  isOpen: boolean;
+  initialTab?: 'login' | 'register' | 'vip';
   user: UserProfile | null;
-  monetization: MonetizationConfig | null;
+  vipMonthlyPrice: number;
   onClose: () => void;
   onAuthSuccess: (user: UserProfile) => void;
 }
 
-export const AuthVipModal: React.FC<AuthVipModalProps> = ({
-  initialMode,
+export const AuthVipModal: React.FC<Props> = ({
+  isOpen,
+  initialTab = 'login',
   user,
-  monetization,
+  vipMonthlyPrice,
   onClose,
   onAuthSuccess,
 }) => {
-  const [mode, setMode] = useState<'login' | 'register' | 'vip'>(initialMode);
+  const [tab, setTab] = useState<'login' | 'register' | 'vip'>(initialTab);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [wantVipOnRegister, setWantVipOnRegister] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<'MENSAL' | 'ANUAL'>('ANUAL');
-  const [paymentMethod, setPaymentMethod] = useState<'PIX' | 'CARTAO'>('PIX');
+  const [plan, setPlan] = useState<'MENSAL' | 'ANUAL'>('MENSAL');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  const monthlyPrice = monetization?.vipMonthlyPrice ?? 14.9;
-  const annualPrice = monetization?.vipAnnualPrice ?? 119.9;
-  const pixKey = monetization?.pixKey || 'clubevip@cadernodavovo.com.br';
+  // Custom Self-Hosted Captcha state
+  const [captcha, setCaptcha] = useState<CaptchaChallenge | null>(null);
+  const [captchaAnswer, setCaptchaAnswer] = useState('');
+
+  const loadCaptcha = async () => {
+    try {
+      const ch = await fetchCaptchaChallenge();
+      setCaptcha(ch);
+      setCaptchaAnswer('');
+    } catch {
+      // ignore
+    }
+  };
+
+  useEffect(() => {
+    setTab(initialTab);
+  }, [initialTab]);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadCaptcha();
+    }
+  }, [isOpen, tab]);
+
+  if (!isOpen) return null;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,21 +68,7 @@ export const AuthVipModal: React.FC<AuthVipModalProps> = ({
       onAuthSuccess(res.user);
       onClose();
     } catch (err: any) {
-      setError(err?.message || 'Erro ao entrar.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleQuickDemoLogin = async (demoEmail: string, demoPass: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await loginApi(demoEmail, demoPass);
-      onAuthSuccess(res.user);
-      onClose();
-    } catch (err: any) {
-      setError(err?.message || 'Erro no login rápido.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -66,17 +79,12 @@ export const AuthVipModal: React.FC<AuthVipModalProps> = ({
     setLoading(true);
     setError(null);
     try {
-      const res = await registerApi({
-        name,
-        email,
-        password,
-        wantVip: wantVipOnRegister,
-        vipPlan: selectedPlan,
-      });
+      const res = await registerApi({ name, email, password });
       onAuthSuccess(res.user);
-      onClose();
+      setTab('vip');
+      setSuccessMsg('Conta criada com sucesso! Aproveite para conhecer o Clube VIP.');
     } catch (err: any) {
-      setError(err?.message || 'Erro ao criar conta.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -84,369 +92,288 @@ export const AuthVipModal: React.FC<AuthVipModalProps> = ({
 
   const handleUpgradeVip = async () => {
     if (!user) {
-      setMode('register');
-      setWantVipOnRegister(true);
+      setTab('register');
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      const res = await upgradeToVipApi(selectedPlan, paymentMethod);
-      setSuccessMsg(res.message);
+      const res = await upgradeToVipApi(plan, 'PIX');
       onAuthSuccess(res.user);
-      setTimeout(() => {
-        onClose();
-      }, 1500);
+      setSuccessMsg(res.message);
+      setTimeout(() => onClose(), 1500);
     } catch (err: any) {
-      setError(err?.message || 'Erro ao ativar assinatura VIP.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  const fillDemoAdmin = () => {
+    setEmail('admin@cadernodavovo.com.br');
+    setPassword('AdminVovo@2026');
+  };
+
   return (
-    <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-[#FDFBF7] border-2 border-amber-200 rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden my-8">
-        {/* Topo Decorativo Afetivo */}
-        <div className="bg-gradient-to-r from-amber-800 via-amber-700 to-orange-700 px-6 py-5 text-white flex items-center justify-between">
+    <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-stone-200 animate-fadeIn">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-[#C83E5B] via-rose-600 to-amber-600 p-6 text-white relative">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/20 hover:bg-black/30 flex items-center justify-center text-white"
+            aria-label="Fechar janela"
+          >
+            <i className="fa-solid fa-xmark" />
+          </button>
+
           <div className="flex items-center gap-3">
-            <img
-              src="/images/logo-vovo.jpg"
-              alt="Logo Vovó"
-              className="w-11 h-11 rounded-full object-cover border-2 border-amber-200"
-            />
+            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-2xl">
+              <i className="fa-solid fa-crown text-amber-200" />
+            </div>
             <div>
-              <h3 className="font-serif-vovo text-xl font-bold">
-                {mode === 'vip'
-                  ? 'Clube VIP da Vovó'
-                  : mode === 'login'
-                  ? 'Bem-vindo de volta!'
-                  : 'Criar Conta no Caderno'}
-              </h3>
-              <p className="text-xs text-amber-100 flex items-center gap-1.5">
-                <i className="fa-solid fa-lock text-[10px]" />
-                <span>Protegido com Criptografia Scrypt & AES-256-GCM</span>
-              </p>
+              <h3 className="text-xl font-extrabold">Família Caderno da Vovó</h3>
+              <p className="text-xs text-rose-100">Segurança Criptografada Scrypt + Captcha Próprio</p>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition"
-          >
-            <i className="fa-solid fa-xmark text-lg" />
-          </button>
-        </div>
-
-        {/* Abas */}
-        <div className="grid grid-cols-3 bg-amber-100/60 p-1.5 gap-1 border-b border-amber-200 text-sm font-bold">
-          <button
-            type="button"
-            onClick={() => setMode('login')}
-            className={`py-2 rounded-xl transition ${
-              mode === 'login' ? 'bg-white text-amber-900 shadow-sm' : 'text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            <i className="fa-solid fa-right-to-bracket mr-1.5" />
-            Entrar
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('register')}
-            className={`py-2 rounded-xl transition ${
-              mode === 'register' ? 'bg-white text-amber-900 shadow-sm' : 'text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            <i className="fa-solid fa-user-plus mr-1.5" />
-            Criar Conta
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('vip')}
-            className={`py-2 rounded-xl transition ${
-              mode === 'vip'
-                ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-sm'
-                : 'text-amber-800 hover:text-amber-950'
-            }`}
-          >
-            <i className="fa-solid fa-crown mr-1.5" />
-            Clube VIP
-          </button>
+          <div className="flex gap-2 mt-5 bg-black/15 p-1 rounded-xl">
+            <button
+              onClick={() => { setTab('login'); setError(null); }}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+                tab === 'login' ? 'bg-white text-stone-900 shadow' : 'text-white hover:bg-white/10'
+              }`}
+            >
+              <i className="fa-solid fa-right-to-bracket mr-1.5" /> Entrar
+            </button>
+            <button
+              onClick={() => { setTab('register'); setError(null); }}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+                tab === 'register' ? 'bg-white text-stone-900 shadow' : 'text-white hover:bg-white/10'
+              }`}
+            >
+              <i className="fa-solid fa-user-plus mr-1.5" /> Criar Conta
+            </button>
+            <button
+              onClick={() => { setTab('vip'); setError(null); }}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+                tab === 'vip' ? 'bg-amber-300 text-amber-950 shadow' : 'text-amber-100 hover:bg-white/10'
+              }`}
+            >
+              <i className="fa-solid fa-crown mr-1.5" /> Clube VIP
+            </button>
+          </div>
         </div>
 
         <div className="p-6">
           {error && (
-            <div className="mb-4 p-3.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-sm font-bold flex items-center gap-2">
-              <i className="fa-solid fa-circle-exclamation text-rose-600" />
-              <span>{error}</span>
+            <div className="mb-4 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium flex items-center gap-2">
+              <i className="fa-solid fa-circle-exclamation" /> {error}
             </div>
           )}
 
           {successMsg && (
-            <div className="mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-sm font-bold flex items-center gap-2">
-              <i className="fa-solid fa-circle-check text-emerald-600" />
-              <span>{successMsg}</span>
+            <div className="mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold flex items-center gap-2">
+              <i className="fa-solid fa-circle-check" /> {successMsg}
             </div>
           )}
 
-          {mode === 'login' && (
-            <div className="space-y-4">
-              {/* Botões de Acesso Rápido 1-Clique para Testar Admin e VIP */}
-              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 space-y-2">
-                <p className="text-xs font-extrabold uppercase tracking-wider text-amber-900">
-                  ⚡ Acesso Rápido de Demonstração (1 Clique):
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleQuickDemoLogin('admin@cadernodavovo.com.br', 'vovo123')}
-                    className="px-3 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-bold flex items-center justify-center gap-2 transition"
-                  >
-                    <i className="fa-solid fa-shield-halved" />
-                    <span>Entrar como Admin</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickDemoLogin('vip@cadernodavovo.com.br', 'vip123')}
-                    className="px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition"
-                  >
-                    <i className="fa-solid fa-crown" />
-                    <span>Entrar como Membro VIP</span>
-                  </button>
-                </div>
-              </div>
-
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-stone-700 mb-1">
-                    Seu E-mail:
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="seuemail@exemplo.com.br"
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:border-amber-600 focus:outline-none text-sm font-semibold"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-stone-700 mb-1">
-                    Sua Senha:
-                  </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:border-amber-600 focus:outline-none text-sm font-semibold"
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3 rounded-xl bg-[#15803D] hover:bg-[#166534] text-white font-bold text-base shadow-md transition"
-                >
-                  {loading ? 'Autenticando...' : 'Entrar no Caderno da Vovó'}
-                </button>
-              </form>
-            </div>
-          )}
-
-          {mode === 'register' && (
-            <form onSubmit={handleRegister} className="space-y-4">
+          {tab === 'login' && (
+            <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="block text-sm font-bold text-stone-700 mb-1">
-                  Seu Nome ou Apelido Carinhoso:
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ex: Vovó Ana / João"
-                  className="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-sm font-semibold"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-stone-700 mb-1">
-                  Seu Melhor E-mail:
-                </label>
+                <label className="block text-xs font-bold text-stone-600 uppercase mb-1">Seu E-mail</label>
                 <input
                   type="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="seuemail@exemplo.com.br"
-                  className="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-sm font-semibold"
-                  required
+                  placeholder="exemplo@email.com"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-300 focus:border-[#C83E5B] focus:outline-none text-stone-800"
                 />
               </div>
-
               <div>
-                <label className="block text-sm font-bold text-stone-700 mb-1">
-                  Crie uma Senha Segura:
-                </label>
+                <label className="block text-xs font-bold text-stone-600 uppercase mb-1">Sua Senha</label>
                 <input
                   type="password"
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Mínimo de 4 caracteres"
-                  className="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-sm font-semibold"
-                  required
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-300 focus:border-[#C83E5B] focus:outline-none text-stone-800"
                 />
               </div>
-
-              <label className="flex items-center gap-3 p-3.5 rounded-xl bg-amber-50 border border-amber-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={wantVipOnRegister}
-                  onChange={(e) => setWantVipOnRegister(e.target.checked)}
-                  className="w-5 h-5 accent-amber-600"
-                />
-                <span className="text-sm font-bold text-amber-950">
-                  👑 Já quero ativar o <strong>Clube VIP da Vovó</strong> (Sem anúncios + Receitas Exclusivas!)
-                </span>
-              </label>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-base shadow-md transition"
+                className="w-full py-3.5 rounded-xl bg-[#C83E5B] hover:bg-rose-700 text-white font-bold shadow-md transition-all"
               >
-                {loading ? 'Criando sua conta...' : 'Criar Minha Conta Agora'}
+                {loading ? 'Autenticando...' : 'Entrar no Caderno da Vovó'}
+              </button>
+
+              <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
+                <span>Acesso rápido para testar o Painel Admin:</span>
+                <button
+                  type="button"
+                  onClick={fillDemoAdmin}
+                  className="text-[#C83E5B] hover:underline font-bold"
+                >
+                  Preencher Admin Demo
+                </button>
+              </div>
+            </form>
+          )}
+
+          {tab === 'register' && (
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-stone-600 uppercase mb-1">Como gosta de ser chamado(a)?</label>
+                <input
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Ex: Vovó Maria"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-300 focus:border-[#C83E5B] focus:outline-none text-stone-800"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-stone-600 uppercase mb-1">Seu E-mail</label>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="maria@email.com"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-300 focus:border-[#C83E5B] focus:outline-none text-stone-800"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-stone-600 uppercase mb-1">Crie uma Senha Segura (mín. 6 letras/números)</label>
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-300 focus:border-[#C83E5B] focus:outline-none text-stone-800"
+                />
+              </div>
+
+              {/* Captcha Própria SVG */}
+              {captcha && (
+                <div className="p-3 rounded-2xl bg-[#F8F6F2] border border-stone-200 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-stone-700 flex items-center gap-1.5">
+                      <i className="fa-solid fa-shield-halved text-[#1E7E5A]" /> Captcha Próprio da Vovó:
+                    </span>
+                    <button
+                      type="button"
+                      onClick={loadCaptcha}
+                      className="text-xs text-[#C83E5B] font-bold hover:underline"
+                    >
+                      <i className="fa-solid fa-rotate mr-1" /> Outra conta
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={captcha.svgDataUri}
+                      alt="Captcha de segurança"
+                      className="h-12 rounded-xl border border-stone-300"
+                    />
+                    <input
+                      type="number"
+                      required
+                      value={captchaAnswer}
+                      onChange={(e) => setCaptchaAnswer(e.target.value)}
+                      placeholder="Resultado?"
+                      className="w-28 px-3 py-2.5 rounded-xl border border-stone-300 font-bold text-center text-stone-800 focus:border-[#C83E5B] focus:outline-none"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-xl bg-[#1E7E5A] hover:bg-emerald-800 text-white font-bold shadow-md transition-all"
+              >
+                {loading ? 'Criando conta...' : 'Criar Minha Conta Gratuita'}
               </button>
             </form>
           )}
 
-          {mode === 'vip' && (
-            <div className="space-y-5">
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200">
-                <h4 className="font-serif-vovo text-lg font-bold text-amber-950 mb-2 flex items-center gap-2">
-                  <i className="fa-solid fa-crown text-amber-600" />
-                  <span>Vantagens Exclusivas do Clube VIP:</span>
+          {tab === 'vip' && (
+            <div className="space-y-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                <h4 className="font-extrabold text-amber-950 text-base flex items-center gap-2 mb-2">
+                  <i className="fa-solid fa-sparkles text-amber-600" /> Benefícios Exclusivos do Clube VIP
                 </h4>
-                <ul className="space-y-2 text-sm font-semibold text-stone-700">
+                <ul className="space-y-2 text-sm text-stone-700">
                   <li className="flex items-center gap-2">
-                    <i className="fa-solid fa-check text-emerald-600" />
-                    <span>Acesso liberado a todas as <strong>Receitas Secretas & Gourmet da Vovó</strong></span>
+                    <i className="fa-solid fa-check text-[#1E7E5A]" /> Zero anúncios (navegação 100% limpa sem Google AdSense)
                   </li>
                   <li className="flex items-center gap-2">
-                    <i className="fa-solid fa-check text-emerald-600" />
-                    <span><strong>Navegação 100% Sem Anúncios</strong> (Google AdSense desativado para você)</span>
+                    <i className="fa-solid fa-check text-[#1E7E5A]" /> Acesso liberado às Receitas Secretas de Família VIP
                   </li>
                   <li className="flex items-center gap-2">
-                    <i className="fa-solid fa-check text-emerald-600" />
-                    <span><strong>Segredinhos Culinários da Vovó</strong> em todas as receitas</span>
+                    <i className="fa-solid fa-check text-[#1E7E5A]" /> Caderno em PDF para imprimir e presentear os netos
                   </li>
                   <li className="flex items-center gap-2">
-                    <i className="fa-solid fa-check text-emerald-600" />
-                    <span>Impressão de Apostilas / Livrinho de Receitas em PDF</span>
+                    <i className="fa-solid fa-check text-[#1E7E5A]" /> Voz neural prioritária no Modo Cozinha Guiado
                   </li>
                 </ul>
               </div>
 
-              {/* Escolha do Plano */}
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
-                  onClick={() => setSelectedPlan('MENSAL')}
-                  className={`p-4 rounded-2xl border-2 text-left transition ${
-                    selectedPlan === 'MENSAL'
-                      ? 'border-amber-600 bg-amber-50/70'
-                      : 'border-stone-200 bg-white'
+                  onClick={() => setPlan('MENSAL')}
+                  className={`p-4 rounded-2xl border-2 text-left transition-all ${
+                    plan === 'MENSAL'
+                      ? 'border-[#C83E5B] bg-rose-50/60'
+                      : 'border-stone-200 hover:border-stone-300'
                   }`}
                 >
-                  <span className="text-xs font-bold uppercase text-stone-500">Plano Mensal</span>
+                  <span className="text-xs font-bold text-stone-500 uppercase">Plano Mensal</span>
                   <p className="text-2xl font-extrabold text-stone-900 mt-1">
-                    R$ {monthlyPrice.toFixed(2).replace('.', ',')}
+                    R$ {vipMonthlyPrice.toFixed(2).replace('.', ',')}
                     <span className="text-xs font-normal text-stone-500">/mês</span>
                   </p>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setSelectedPlan('ANUAL')}
-                  className={`relative p-4 rounded-2xl border-2 text-left transition ${
-                    selectedPlan === 'ANUAL'
-                      ? 'border-amber-600 bg-amber-50/70'
-                      : 'border-stone-200 bg-white'
+                  onClick={() => setPlan('ANUAL')}
+                  className={`p-4 rounded-2xl border-2 text-left transition-all relative ${
+                    plan === 'ANUAL'
+                      ? 'border-[#C83E5B] bg-rose-50/60'
+                      : 'border-stone-200 hover:border-stone-300'
                   }`}
                 >
-                  <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-extrabold">
-                    MAIS ESCOLHIDO (-33%)
+                  <span className="absolute -top-2.5 right-3 bg-[#1E7E5A] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    2 MESES GRÁTIS
                   </span>
-                  <span className="text-xs font-bold uppercase text-stone-500">Plano Anual</span>
+                  <span className="text-xs font-bold text-stone-500 uppercase">Plano Anual</span>
                   <p className="text-2xl font-extrabold text-stone-900 mt-1">
-                    R$ {annualPrice.toFixed(2).replace('.', ',')}
+                    R$ {(vipMonthlyPrice * 10).toFixed(2).replace('.', ',')}
                     <span className="text-xs font-normal text-stone-500">/ano</span>
                   </p>
                 </button>
               </div>
 
-              {/* Método de Pagamento */}
-              <div className="p-4 rounded-2xl bg-stone-100 border border-stone-200 space-y-3">
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('PIX')}
-                    className={`flex-1 py-2 rounded-xl text-xs font-extrabold border transition ${
-                      paymentMethod === 'PIX'
-                        ? 'bg-emerald-700 text-white border-emerald-800'
-                        : 'bg-white text-stone-700 border-stone-300'
-                    }`}
-                  >
-                    <i className="fa-brands fa-pix mr-1.5" />
-                    PIX Instantâneo
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('CARTAO')}
-                    className={`flex-1 py-2 rounded-xl text-xs font-extrabold border transition ${
-                      paymentMethod === 'CARTAO'
-                        ? 'bg-amber-700 text-white border-amber-800'
-                        : 'bg-white text-stone-700 border-stone-300'
-                    }`}
-                  >
-                    <i className="fa-solid fa-credit-card mr-1.5" />
-                    Cartão de Crédito
-                  </button>
-                </div>
-
-                {paymentMethod === 'PIX' && (
-                  <div className="text-xs bg-white p-3 rounded-xl border border-stone-200 flex items-center justify-between">
-                    <div>
-                      <span className="text-stone-500 block">Chave PIX Oficial (AES-256):</span>
-                      <strong className="text-stone-900 font-mono text-sm">{pixKey}</strong>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => navigator.clipboard?.writeText(pixKey)}
-                      className="px-3 py-1.5 rounded-lg bg-amber-100 text-amber-900 font-bold hover:bg-amber-200"
-                    >
-                      Copiar PIX
-                    </button>
-                  </div>
-                )}
-              </div>
-
               <button
-                type="button"
-                disabled={loading}
                 onClick={handleUpgradeVip}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-extrabold text-base shadow-lg flex items-center justify-center gap-2 transition"
+                disabled={loading || Boolean(user?.isVip)}
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-[#C83E5B] hover:from-amber-600 hover:to-rose-700 text-white font-extrabold shadow-lg transition-all flex items-center justify-center gap-2"
               >
                 <i className="fa-solid fa-crown" />
-                <span>
-                  {user?.isVip
-                    ? 'Você já é Membro VIP Ativo! ✨'
-                    : loading
-                    ? 'Ativando Benefícios VIP...'
-                    : 'Ativar Minha Conta VIP Agora'}
-                </span>
+                {user?.isVip
+                  ? 'Você já é Membro VIP Ativo!'
+                  : loading
+                  ? 'Ativando Clube VIP...'
+                  : 'Ativar Assinatura VIP Agora'}
               </button>
             </div>
           )}

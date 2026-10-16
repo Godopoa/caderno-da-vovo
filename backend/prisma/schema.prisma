@@ -12,11 +12,14 @@ model User {
   name          String
   email         String    @unique
   passwordHash  String
+  bio           String?   @default("Apaixonado(a) por receitas caseiras de família!")
+  specialty     String?   @default("Bolos Caseiros & Café da Tarde")
   role          String    @default("USER") // "USER", "VIP", "ADMIN"
   isVip         Boolean   @default(false)
   vipPlan       String?   // "MENSAL", "ANUAL"
   vipExpiresAt  DateTime?
   avatarUrl     String?
+  comments      Comment[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -33,13 +36,15 @@ model Recipe {
   prepTimeMinutes Int?         @default(35)
   servings        String?      @default("6 porções")
   difficulty      String       @default("Fácil")
+  caloriesPerServ Int?         @default(240)
   isFavorite      Boolean      @default(false)
-  isVipOnly       Boolean      @default(false) // Receita exclusiva para assinantes VIP
+  isVipOnly       Boolean      @default(false)
   viewsCount      Int          @default(120)
   likesCount      Int          @default(45)
   rating          Float        @default(4.9)
   ingredients     Ingredient[]
   steps           Step[]
+  comments        Comment[]
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 }
@@ -63,17 +68,49 @@ model Step {
   timerSeconds     Int?
 }
 
+model Comment {
+  id          String   @id @default(uuid())
+  recipeId    String
+  recipe      Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  authorName  String
+  authorAvatar String?
+  authorIsVip Boolean  @default(false)
+  rating      Int      @default(5)
+  content     String
+  madeIt      Boolean  @default(true) // Selo "Eu fiz e deu super certo!"
+  likesCount  Int      @default(1)
+  createdAt   DateTime @default(now())
+}
+
+model NewsPost {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  summary     String
+  content     String
+  category    String   @default("Dicas da Vovó") // "Dicas da Vovó", "Saúde & Bem-Estar", "Novidades", "Histórias de Família"
+  imageUrl    String?
+  authorName  String   @default("Vovó Helena")
+  readMinutes Int      @default(3)
+  likesCount  Int      @default(28)
+  createdAt   DateTime @default(now())
+}
+
 model SiteConfig {
   id                    String   @id @default("default")
   siteName              String   @default("Caderno da Vovó")
+  seoDescription        String   @default("O portal de receitas afetivas da família brasileira: passo a passo falado em voz alta, relógio integrado, Clube VIP e parceria TudoGostoso.")
+  seoKeywords           String   @default("receitas da vovó, receitas fáceis, bolo caseiro, tudogostoso, culinária afetiva, receitas passo a passo")
   adsenseEnabled        Boolean  @default(true)
-  adsenseClientId       String   @default("ca-pub-0000000000000000")
-  adsenseHeaderSlot     String   @default("1000000001")
-  adsenseInFeedSlot     String   @default("1000000002")
-  adsenseRecipeSlot     String   @default("1000000003")
+  adsenseClientId       String   @default("ca-pub-7788990011223344")
+  adsenseHeaderSlot     String   @default("1010101010")
+  adsenseInFeedSlot     String   @default("2020202020")
+  adsenseRecipeSlot     String   @default("3030303030")
   vipMonthlyPrice       Float    @default(14.90)
   vipAnnualPrice        Float    @default(119.90)
-  encryptedPixKey       String?  // Criptografado com AES-256-GCM no banco
+  encryptedPixKey       String?
   updatedAt             DateTime @updatedAt
 }
 
