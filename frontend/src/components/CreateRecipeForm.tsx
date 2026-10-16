@@ -61,28 +61,28 @@ export const CreateRecipeForm: React.FC<CreateRecipeFormProps> = ({
   return (
     <div className="max-w-4xl mx-auto px-4 py-4">
       <div
-        className={`rounded-3xl border p-6 sm:p-10 shadow-sm ${
+        className={`rounded-3xl border p-6 sm:p-10 shadow-sm overflow-hidden ${
           highContrastDark
             ? 'bg-stone-900 border-stone-800 text-white'
             : 'bg-white border-stone-200/90 text-stone-800'
         }`}
       >
         <div className="flex items-center gap-4 pb-6 mb-6 border-b border-stone-100 dark:border-stone-800">
-          <div className="w-12 h-12 rounded-2xl bg-rose-50 text-[#C83E5B] flex items-center justify-center text-2xl shrink-0 shadow-2xs">
+          <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-[#C83E5B] dark:text-rose-300 flex items-center justify-center text-2xl shrink-0 shadow-2xs">
             <i className="fa-solid fa-feather-pointed" />
           </div>
-          <div>
+          <div className="min-w-0 flex-1">
             <h2 className="font-serif-vovo text-2xl sm:text-3xl font-extrabold">
               Anotar Nova Receita no Caderno
             </h2>
-            <p className="text-sm text-stone-500 mt-0.5">
+            <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
               Escreva uma receita especial da sua família. O Estúdio Modo Cozinha com leitura por voz será gerado automaticamente.
             </p>
           </div>
         </div>
 
         {error && (
-          <div className="p-4 mb-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 font-bold text-sm flex items-center gap-2.5">
+          <div className="p-4 mb-6 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 font-bold text-sm flex items-center gap-2.5">
             <i className="fa-solid fa-circle-exclamation text-[#C83E5B]" />
             <span>{error}</span>
           </div>
@@ -90,7 +90,7 @@ export const CreateRecipeForm: React.FC<CreateRecipeFormProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+            <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
               1. Nome da Receita
             </label>
             <input
@@ -98,20 +98,20 @@ export const CreateRecipeForm: React.FC<CreateRecipeFormProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Ex: Bolo de Milho Cremoso da Tia Maria"
-              className="w-full px-4 py-3.5 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-base font-bold focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
+              className="w-full min-w-0 px-4 py-3.5 rounded-2xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-base font-bold focus:bg-white dark:focus:bg-stone-900 focus:border-[#C83E5B] focus:outline-none transition"
               required
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+              <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
                 Categoria
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-3.5 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm font-bold focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
+                className="w-full min-w-0 px-4 py-3.5 rounded-2xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-sm font-bold focus:bg-white dark:focus:bg-stone-900 focus:border-[#C83E5B] focus:outline-none transition"
               >
                 <option value="Bolos e Tortas">Bolos e Tortas</option>
                 <option value="Sopas e Caldos">Sopas e Caldos</option>
@@ -122,19 +122,19 @@ export const CreateRecipeForm: React.FC<CreateRecipeFormProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+              <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
                 Tempo de Preparo (minutos)
               </label>
               <input
                 type="number"
                 value={prepTimeMinutes}
                 onChange={(e) => setPrepTimeMinutes(Number(e.target.value))}
-                className="w-full px-4 py-3.5 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm font-bold focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
+                className="w-full min-w-0 px-4 py-3.5 rounded-2xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-sm font-bold focus:bg-white dark:focus:bg-stone-900 focus:border-[#C83E5B] focus:outline-none transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+              <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
                 Rendimento
               </label>
               <input
@@ -142,13 +142,13 @@ export const CreateRecipeForm: React.FC<CreateRecipeFormProps> = ({
                 value={servings}
                 onChange={(e) => setServings(e.target.value)}
                 placeholder="Ex: 8 porções"
-                className="w-full px-4 py-3.5 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm font-bold focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
+                className="w-full min-w-0 px-4 py-3.5 rounded-2xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-sm font-bold focus:bg-white dark:focus:bg-stone-900 focus:border-[#C83E5B] focus:outline-none transition"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+            <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
               2. Lista de Ingredientes (um por linha)
             </label>
             <textarea
@@ -156,13 +156,13 @@ export const CreateRecipeForm: React.FC<CreateRecipeFormProps> = ({
               value={ingredientsText}
               onChange={(e) => setIngredientsText(e.target.value)}
               placeholder={'3 ovos inteiros\n2 xícaras de açúcar\n1 lata de milho verde\n1 colher de sopa de fermento'}
-              className="w-full p-4 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm font-semibold focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
+              className="w-full min-w-0 p-4 rounded-2xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-sm font-semibold focus:bg-white dark:focus:bg-stone-900 focus:border-[#C83E5B] focus:outline-none transition"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+            <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
               3. Modo de Preparo Passo a Passo (um passo por linha)
             </label>
             <textarea
@@ -172,13 +172,13 @@ export const CreateRecipeForm: React.FC<CreateRecipeFormProps> = ({
               placeholder={
                 'Bata todos os ingredientes no liquidificador por 3 minutos.\nDespeje em uma forma untada e enfarinhada.\nAsse em forno médio por 40 minutos até dourar.'
               }
-              className="w-full p-4 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm font-semibold focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
+              className="w-full min-w-0 p-4 rounded-2xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-sm font-semibold focus:bg-white dark:focus:bg-stone-900 focus:border-[#C83E5B] focus:outline-none transition"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+            <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
               Foto da Receita (URL opcional)
             </label>
             <input
@@ -186,7 +186,7 @@ export const CreateRecipeForm: React.FC<CreateRecipeFormProps> = ({
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               placeholder="https://..."
-              className="w-full px-4 py-3 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
+              className="w-full min-w-0 px-4 py-3 rounded-2xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-sm focus:bg-white dark:focus:bg-stone-900 focus:border-[#C83E5B] focus:outline-none transition"
             />
           </div>
 

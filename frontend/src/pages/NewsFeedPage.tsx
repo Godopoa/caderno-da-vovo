@@ -95,9 +95,9 @@ export const NewsFeedPage: React.FC<NewsFeedPageProps> = ({ user, highContrastDa
       {showPublishForm && user?.role === 'ADMIN' && (
         <form
           onSubmit={handlePublish}
-          className="rounded-3xl border border-stone-200 bg-white p-6 shadow-md space-y-4 text-stone-900"
+          className="rounded-3xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 p-6 shadow-md space-y-4 text-stone-900 dark:text-stone-100 overflow-hidden"
         >
-          <h3 className="font-serif-vovo text-xl font-bold text-[#1E1B18] flex items-center gap-2">
+          <h3 className="font-serif-vovo text-xl font-bold text-[#1E1B18] dark:text-white flex items-center gap-2">
             <i className="fa-solid fa-pen-nib text-[#C83E5B]" />
             <span>Publicar Nova Dica ou Notícia no Feed</span>
           </h3>
@@ -107,13 +107,13 @@ export const NewsFeedPage: React.FC<NewsFeedPageProps> = ({ user, highContrastDa
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Título da matéria ou dica..."
-              className="sm:col-span-2 px-4 py-2.5 rounded-xl border border-stone-300 text-sm font-bold"
+              className="sm:col-span-2 min-w-0 px-4 py-2.5 rounded-xl border border-stone-300 dark:border-stone-700 bg-[#F8F6F2] dark:bg-stone-800 text-sm font-bold"
               required
             />
             <select
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
-              className="px-4 py-2.5 rounded-xl border border-stone-300 text-sm font-bold"
+              className="min-w-0 px-4 py-2.5 rounded-xl border border-stone-300 dark:border-stone-700 bg-[#F8F6F2] dark:bg-stone-800 text-sm font-bold"
             >
               <option value="Dicas da Vovó">Dicas da Vovó</option>
               <option value="Saúde & Bem-Estar">Saúde & Bem-Estar</option>
@@ -126,14 +126,14 @@ export const NewsFeedPage: React.FC<NewsFeedPageProps> = ({ user, highContrastDa
             value={newSummary}
             onChange={(e) => setNewSummary(e.target.value)}
             placeholder="Resumo curto que aparece no card..."
-            className="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-sm"
+            className="w-full min-w-0 px-4 py-2.5 rounded-xl border border-stone-300 dark:border-stone-700 bg-[#F8F6F2] dark:bg-stone-800 text-sm"
           />
           <textarea
             rows={4}
             value={newContent}
             onChange={(e) => setNewContent(e.target.value)}
             placeholder="Texto completo da matéria..."
-            className="w-full p-4 rounded-xl border border-stone-300 text-sm"
+            className="w-full min-w-0 p-4 rounded-xl border border-stone-300 dark:border-stone-700 bg-[#F8F6F2] dark:bg-stone-800 text-sm"
             required
           />
           <button
@@ -156,7 +156,7 @@ export const NewsFeedPage: React.FC<NewsFeedPageProps> = ({ user, highContrastDa
               className={`px-4 py-2 rounded-xl font-bold text-xs sm:text-sm border transition ${
                 selectedCategory === cat
                   ? 'bg-[#C83E5B] text-white border-[#C83E5B] shadow-sm'
-                  : 'bg-white text-stone-700 border-stone-200 hover:bg-rose-50'
+                  : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-200 border-stone-200 dark:border-stone-800 hover:bg-rose-50 dark:hover:bg-stone-800'
               }`}
             >
               {cat}
@@ -179,7 +179,7 @@ export const NewsFeedPage: React.FC<NewsFeedPageProps> = ({ user, highContrastDa
               }`}
             >
               <div className="grid grid-cols-1 md:grid-cols-12">
-                <div className="md:col-span-4 h-56 md:h-auto bg-stone-100">
+                <div className="md:col-span-4 h-56 md:h-auto bg-stone-100 dark:bg-stone-800">
                   <img
                     src={
                       post.imageUrl ||
@@ -190,10 +190,10 @@ export const NewsFeedPage: React.FC<NewsFeedPageProps> = ({ user, highContrastDa
                   />
                 </div>
 
-                <div className="md:col-span-8 p-6 flex flex-col justify-between">
+                <div className="md:col-span-8 p-6 flex flex-col justify-between min-w-0">
                   <div>
                     <div className="flex flex-wrap items-center gap-3 text-xs font-bold mb-2">
-                      <span className="px-3 py-1 rounded-full bg-emerald-50 text-[#1E7E5A] border border-emerald-200">
+                      <span className="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-[#1E7E5A] dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                         {post.category}
                       </span>
                       <span className="text-stone-400">
@@ -212,13 +212,13 @@ export const NewsFeedPage: React.FC<NewsFeedPageProps> = ({ user, highContrastDa
                   </div>
 
                   <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-stone-100 dark:border-stone-800">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <button
                         type="button"
                         onClick={() =>
                           setExpandedPostId(isExpanded ? null : post.id)
                         }
-                        className="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm bg-[#1E1B18] hover:bg-stone-800 text-white transition"
+                        className="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm bg-[#1E1B18] dark:bg-stone-800 hover:bg-stone-800 dark:hover:bg-stone-700 text-white transition"
                       >
                         {isExpanded ? 'Recolher Texto' : 'Ler Matéria Completa'}
                       </button>
@@ -229,7 +229,7 @@ export const NewsFeedPage: React.FC<NewsFeedPageProps> = ({ user, highContrastDa
                           if (isSpeaking) stopSpeaking();
                           else speakText(`${post.title}. ${post.content}`);
                         }}
-                        className="px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-rose-50 hover:bg-rose-100 text-[#C83E5B] border border-rose-200 flex items-center gap-1.5 transition"
+                        className="px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 text-[#C83E5B] dark:text-rose-300 border border-rose-200 dark:border-rose-800 flex items-center gap-1.5 transition"
                       >
                         <i className="fa-solid fa-volume-high" />
                         <span>Ouvir Dica</span>
@@ -239,7 +239,7 @@ export const NewsFeedPage: React.FC<NewsFeedPageProps> = ({ user, highContrastDa
                     <button
                       type="button"
                       onClick={() => handleLike(post.id)}
-                      className="px-3.5 py-1.5 rounded-xl font-bold text-xs bg-stone-100 hover:bg-rose-50 text-stone-700 hover:text-[#C83E5B] flex items-center gap-1.5 transition"
+                      className="px-3.5 py-1.5 rounded-xl font-bold text-xs bg-stone-100 dark:bg-stone-800 hover:bg-rose-50 text-stone-700 dark:text-stone-200 hover:text-[#C83E5B] flex items-center gap-1.5 transition"
                     >
                       <i className="fa-solid fa-heart text-[#C83E5B]" />
                       <span>Amei ({post.likesCount})</span>

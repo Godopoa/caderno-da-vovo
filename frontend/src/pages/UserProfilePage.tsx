@@ -119,7 +119,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
         <div className="lg:col-span-5">
           <form
             onSubmit={handleSaveProfile}
-            className={`rounded-3xl border p-6 shadow-sm space-y-4 ${
+            className={`rounded-3xl border p-6 shadow-sm space-y-4 overflow-hidden ${
               highContrastDark
                 ? 'bg-stone-900 border-stone-800 text-white'
                 : 'bg-white border-stone-200 text-[#1E1B18]'
@@ -131,27 +131,27 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
             </h2>
 
             {statusMsg && (
-              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-bold flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 text-xs font-bold flex items-center gap-2">
                 <i className="fa-solid fa-circle-check text-emerald-600" />
                 <span>{statusMsg}</span>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-bold uppercase text-stone-500 mb-1">
+              <label className="block text-xs font-bold uppercase text-stone-500 dark:text-stone-400 mb-1">
                 Seu Nome no Caderno:
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-stone-900 text-sm font-bold"
+                className="w-full min-w-0 px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 text-sm font-bold"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase text-stone-500 mb-1">
+              <label className="block text-xs font-bold uppercase text-stone-500 dark:text-stone-400 mb-1">
                 Qual é a sua especialidade na cozinha?
               </label>
               <input
@@ -159,24 +159,24 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
                 value={specialty}
                 onChange={(e) => setSpecialty(e.target.value)}
                 placeholder="Ex: Bolos de Aniversário, Pães Caseiros, Massas..."
-                className="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-stone-900 text-sm font-semibold"
+                className="w-full min-w-0 px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 text-sm font-semibold"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase text-stone-500 mb-1">
+              <label className="block text-xs font-bold uppercase text-stone-500 dark:text-stone-400 mb-1">
                 Sobre Você (Bio Culinária):
               </label>
               <textarea
                 rows={3}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                className="w-full p-3 rounded-xl border border-stone-300 text-stone-900 text-sm"
+                className="w-full min-w-0 p-3 rounded-xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase text-stone-500 mb-1">
+              <label className="block text-xs font-bold uppercase text-stone-500 dark:text-stone-400 mb-1">
                 Foto de Perfil (URL opcional):
               </label>
               <input
@@ -184,12 +184,12 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
                 value={avatarUrl}
                 onChange={(e) => setAvatarUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full px-4 py-2 rounded-xl border border-stone-300 text-stone-900 text-xs"
+                className="w-full min-w-0 px-4 py-2 rounded-xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 text-xs"
               />
             </div>
 
             <div className="pt-2 border-t border-stone-100 dark:border-stone-800">
-              <label className="block text-xs font-bold uppercase text-stone-500 mb-1">
+              <label className="block text-xs font-bold uppercase text-stone-500 dark:text-stone-400 mb-1">
                 Trocar Senha (deixe em branco para manter a atual):
               </label>
               <input
@@ -197,7 +197,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Nova senha protegida com Scrypt"
-                className="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-stone-900 text-sm"
+                className="w-full min-w-0 px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 text-sm"
               />
             </div>
 
@@ -221,7 +221,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
           </div>
 
           {favoriteRecipes.length === 0 ? (
-            <div className="p-8 rounded-3xl border border-stone-200 bg-white text-center text-stone-600">
+            <div className="p-8 rounded-3xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-center text-stone-600 dark:text-stone-300">
               <i className="fa-regular fa-heart text-3xl text-[#C83E5B] mb-2 block" />
               <p className="font-bold">Você ainda não favoritou nenhuma receita.</p>
               <p className="text-xs mt-1">

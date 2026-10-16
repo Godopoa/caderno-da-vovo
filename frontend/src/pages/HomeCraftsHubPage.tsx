@@ -262,11 +262,11 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
       {subTab === 'stains' && (
         <div className="space-y-6">
           {/* Alerta Importante de Segurança Doméstica */}
-          <div className="p-5 rounded-3xl bg-amber-50 border-2 border-amber-300 text-amber-950 flex items-start gap-4">
+          <div className="p-5 rounded-3xl bg-amber-50 dark:bg-amber-950/50 border-2 border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-100 flex items-start gap-4">
             <div className="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl shrink-0">
               <i className="fa-solid fa-shield-heart" />
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <h3 className="font-serif-vovo text-lg font-extrabold">
                 Regra de Ouro de Segurança da Vovó na Limpeza:
               </h3>
@@ -284,7 +284,7 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
               value={stainSearch}
               onChange={(e) => setStainSearch(e.target.value)}
               placeholder="Qual mancha ou limpeza você quer resolver? (ex: vinho, café, panela, prata)..."
-              className="w-full px-5 py-3.5 rounded-2xl bg-white border border-stone-300 text-stone-800 text-sm font-bold shadow-2xs focus:border-[#C83E5B] focus:outline-none"
+              className="w-full min-w-0 px-5 py-3.5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-sm font-bold shadow-2xs focus:border-[#C83E5B] focus:outline-none"
             />
           </div>
 
@@ -292,17 +292,17 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
             {filteredStains.map((item, idx) => (
               <div
                 key={idx}
-                className={`rounded-3xl border p-6 shadow-sm space-y-3 flex flex-col justify-between ${
+                className={`rounded-3xl border p-6 shadow-sm space-y-3 flex flex-col justify-between overflow-hidden ${
                   highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
                 }`}
               >
                 <div className="space-y-2.5">
-                  <span className="px-3 py-1 rounded-full bg-rose-50 text-[#C83E5B] border border-rose-200 text-xs font-extrabold">
+                  <span className="inline-block px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/60 text-[#C83E5B] dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-xs font-extrabold">
                     {item.category}
                   </span>
                   <h3 className="font-serif-vovo text-xl font-bold">{item.title}</h3>
                   <div className="p-3 rounded-2xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-200/70 dark:border-stone-800 text-xs">
-                    <strong className="text-[#1E7E5A] block mb-0.5">Misturinha Caseira:</strong>
+                    <strong className="text-[#1E7E5A] dark:text-emerald-400 block mb-0.5">Misturinha Caseira:</strong>
                     <span>{item.mixture}</span>
                   </div>
                   <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
@@ -316,7 +316,7 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
                     if (isSpeaking) stopSpeaking();
                     else speakText(`${item.title}. Você vai usar: ${item.mixture}. Passo a passo: ${item.instructions}`);
                   }}
-                  className="self-start px-4 py-2 rounded-xl bg-stone-100 hover:bg-[#C83E5B] hover:text-white text-stone-700 font-extrabold text-xs flex items-center gap-1.5 transition"
+                  className="self-start px-4 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-[#C83E5B] hover:text-white text-stone-700 dark:text-stone-200 font-extrabold text-xs flex items-center gap-1.5 transition"
                 >
                   <i className="fa-solid fa-volume-high" />
                   <span>Ouvir Explicação</span>
@@ -331,17 +331,17 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
       {subTab === 'garden' && (
         <div className="space-y-8">
           <div
-            className={`rounded-3xl border p-6 sm:p-8 shadow-sm space-y-6 ${
+            className={`rounded-3xl border p-6 sm:p-8 shadow-sm space-y-6 overflow-hidden ${
               highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
             }`}
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-100 dark:border-stone-800 pb-4">
-              <div>
+              <div className="min-w-0 flex-1">
                 <h2 className="font-serif-vovo text-2xl font-bold flex items-center gap-2">
-                  <i className="fa-solid fa-apple-whole text-[#C83E5B]" />
+                  <i className="fa-solid fa-apple-whole text-[#C83E5B] shrink-0" />
                   <span>Calendário da Feira: Safra de {currentHarvest.monthName}</span>
                 </h2>
-                <p className="text-xs sm:text-sm text-stone-500">
+                <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
                   Comprar alimentos da época garante frutas mais doces, verduras fresquinhas e até 40% de economia na feira!
                 </p>
               </div>
@@ -349,7 +349,7 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                className="px-4 py-2.5 rounded-xl bg-[#F8F6F2] border border-stone-300 text-stone-800 font-extrabold text-sm"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-extrabold text-sm shrink-0"
               >
                 {Object.entries(SEASONAL_HARVEST).map(([mIndex, data]) => (
                   <option key={mIndex} value={Number(mIndex)}>
@@ -360,8 +360,8 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-5 rounded-2xl bg-rose-50/60 border border-rose-200 space-y-3 text-stone-900">
-                <h3 className="font-extrabold text-sm uppercase tracking-wider text-[#C83E5B] flex items-center gap-2">
+              <div className="p-5 rounded-2xl bg-rose-50/60 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 space-y-3 text-stone-900 dark:text-stone-100">
+                <h3 className="font-extrabold text-sm uppercase tracking-wider text-[#C83E5B] dark:text-rose-300 flex items-center gap-2">
                   <i className="fa-solid fa-lemon" />
                   <span>Frutas da Época</span>
                 </h3>
@@ -369,7 +369,7 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
                   {currentHarvest.fruits.map((f) => (
                     <span
                       key={f}
-                      className="px-3 py-1 rounded-xl bg-white border border-rose-200 text-xs font-bold shadow-2xs"
+                      className="px-3 py-1 rounded-xl bg-white dark:bg-stone-900 border border-rose-200 dark:border-rose-800 text-stone-800 dark:text-stone-100 text-xs font-bold shadow-2xs"
                     >
                       {f}
                     </span>
@@ -377,8 +377,8 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-3 text-stone-900">
-                <h3 className="font-extrabold text-sm uppercase tracking-wider text-amber-800 flex items-center gap-2">
+              <div className="p-5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 space-y-3 text-stone-900 dark:text-stone-100">
+                <h3 className="font-extrabold text-sm uppercase tracking-wider text-amber-800 dark:text-amber-300 flex items-center gap-2">
                   <i className="fa-solid fa-carrot" />
                   <span>Legumes Mais Baratos</span>
                 </h3>
@@ -386,7 +386,7 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
                   {currentHarvest.veggies.map((v) => (
                     <span
                       key={v}
-                      className="px-3 py-1 rounded-xl bg-white border border-amber-200 text-xs font-bold shadow-2xs"
+                      className="px-3 py-1 rounded-xl bg-white dark:bg-stone-900 border border-amber-200 dark:border-amber-800 text-stone-800 dark:text-stone-100 text-xs font-bold shadow-2xs"
                     >
                       {v}
                     </span>
@@ -394,8 +394,8 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-3 text-stone-900">
-                <h3 className="font-extrabold text-sm uppercase tracking-wider text-[#1E7E5A] flex items-center gap-2">
+              <div className="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 space-y-3 text-stone-900 dark:text-stone-100">
+                <h3 className="font-extrabold text-sm uppercase tracking-wider text-[#1E7E5A] dark:text-emerald-400 flex items-center gap-2">
                   <i className="fa-solid fa-seedling" />
                   <span>Verduras & Ervas Frescas</span>
                 </h3>
@@ -403,7 +403,7 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
                   {currentHarvest.greens.map((g) => (
                     <span
                       key={g}
-                      className="px-3 py-1 rounded-xl bg-white border border-emerald-200 text-xs font-bold shadow-2xs"
+                      className="px-3 py-1 rounded-xl bg-white dark:bg-stone-900 border border-emerald-200 dark:border-emerald-800 text-stone-800 dark:text-stone-100 text-xs font-bold shadow-2xs"
                     >
                       {g}
                     </span>
@@ -423,11 +423,11 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
               {HERB_POTS_GUIDE.map((herb) => (
                 <div
                   key={herb.name}
-                  className={`rounded-3xl border p-6 shadow-sm space-y-3 ${
+                  className={`rounded-3xl border p-6 shadow-sm space-y-3 overflow-hidden ${
                     highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
                   }`}
                 >
-                  <h3 className="font-serif-vovo text-xl font-bold text-[#1E7E5A] flex items-center gap-2">
+                  <h3 className="font-serif-vovo text-xl font-bold text-[#1E7E5A] dark:text-emerald-400 flex items-center gap-2">
                     <i className="fa-solid fa-plant-wilt" />
                     <span>{herb.name}</span>
                   </h3>
@@ -441,7 +441,7 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
                       <strong>Regas:</strong> {herb.water}
                     </p>
                     <p className="p-3 rounded-xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-200/70 dark:border-stone-800 mt-2">
-                      <strong className="text-[#C83E5B]">Segredo da Vovó:</strong> {herb.secret}
+                      <strong className="text-[#C83E5B] dark:text-rose-400">Segredo da Vovó:</strong> {herb.secret}
                     </p>
                   </div>
                 </div>
@@ -458,13 +458,13 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
             {CRAFTS_TUTORIALS.map((craft, idx) => (
               <div
                 key={idx}
-                className={`rounded-3xl border p-6 sm:p-8 shadow-sm space-y-4 ${
+                className={`rounded-3xl border p-6 sm:p-8 shadow-sm space-y-4 overflow-hidden ${
                   highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
                 }`}
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <span className="px-3 py-1 rounded-full bg-rose-50 text-[#C83E5B] border border-rose-200 text-xs font-extrabold">
+                  <div className="min-w-0 flex-1">
+                    <span className="inline-block px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/60 text-[#C83E5B] dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-xs font-extrabold">
                       {craft.category}
                     </span>
                     <h2 className="font-serif-vovo text-2xl font-bold mt-2">{craft.title}</h2>
@@ -479,7 +479,7 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
                           `${craft.title}. Materiais necessários: ${craft.materials}. Passo a passo: ${craft.steps.join(' ')}`
                         );
                     }}
-                    className="px-4 py-2.5 rounded-xl bg-[#C83E5B] hover:bg-rose-700 text-white font-extrabold text-xs flex items-center gap-2 shadow-sm transition"
+                    className="px-4 py-2.5 rounded-xl bg-[#C83E5B] hover:bg-rose-700 text-white font-extrabold text-xs flex items-center gap-2 shadow-sm transition shrink-0"
                   >
                     <i className="fa-solid fa-volume-high" />
                     <span>Ouvir Passo a Passo do Crochê</span>
@@ -487,7 +487,7 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
                 </div>
 
                 <div className="p-4 rounded-2xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 text-xs sm:text-sm">
-                  <strong className="text-[#C83E5B]">Materiais necessários:</strong> {craft.materials}
+                  <strong className="text-[#C83E5B] dark:text-rose-400">Materiais necessários:</strong> {craft.materials}
                 </div>
 
                 <ul className="space-y-2 text-xs sm:text-sm font-medium leading-relaxed">
@@ -501,8 +501,8 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
                   ))}
                 </ul>
 
-                <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs font-bold flex items-center gap-2">
-                  <i className="fa-solid fa-sack-dollar text-[#1E7E5A] text-base" />
+                <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-950 dark:text-emerald-100 text-xs font-bold flex items-center gap-2">
+                  <i className="fa-solid fa-sack-dollar text-[#1E7E5A] dark:text-emerald-400 text-base shrink-0" />
                   <span>{craft.sellTip}</span>
                 </div>
               </div>

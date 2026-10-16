@@ -313,7 +313,7 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
       {subTab === 'planner' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div
-            className={`lg:col-span-7 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-5 ${
+            className={`lg:col-span-7 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-5 overflow-hidden ${
               highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
             }`}
           >
@@ -323,14 +323,14 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
                   <i className="fa-solid fa-calendar-days text-[#C83E5B]" />
                   <span>Cardápio da Semana (Segunda a Domingo)</span>
                 </h2>
-                <p className="text-xs sm:text-sm text-stone-500">
+                <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
                   Escolha o prato de cada dia ou deixe a Vovó sortear uma semana econômica para você.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleAutoGenerateWeek}
-                className="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-[#C83E5B] text-[#C83E5B] hover:text-white border border-rose-200 font-extrabold text-xs flex items-center gap-2 transition"
+                className="px-4 py-2.5 rounded-xl bg-rose-50 dark:bg-stone-800 hover:bg-[#C83E5B] text-[#C83E5B] dark:text-rose-300 hover:text-white border border-rose-200 dark:border-stone-700 font-extrabold text-xs flex items-center gap-2 transition shrink-0"
               >
                 <i className="fa-solid fa-wand-magic-sparkles" />
                 <span>Sortear Semana Econômica</span>
@@ -344,14 +344,14 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
                 return (
                   <div
                     key={day}
-                    className={`p-3.5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                    className={`p-3.5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 overflow-hidden ${
                       highContrastDark
                         ? 'bg-stone-950 border-stone-800'
                         : 'bg-[#F8F6F2] border-stone-200/80'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="w-28 font-extrabold text-xs uppercase tracking-wider text-[#C83E5B]">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                      <span className="w-28 shrink-0 font-extrabold text-xs uppercase tracking-wider text-[#C83E5B]">
                         {day}
                       </span>
                       <select
@@ -359,7 +359,7 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
                         onChange={(e) =>
                           setWeeklyPlan((prev) => ({ ...prev, [day]: e.target.value }))
                         }
-                        className="px-3 py-2 rounded-xl bg-white border border-stone-300 text-stone-800 text-sm font-bold focus:border-[#C83E5B] focus:outline-none"
+                        className="w-full flex-1 min-w-0 px-3 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-sm font-bold truncate focus:border-[#C83E5B] focus:outline-none"
                       >
                         {recipes.map((r) => (
                           <option key={r.id} value={r.id}>
@@ -373,7 +373,7 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
                       <button
                         type="button"
                         onClick={() => onSelectRecipe(currentRec)}
-                        className="text-xs font-extrabold text-[#1E7E5A] hover:underline flex items-center gap-1 self-end sm:self-center"
+                        className="shrink-0 whitespace-nowrap text-xs font-extrabold text-[#1E7E5A] dark:text-emerald-400 hover:underline flex items-center gap-1 self-end sm:self-center"
                       >
                         <span>Abrir receita</span>
                         <i className="fa-solid fa-arrow-right" />
@@ -387,24 +387,24 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
 
           {/* Lista de Feira Consolidada */}
           <div
-            className={`lg:col-span-5 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-5 ${
+            className={`lg:col-span-5 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-5 overflow-hidden ${
               highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
             }`}
           >
-            <div className="flex items-center justify-between pb-4 border-b border-stone-100 dark:border-stone-800">
-              <div>
+            <div className="flex items-center justify-between gap-2 pb-4 border-b border-stone-100 dark:border-stone-800">
+              <div className="min-w-0">
                 <h3 className="font-serif-vovo text-xl font-bold flex items-center gap-2">
                   <i className="fa-solid fa-cart-shopping text-[#1E7E5A]" />
                   <span>Lista de Feira Consolidada</span>
                 </h3>
-                <p className="text-xs text-stone-500">
+                <p className="text-xs text-stone-500 dark:text-stone-400">
                   {consolidatedShoppingList.length} itens somados automaticamente para a semana
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleSendWeeklyListWhatsApp}
-                className="px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#1EBE5B] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition"
+                className="shrink-0 px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#1EBE5B] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm transition"
               >
                 <i className="fa-brands fa-whatsapp text-sm" />
                 <span>WhatsApp</span>
@@ -415,10 +415,10 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
               {consolidatedShoppingList.map((item, idx) => (
                 <li
                   key={idx}
-                  className="p-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-200/70 dark:border-stone-800 text-xs sm:text-sm font-semibold flex items-center gap-2.5"
+                  className="p-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-200/70 dark:border-stone-800 text-xs sm:text-sm font-semibold flex items-start gap-2.5 break-words"
                 >
-                  <i className="fa-solid fa-check text-[#1E7E5A]" />
-                  <span>{item}</span>
+                  <i className="fa-solid fa-check text-[#1E7E5A] mt-1 shrink-0" />
+                  <span className="min-w-0 flex-1">{item}</span>
                 </li>
               ))}
             </ul>
@@ -430,7 +430,7 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
       {subTab === 'fridge' && (
         <div className="space-y-8">
           <div
-            className={`rounded-3xl border p-6 sm:p-8 shadow-sm space-y-5 ${
+            className={`rounded-3xl border p-6 sm:p-8 shadow-sm space-y-5 overflow-hidden ${
               highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
             }`}
           >
@@ -450,7 +450,7 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
                     className={`px-4 py-2 rounded-2xl text-xs sm:text-sm font-extrabold border flex items-center gap-2 transition ${
                       active
                         ? 'bg-[#1E7E5A] text-white border-[#1E7E5A] shadow-sm'
-                        : 'bg-[#F8F6F2] text-stone-700 border-stone-200 hover:border-[#1E7E5A]'
+                        : 'bg-[#F8F6F2] dark:bg-stone-800 text-stone-700 dark:text-stone-200 border-stone-200 dark:border-stone-700 hover:border-[#1E7E5A]'
                     }`}
                   >
                     <i className={`fa-solid ${active ? 'fa-check' : 'fa-plus'}`} />
@@ -466,7 +466,7 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
                 value={customFridgeInput}
                 onChange={(e) => setCustomFridgeInput(e.target.value)}
                 placeholder="Ou digite outros ingredientes separados por vírgula (ex: mandioca, fubá, maçã)..."
-                className="w-full px-4 py-3 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm font-semibold focus:bg-white focus:border-[#1E7E5A] focus:outline-none"
+                className="w-full px-4 py-3 rounded-2xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-sm font-semibold focus:border-[#1E7E5A] focus:outline-none"
               />
             </div>
           </div>
@@ -482,11 +482,11 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
                     : 'bg-emerald-50/50 border-emerald-200'
                 }`}
               >
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="px-2.5 py-0.5 rounded-full bg-[#1E7E5A] text-white text-[11px] font-extrabold">
                     Zero Desperdício • {zw.time}
                   </span>
-                  <span className="text-xs font-bold text-stone-500">
+                  <span className="text-xs font-bold text-stone-500 dark:text-stone-400">
                     Usa: {zw.uses.join(', ')}
                   </span>
                 </div>
@@ -527,7 +527,7 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Calculadora de Xícaras para Gramas / Colheres */}
           <div
-            className={`lg:col-span-5 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-5 ${
+            className={`lg:col-span-5 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-5 overflow-hidden ${
               highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
             }`}
           >
@@ -535,19 +535,19 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
               <i className="fa-solid fa-scale-balanced text-[#C83E5B]" />
               <span>Conversor de Xícaras & Gramas</span>
             </h2>
-            <p className="text-xs sm:text-sm text-stone-500">
+            <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
               Não tem balança em casa? Escolha o ingrediente e a quantidade de xícaras para ver o peso exato e quantas colheres de sopa equivalem.
             </p>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+                <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                   Ingrediente:
                 </label>
                 <select
                   value={convIngredient}
                   onChange={(e) => setConvIngredient(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-[#F8F6F2] border border-stone-300 text-stone-800 font-bold text-sm"
+                  className="w-full px-4 py-3 rounded-2xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold text-sm"
                 >
                   {Object.entries(INGREDIENT_CONVERSIONS).map(([k, val]) => (
                     <option key={k} value={k}>
@@ -558,7 +558,7 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+                <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                   Quantidade de Xícaras (Padrão 240 ml):
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -570,7 +570,7 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
                       className={`px-3.5 py-2 rounded-xl font-extrabold text-xs transition ${
                         convCups === q
                           ? 'bg-[#C83E5B] text-white shadow'
-                          : 'bg-[#F8F6F2] text-stone-700 border border-stone-200'
+                          : 'bg-[#F8F6F2] dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-200 dark:border-stone-700'
                       }`}
                     >
                       {q === 0.25 ? '¼ xíc' : q === 0.5 ? '½ xíc' : q === 0.75 ? '¾ xíc' : `${q} xíc`}
@@ -581,23 +581,23 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
 
               {/* Resultado Instantâneo */}
               {INGREDIENT_CONVERSIONS[convIngredient] && (
-                <div className="p-5 rounded-2xl bg-rose-50/70 border border-rose-200 text-stone-900 space-y-3">
-                  <div className="flex items-center justify-between border-b border-rose-200/70 pb-2">
-                    <span className="text-xs font-bold text-stone-600">Peso Equivalente:</span>
-                    <strong className="text-2xl font-black text-[#C83E5B]">
+                <div className="p-5 rounded-2xl bg-rose-50/70 dark:bg-stone-950 border border-rose-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 space-y-3">
+                  <div className="flex items-center justify-between border-b border-rose-200/70 dark:border-stone-800 pb-2">
+                    <span className="text-xs font-bold text-stone-600 dark:text-stone-400">Peso Equivalente:</span>
+                    <strong className="text-2xl font-black text-[#C83E5B] dark:text-rose-400">
                       {Math.round(INGREDIENT_CONVERSIONS[convIngredient].gramsPerCup * convCups)}{' '}
                       {INGREDIENT_CONVERSIONS[convIngredient].isLiquid ? 'ml' : 'gramas'}
                     </strong>
                   </div>
-                  <div className="flex items-center justify-between border-b border-rose-200/70 pb-2">
-                    <span className="text-xs font-bold text-stone-600">Em Colheres de Sopa:</span>
-                    <strong className="text-lg font-extrabold text-[#1E7E5A]">
+                  <div className="flex items-center justify-between border-b border-rose-200/70 dark:border-stone-800 pb-2">
+                    <span className="text-xs font-bold text-stone-600 dark:text-stone-400">Em Colheres de Sopa:</span>
+                    <strong className="text-lg font-extrabold text-[#1E7E5A] dark:text-emerald-400">
                       {Math.round(16 * convCups)} colheres (sopa)
                     </strong>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-stone-600">Volume em Mililitros:</span>
-                    <strong className="text-sm font-bold text-stone-700">
+                    <span className="text-xs font-bold text-stone-600 dark:text-stone-400">Volume em Mililitros:</span>
+                    <strong className="text-sm font-bold text-stone-700 dark:text-stone-200">
                       {Math.round(240 * convCups)} ml
                     </strong>
                   </div>
@@ -608,7 +608,7 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
 
           {/* Guia de Substituições de Emergência */}
           <div
-            className={`lg:col-span-7 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-4 ${
+            className={`lg:col-span-7 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-4 overflow-hidden ${
               highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
             }`}
           >
@@ -631,7 +631,7 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
                     <span>{sub.missing}</span>
                   </p>
                   <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 mt-1 font-medium">
-                    <strong className="text-[#1E7E5A]">Solução da Vovó:</strong> {sub.replaceWith}
+                    <strong className="text-[#1E7E5A] dark:text-emerald-400">Solução da Vovó:</strong> {sub.replaceWith}
                   </p>
                 </div>
               ))}
@@ -644,7 +644,7 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
       {subTab === 'pricing' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div
-            className={`lg:col-span-6 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-4 ${
+            className={`lg:col-span-6 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-4 overflow-hidden ${
               highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
             }`}
           >
@@ -652,47 +652,47 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
               <i className="fa-solid fa-calculator text-[#C83E5B]" />
               <span>Calculadora Faça e Venda da Vovó</span>
             </h2>
-            <p className="text-xs sm:text-sm text-stone-500">
+            <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
               Descubra por quanto vender seus bolos, pães caseiros, doces ou salgados sem ter prejuízo com gás e embalagem.
             </p>
 
             <div>
-              <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+              <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                 O que você vai produzir?
               </label>
               <input
                 type="text"
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] border border-stone-300 text-stone-800 font-bold text-sm"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold text-sm"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+                <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                   Custo dos Ingredientes (R$):
                 </label>
                 <input
                   type="number"
                   value={ingredientsCost}
                   onChange={(e) => setIngredientsCost(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] border border-stone-300 text-stone-800 font-bold text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+                <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                   Custo de Embalagens (R$):
                 </label>
                 <input
                   type="number"
                   value={packagingCost}
                   onChange={(e) => setPackagingCost(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] border border-stone-300 text-stone-800 font-bold text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+                <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                   Rendimento (Unidades/Potes):
                 </label>
                 <input
@@ -700,57 +700,57 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
                   min={1}
                   value={unitsYield}
                   onChange={(e) => setUnitsYield(Math.max(1, Number(e.target.value)))}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] border border-stone-300 text-stone-800 font-bold text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+                <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                   Taxa de Gás/Luz/Água (%):
                 </label>
                 <input
                   type="number"
                   value={overheadPercent}
                   onChange={(e) => setOverheadPercent(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] border border-stone-300 text-stone-800 font-bold text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+                <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                   Margem de Lucro Desejada (%):
                 </label>
                 <input
                   type="number"
                   value={profitMarginPercent}
                   onChange={(e) => setProfitMarginPercent(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] border border-stone-300 text-stone-800 font-bold text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+                <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                   Dias de Produção no Mês:
                 </label>
                 <input
                   type="number"
                   value={daysSoldPerMonth}
                   onChange={(e) => setDaysSoldPerMonth(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] border border-stone-300 text-stone-800 font-bold text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold text-sm"
                 />
               </div>
             </div>
           </div>
 
           {/* Painel de Resultado do Faça e Venda */}
-          <div className="lg:col-span-6 rounded-3xl bg-gradient-to-br from-[#1E7E5A] to-emerald-900 text-white p-6 sm:p-8 shadow-lg space-y-6">
+          <div className="lg:col-span-6 rounded-3xl bg-gradient-to-br from-[#1E7E5A] to-emerald-900 text-white p-6 sm:p-8 shadow-lg space-y-6 overflow-hidden">
             <div>
-              <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-200">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-200 block truncate">
                 Ficha Financeira • {productName}
               </span>
-              <h3 className="font-serif-vovo text-3xl font-bold mt-1">
+              <h3 className="font-serif-vovo text-2xl sm:text-3xl font-bold mt-1">
                 Preço Sugerido de Venda: R$ {suggestedUnitPrice.toFixed(2).replace('.', ',')} / un.
               </h3>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-2xl bg-white/10 border border-white/15">
                 <span className="text-xs text-emerald-100 block">Custo Real por Unidade</span>
                 <strong className="text-2xl font-extrabold">

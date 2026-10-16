@@ -58,6 +58,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     localStorage.setItem('caderno_vovo_dark', String(highContrastDark));
+    document.documentElement.classList.toggle('dark', highContrastDark);
   }, [highContrastDark]);
 
   const loadRecipes = async () => {

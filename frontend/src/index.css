@@ -17,11 +17,53 @@ html {
   font-family: 'Playfair Display', Georgia, serif;
 }
 
+/* Impede que selects, inputs e itens flex estourem a largura dos cards */
+select,
+input,
+textarea {
+  max-width: 100%;
+  min-width: 0;
+}
+
+select {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Padronização automática de inputs, selects e textareas no Modo Noturno (Dark Mode) */
+html.dark input:not([type='checkbox']):not([type='radio']):not([type='range']),
+html.dark select,
+html.dark textarea {
+  background-color: #1c1917;
+  color: #f5f5f4;
+  border-color: #44403c;
+}
+
+html.dark select option {
+  background-color: #1c1917;
+  color: #f5f5f4;
+}
+
+/* Esconde barra de rolagem horizontal mantendo scroll suave */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Textura delicada de papel de caderno artesanal */
 .bg-notebook-paper {
   background-color: #FDFBF7;
   background-image: radial-gradient(#E6DEC8 1px, transparent 1px);
   background-size: 24px 24px;
+}
+
+html.dark .bg-notebook-paper {
+  background-color: #1c1917;
+  background-image: radial-gradient(#292524 1px, transparent 1px);
 }
 
 /* Modo de impressão para folha de caderno */

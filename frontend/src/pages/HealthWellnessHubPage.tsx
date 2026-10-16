@@ -232,7 +232,7 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Coluna 1 (7 cols): Lembrete de Remédios com Aviso por Voz */}
         <div
-          className={`lg:col-span-7 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-6 ${
+          className={`lg:col-span-7 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-6 overflow-hidden ${
             highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
           }`}
         >
@@ -242,12 +242,12 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
                 <i className="fa-solid fa-capsules text-[#C83E5B]" />
                 <span>Caixinha de Remédios & Horários</span>
               </h2>
-              <p className="text-xs sm:text-sm text-stone-500">
+              <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
                 Toque no botão de som para ouvir o aviso da Vovó ou marque quando já tiver tomado.
               </p>
             </div>
             {user ? (
-              <span className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#1E7E5A] bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+              <span className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#1E7E5A] dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3 py-1 rounded-full">
                 <i className="fa-solid fa-cloud-arrow-up" />
                 Salvo na conta de {user.name.split(' ')[0]}
               </span>
@@ -255,9 +255,9 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
               <button
                 type="button"
                 onClick={() => onOpenAuthModal('register')}
-                className="inline-flex items-center gap-1.5 text-xs font-extrabold text-amber-800 bg-amber-100 hover:bg-amber-200 border border-amber-300 px-3 py-1 rounded-full transition"
+                className="inline-flex items-center gap-1.5 text-xs font-extrabold text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 border border-amber-300 dark:border-amber-700 px-3 py-1 rounded-full transition"
               >
-                <i className="fa-solid fa-triangle-exclamation text-amber-600" />
+                <i className="fa-solid fa-triangle-exclamation text-amber-600 dark:text-amber-400" />
                 <span>Sem Login: Salvar Remédios na Conta</span>
               </button>
             )}
@@ -267,35 +267,35 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
             {reminders.map((rem) => (
               <div
                 key={rem.id}
-                className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition ${
+                className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition overflow-hidden ${
                   rem.takenToday
-                    ? 'bg-emerald-50/70 border-emerald-200 text-stone-700'
+                    ? 'bg-emerald-50/70 dark:bg-emerald-950/35 border-emerald-200 dark:border-emerald-800/80 text-stone-700 dark:text-stone-100'
                     : highContrastDark
                     ? 'bg-stone-950 border-stone-800'
                     : 'bg-[#F8F6F2] border-stone-200'
                 }`}
               >
-                <div className="flex items-center gap-3.5">
-                  <div className="px-3.5 py-2 rounded-2xl bg-[#C83E5B] text-white font-mono font-black text-base shadow-2xs">
+                <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                  <div className="px-3.5 py-2 rounded-2xl bg-[#C83E5B] text-white font-mono font-black text-base shadow-2xs shrink-0">
                     {rem.time}
                   </div>
-                  <div>
-                    <h3 className="font-extrabold text-base flex items-center gap-2">
-                      <span>{rem.name}</span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-white border border-stone-200 text-stone-600">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-extrabold text-base flex flex-wrap items-center gap-2">
+                      <span className="truncate">{rem.name}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-200">
                         {rem.dosage}
                       </span>
                     </h3>
-                    <p className="text-xs text-stone-500 mt-0.5">{rem.notes}</p>
+                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 truncate">{rem.notes}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 self-end sm:self-center">
+                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                   <button
                     type="button"
                     onClick={() => testAlarmVoice(rem)}
                     title="Ouvir lembrete em voz alta"
-                    className="px-3 py-2 rounded-xl bg-white hover:bg-rose-50 text-[#C83E5B] border border-stone-200 text-xs font-extrabold flex items-center gap-1.5"
+                    className="px-3 py-2 rounded-xl bg-white dark:bg-stone-800 hover:bg-rose-50 dark:hover:bg-stone-700 text-[#C83E5B] dark:text-rose-300 border border-stone-200 dark:border-stone-700 text-xs font-extrabold flex items-center gap-1.5"
                   >
                     <i className="fa-solid fa-volume-high" />
                     <span>Ouvir</span>
@@ -307,7 +307,7 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
                     className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition ${
                       rem.takenToday
                         ? 'bg-[#1E7E5A] text-white shadow-2xs'
-                        : 'bg-white text-stone-700 border border-stone-300 hover:border-[#1E7E5A]'
+                        : 'bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-300 dark:border-stone-700 hover:border-[#1E7E5A]'
                     }`}
                   >
                     <i className={`fa-solid ${rem.takenToday ? 'fa-circle-check' : 'fa-circle'}`} />
@@ -332,7 +332,7 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
             onSubmit={handleAddReminder}
             className="p-4 rounded-2xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 space-y-3"
           >
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
+            <h4 className="text-xs font-extrabold uppercase tracking-wider text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
               <i className="fa-solid fa-plus text-[#C83E5B]" />
               <span>Adicionar Novo Horário na Caixinha:</span>
             </h4>
@@ -343,21 +343,21 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
                 value={pillName}
                 onChange={(e) => setPillName(e.target.value)}
                 placeholder="Nome do remédio/vitamina"
-                className="sm:col-span-2 px-3.5 py-2 rounded-xl bg-white border border-stone-300 text-stone-800 text-xs font-bold"
+                className="sm:col-span-2 px-3.5 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs font-bold"
               />
               <input
                 type="time"
                 required
                 value={pillTime}
                 onChange={(e) => setPillTime(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-white border border-stone-300 text-stone-800 text-xs font-bold"
+                className="px-3 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs font-bold"
               />
               <input
                 type="text"
                 value={pillDosage}
                 onChange={(e) => setPillDosage(e.target.value)}
                 placeholder="Dose (ex: 1 cp)"
-                className="px-3 py-2 rounded-xl bg-white border border-stone-300 text-stone-800 text-xs font-bold"
+                className="px-3 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs font-bold"
               />
             </div>
             <div className="flex flex-col sm:flex-row gap-2.5">
@@ -366,11 +366,11 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
                 value={pillNotes}
                 onChange={(e) => setPillNotes(e.target.value)}
                 placeholder="Observação (ex: Tomar após o almoço)"
-                className="flex-1 px-3.5 py-2 rounded-xl bg-white border border-stone-300 text-stone-800 text-xs"
+                className="flex-1 min-w-0 px-3.5 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs"
               />
               <button
                 type="submit"
-                className="px-5 py-2 rounded-xl bg-[#C83E5B] hover:bg-rose-700 text-white font-extrabold text-xs shadow-sm transition"
+                className="px-5 py-2 rounded-xl bg-[#C83E5B] hover:bg-rose-700 text-white font-extrabold text-xs shadow-sm transition shrink-0"
               >
                 Salvar Horário
               </button>
@@ -380,21 +380,21 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
 
         {/* Coluna 2 (5 cols): Hidratômetro da Vovó (8 Copos d'Água) */}
         <div
-          className={`lg:col-span-5 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-5 ${
+          className={`lg:col-span-5 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-5 overflow-hidden ${
             highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
           }`}
         >
-          <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
+          <div className="flex items-center justify-between gap-2 pb-3 border-b border-stone-100 dark:border-stone-800">
             <div>
               <h2 className="font-serif-vovo text-2xl font-bold flex items-center gap-2">
                 <i className="fa-solid fa-glass-water text-sky-600" />
                 <span>Hidratômetro Diário</span>
               </h2>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-stone-500 dark:text-stone-400">
                 Meta recomendada: 8 copos de água por dia ({waterGlasses * 250} ml bebidos hoje)
               </p>
             </div>
-            <span className="px-3 py-1 rounded-full bg-sky-50 text-sky-800 border border-sky-200 text-xs font-extrabold">
+            <span className="shrink-0 px-3 py-1 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800 text-xs font-extrabold">
               {waterGlasses} / 8 copos
             </span>
           </div>
@@ -416,7 +416,7 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
                   className={`p-3 rounded-2xl border flex flex-col items-center justify-center gap-1.5 transition transform active:scale-95 ${
                     drank
                       ? 'bg-sky-500 text-white border-sky-600 shadow-sm'
-                      : 'bg-[#F8F6F2] text-stone-400 border-stone-200 hover:border-sky-300'
+                      : 'bg-[#F8F6F2] dark:bg-stone-950 text-stone-400 border-stone-200 dark:border-stone-800 hover:border-sky-300'
                   }`}
                 >
                   <i className="fa-solid fa-glass-water text-xl" />
@@ -430,7 +430,7 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
             <button
               type="button"
               onClick={() => setWaterGlasses(0)}
-              className="text-xs font-bold text-stone-400 hover:text-stone-700"
+              className="text-xs font-bold text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
             >
               Zerar contagem do dia
             </button>
@@ -454,7 +454,7 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
               <i className="fa-solid fa-mug-hot text-[#1E7E5A]" />
               <span>Farmacinha Natural & Guia de Chás da Vovó</span>
             </h2>
-            <p className="text-sm text-stone-500">
+            <p className="text-sm text-stone-500 dark:text-stone-400">
               Escolha o que você deseja aliviar e ouça o preparo correto da infusão em voz alta.
             </p>
           </div>
@@ -475,7 +475,7 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
                 className={`px-3.5 py-2 rounded-xl font-bold text-xs transition ${
                   selectedGoal === goal
                     ? 'bg-[#1E7E5A] text-white shadow-sm'
-                    : 'bg-white text-stone-700 border border-stone-200 hover:border-[#1E7E5A]'
+                    : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-200 border border-stone-200 dark:border-stone-700 hover:border-[#1E7E5A]'
                 }`}
               >
                 {goal}
@@ -488,13 +488,13 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
           {filteredTeas.map((tea) => (
             <div
               key={tea.id}
-              className={`rounded-3xl border p-6 shadow-sm flex flex-col justify-between gap-4 ${
+              className={`rounded-3xl border p-6 shadow-sm flex flex-col justify-between gap-4 overflow-hidden ${
                 highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
               }`}
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-[#1E7E5A] border border-emerald-200 text-xs font-extrabold">
+                  <span className="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-[#1E7E5A] dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-extrabold">
                     {tea.goalCategory}
                   </span>
                   <span className="text-[11px] font-bold text-stone-400">
@@ -510,17 +510,17 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
 
                 <div className="p-3.5 rounded-2xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-200/70 dark:border-stone-800 space-y-2 text-xs">
                   <p>
-                    <strong className="text-[#1E7E5A]">Medidas:</strong> {tea.ingredients}
+                    <strong className="text-[#1E7E5A] dark:text-emerald-400">Medidas:</strong> {tea.ingredients}
                   </p>
                   <p>
-                    <strong className="text-[#C83E5B]">Como fazer a infusão:</strong> {tea.preparation}
+                    <strong className="text-[#C83E5B] dark:text-rose-400">Como fazer a infusão:</strong> {tea.preparation}
                   </p>
                 </div>
               </div>
 
               <div className="space-y-3 pt-2 border-t border-stone-100 dark:border-stone-800">
-                <p className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl font-semibold">
-                  <i className="fa-solid fa-triangle-exclamation mr-1 text-amber-600" />
+                <p className="text-[11px] text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/70 px-3 py-1.5 rounded-xl font-semibold">
+                  <i className="fa-solid fa-triangle-exclamation mr-1 text-amber-600 dark:text-amber-400" />
                   {tea.contraindication}
                 </p>
 
@@ -533,7 +533,7 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
                         `${tea.name}. Indicado para ${tea.goalCategory}. ${tea.benefitSummary} Ingredientes: ${tea.ingredients}. Modo de preparo: ${tea.preparation}. Atenção: ${tea.contraindication}`
                       );
                   }}
-                  className="w-full py-2.5 rounded-xl bg-rose-50 hover:bg-[#C83E5B] text-[#C83E5B] hover:text-white border border-rose-200 font-extrabold text-xs flex items-center justify-center gap-2 transition"
+                  className="w-full py-2.5 rounded-xl bg-rose-50 dark:bg-stone-800 hover:bg-[#C83E5B] text-[#C83E5B] dark:text-rose-300 hover:text-white border border-rose-200 dark:border-stone-700 font-extrabold text-xs flex items-center justify-center gap-2 transition"
                 >
                   <i className="fa-solid fa-volume-high" />
                   <span>Ouvir Receita do Chá em Voz Alta</span>

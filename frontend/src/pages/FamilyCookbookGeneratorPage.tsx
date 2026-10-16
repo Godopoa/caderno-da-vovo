@@ -89,20 +89,20 @@ export const FamilyCookbookGeneratorPage: React.FC<FamilyCookbookGeneratorPagePr
 
       {/* Painel de Configuração do Livro (Oculto na hora de imprimir o PDF!) */}
       <div
-        className={`no-print rounded-3xl border p-6 sm:p-8 shadow-sm space-y-6 ${
+        className={`no-print rounded-3xl border p-6 sm:p-8 shadow-sm space-y-6 overflow-hidden ${
           highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
         }`}
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-100 dark:border-stone-800 pb-5">
-          <div className="space-y-1">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-extrabold uppercase">
-              <i className="fa-solid fa-book-bookmark text-amber-600" />
+          <div className="space-y-1 min-w-0 flex-1">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 text-xs font-extrabold uppercase">
+              <i className="fa-solid fa-book-bookmark text-amber-600 dark:text-amber-400" />
               <span>Memórias de Família • Exportação em PDF</span>
             </span>
             <h1 className="font-serif-vovo text-3xl font-extrabold">
               Gerador de Livro de Receitas da Família
             </h1>
-            <p className="text-xs sm:text-sm text-stone-500">
+            <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
               Personalize a capa, escreva uma dedicatória emocionante para seus filhos e netos e gere um livro diagramado pronto para salvar em PDF ou imprimir!
             </p>
           </div>
@@ -118,34 +118,34 @@ export const FamilyCookbookGeneratorPage: React.FC<FamilyCookbookGeneratorPagePr
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-6 space-y-4">
+          <div className="lg:col-span-6 space-y-4 min-w-0">
             <div>
-              <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+              <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                 Título Oficial do Livro:
               </label>
               <input
                 type="text"
                 value={bookTitle}
                 onChange={(e) => setBookTitle(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] border border-stone-300 text-stone-800 font-bold text-sm"
+                className="w-full min-w-0 px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold text-sm"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+                <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                   Nome da Autora / Vovó:
                 </label>
                 <input
                   type="text"
                   value={authorName}
                   onChange={(e) => setAuthorName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#F8F6F2] border border-stone-300 text-stone-800 font-bold text-sm"
+                  className="w-full min-w-0 px-4 py-2.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+                <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                   Cor da Capa Clássica:
                 </label>
                 <div className="flex gap-2">
@@ -158,10 +158,10 @@ export const FamilyCookbookGeneratorPage: React.FC<FamilyCookbookGeneratorPagePr
                       key={c.id}
                       type="button"
                       onClick={() => setCoverTheme(c.id as any)}
-                      className={`flex-1 py-2 rounded-xl text-xs font-extrabold border transition ${
+                      className={`flex-1 min-w-0 truncate px-2 py-2 rounded-xl text-xs font-extrabold border transition ${
                         coverTheme === c.id
-                          ? 'bg-stone-900 text-white border-stone-900'
-                          : 'bg-[#F8F6F2] text-stone-700 border-stone-300'
+                          ? 'bg-[#C83E5B] text-white border-[#C83E5B]'
+                          : 'bg-[#F8F6F2] dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-300 dark:border-stone-700'
                       }`}
                     >
                       {c.label}
@@ -172,27 +172,27 @@ export const FamilyCookbookGeneratorPage: React.FC<FamilyCookbookGeneratorPagePr
             </div>
 
             <div>
-              <label className="block text-xs font-extrabold uppercase text-stone-500 mb-1">
+              <label className="block text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
                 Dedicatória Afetiva para a Família:
               </label>
               <textarea
                 rows={3}
                 value={dedication}
                 onChange={(e) => setDedication(e.target.value)}
-                className="w-full p-3.5 rounded-xl bg-[#F8F6F2] border border-stone-300 text-stone-800 text-sm font-medium"
+                className="w-full min-w-0 p-3.5 rounded-xl bg-[#F8F6F2] dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-sm font-medium"
               />
             </div>
           </div>
 
-          <div className="lg:col-span-6 space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-extrabold uppercase text-stone-500">
+          <div className="lg:col-span-6 space-y-3 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <label className="text-xs font-extrabold uppercase text-stone-500 dark:text-stone-400">
                 Escolha quais receitas entram no livro ({selectedBookRecipes.length} selecionadas):
               </label>
               <button
                 type="button"
                 onClick={() => setSelectedRecipeIds(recipes.map((r) => r.id))}
-                className="text-xs font-bold text-[#C83E5B] hover:underline"
+                className="text-xs font-bold text-[#C83E5B] hover:underline shrink-0"
               >
                 Selecionar Todas
               </button>
@@ -206,14 +206,14 @@ export const FamilyCookbookGeneratorPage: React.FC<FamilyCookbookGeneratorPagePr
                     key={r.id}
                     type="button"
                     onClick={() => toggleRecipeInBook(r.id)}
-                    className={`p-2.5 rounded-xl border text-left text-xs font-bold flex items-center gap-2.5 transition ${
+                    className={`p-2.5 rounded-xl border text-left text-xs font-bold flex items-center gap-2.5 min-w-0 transition ${
                       checked
-                        ? 'bg-emerald-50 border-[#1E7E5A] text-[#1E7E5A]'
-                        : 'bg-[#F8F6F2] border-stone-200 text-stone-600'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/50 border-[#1E7E5A] dark:border-emerald-700 text-[#1E7E5A] dark:text-emerald-300'
+                        : 'bg-[#F8F6F2] dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300'
                     }`}
                   >
-                    <i className={`fa-solid ${checked ? 'fa-square-check' : 'fa-regular fa-square'}`} />
-                    <span className="truncate">{r.title}</span>
+                    <i className={`fa-solid shrink-0 ${checked ? 'fa-square-check' : 'fa-regular fa-square'}`} />
+                    <span className="truncate flex-1 min-w-0">{r.title}</span>
                   </button>
                 );
               })}
