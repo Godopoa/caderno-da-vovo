@@ -363,8 +363,9 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
 
               {/* Calculadora Inteligente de Porções (Inspirada no NYT Cooking) */}
               <div className="no-print p-3 rounded-2xl bg-stone-50 dark:bg-stone-800 border border-stone-200/80">
-                <span className="text-xs font-extrabold uppercase text-stone-500 block mb-2">
-                  ⚖️ Ajustar Quantidade da Receita:
+                <span className="text-xs font-extrabold uppercase text-stone-500 flex items-center gap-1.5 mb-2">
+                  <i className="fa-solid fa-scale-balanced text-[#C83E5B]" />
+                  <span>Ajustar Quantidade da Receita:</span>
                 </span>
                 <div className="grid grid-cols-4 gap-1.5">
                   {[
@@ -590,7 +591,8 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                       onChange={(e) => setMadeIt(e.target.checked)}
                       className="w-4 h-4 accent-[#1E7E5A]"
                     />
-                    <span>✅ Eu fiz esta receita e deu certo!</span>
+                    <i className="fa-solid fa-circle-check text-[#1E7E5A]" />
+                    <span>Eu fiz esta receita e deu certo!</span>
                   </label>
                 </div>
               </div>
@@ -656,13 +658,15 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                       </span>
                       <strong className="text-sm">{c.authorName}</strong>
                       {c.authorIsVip && (
-                        <span className="px-2 py-0.2 rounded-full bg-amber-100 text-amber-900 text-[10px] font-extrabold">
-                          👑 Membro VIP
+                        <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-extrabold inline-flex items-center gap-1">
+                          <i className="fa-solid fa-crown text-amber-600" />
+                          <span>Membro VIP</span>
                         </span>
                       )}
                       {c.madeIt && (
-                        <span className="px-2 py-0.2 rounded-full bg-emerald-100 text-[#1E7E5A] text-[10px] font-extrabold">
-                          ✅ Fez e Aprovou
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-[#1E7E5A] text-[10px] font-extrabold inline-flex items-center gap-1">
+                          <i className="fa-solid fa-circle-check" />
+                          <span>Fez e Aprovou</span>
                         </span>
                       )}
                     </div>

@@ -77,7 +77,7 @@ class AutoImporterEngine {
     if (this.isRunning) return;
     this.isRunning = true;
     this.currentAction = 'Robô Auto-Importer iniciado! Varrendo TudoGostoso.com.br...';
-    this.addLog('INFO', '▶️ Auto-Importer Contínuo iniciado pelo Administrador.');
+    this.addLog('INFO', 'Auto-Importer Contínuo iniciado pelo Administrador.');
 
     // Executa o primeiro ciclo imediatamente e agenda os próximos
     this.runTick();
@@ -92,8 +92,8 @@ class AutoImporterEngine {
       clearInterval(this.timerHandle);
       this.timerHandle = null;
     }
-    this.currentAction = '⏸️ Auto-Importer pausado pelo Administrador.';
-    this.addLog('INFO', '⏸️ Auto-Importer pausado. Você pode retomar a qualquer momento.');
+    this.currentAction = 'Auto-Importer pausado pelo Administrador.';
+    this.addLog('INFO', 'Auto-Importer pausado. Você pode retomar a qualquer momento.');
   }
 
   public getStatus() {
@@ -111,7 +111,7 @@ class AutoImporterEngine {
 
   private async crawlMoreLinksFromPage(pageUrl: string) {
     try {
-      this.currentAction = `🔍 Descobrindo novas receitas em: ${pageUrl}`;
+      this.currentAction = `Descobrindo novas receitas em: ${pageUrl}`;
       const res = await fetch(pageUrl, {
         headers: {
           'User-Agent':
@@ -145,7 +145,7 @@ class AutoImporterEngine {
       if (addedCount > 0) {
         this.addLog(
           'CRAWLED',
-          `🕸️ Crawler encontrou +${addedCount} novos links de receitas em ${pageUrl}`,
+          `Crawler encontrou +${addedCount} novos links de receitas em ${pageUrl}`,
           undefined,
           pageUrl
         );
@@ -185,7 +185,7 @@ class AutoImporterEngine {
           this.totalSkippedDuplicates++;
           this.addLog(
             'SKIPPED',
-            `⏭️ Já existe no banco (ignorada para não repetir): ${existingByUrl.title}`,
+            `Já existe no banco (ignorada para não repetir): ${existingByUrl.title}`,
             existingByUrl.title,
             candidateUrl
           );
@@ -197,7 +197,7 @@ class AutoImporterEngine {
         }
 
         // Importa a receita inédita!
-        this.currentAction = `📥 Importando receita inédita: ${candidateUrl}`;
+        this.currentAction = `Importando receita inédita: ${candidateUrl}`;
         const imported = await importFromTudoGostoso(candidateUrl);
 
         // Verifica também se já existe receita com o mesmo título exato
@@ -209,7 +209,7 @@ class AutoImporterEngine {
           this.totalSkippedDuplicates++;
           this.addLog(
             'SKIPPED',
-            `⏭️ Título duplicado ignorado: "${imported.title}"`,
+            `Título duplicado ignorado: "${imported.title}"`,
             imported.title,
             candidateUrl
           );
@@ -239,10 +239,10 @@ class AutoImporterEngine {
         });
 
         this.totalImportedInSession++;
-        this.currentAction = `✅ Importada com sucesso: "${saved.title}"`;
+        this.currentAction = `Importada com sucesso: "${saved.title}"`;
         this.addLog(
           'IMPORTED',
-          `✅ Nova receita importada (#${this.totalImportedInSession}): "${saved.title}" (${imported.ingredients.length} ingr. / ${imported.steps.length} passos)`,
+          `Nova receita importada (#${this.totalImportedInSession}): "${saved.title}" (${imported.ingredients.length} ingr. / ${imported.steps.length} passos)`,
           saved.title,
           candidateUrl
         );

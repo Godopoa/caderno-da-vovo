@@ -97,8 +97,9 @@ export const NewsFeedPage: React.FC<NewsFeedPageProps> = ({ user, highContrastDa
           onSubmit={handlePublish}
           className="rounded-3xl border border-stone-200 bg-white p-6 shadow-md space-y-4 text-stone-900"
         >
-          <h3 className="font-serif-vovo text-xl font-bold text-[#1E1B18]">
-            ✍️ Publicar Nova Dica ou Notícia no Feed
+          <h3 className="font-serif-vovo text-xl font-bold text-[#1E1B18] flex items-center gap-2">
+            <i className="fa-solid fa-pen-nib text-[#C83E5B]" />
+            <span>Publicar Nova Dica ou Notícia no Feed</span>
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <input

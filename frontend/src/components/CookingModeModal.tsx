@@ -22,11 +22,11 @@ function scaleIngredientText(rawText: string, multiplier: number): string {
 }
 
 const VOVO_ENCOURAGEMENTS = [
-  'Separe tudo com calma, meu bem. Cozinhar sem pressa deixa tudo mais gostoso! 💕',
-  'Que cheirinho bom já está começando a aparecer por aí! ✨',
-  'Você está indo muito bem! Siga esse passo com carinho. 👵🍰',
-  'Dica da Vovó: mantenha o fogo sempre na temperatura indicada para não passar do ponto! 🔥',
-  'Quase lá! Já pode ir preparando a travessa mais bonita da casa! 🌸',
+  'Separe tudo com calma, meu bem. Cozinhar sem pressa deixa tudo mais gostoso.',
+  'Que cheirinho bom já está começando a aparecer por aí!',
+  'Você está indo muito bem! Siga esse passo com todo carinho.',
+  'Dica da Vovó: mantenha o fogo sempre na temperatura indicada para não passar do ponto.',
+  'Quase lá! Já pode ir preparando a travessa mais bonita da casa.',
 ];
 
 export const CookingModeModal: React.FC<CookingModeModalProps> = ({
@@ -57,7 +57,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
   const [timerRunning, setTimerRunning] = useState(false);
   const [timerFinished, setTimerFinished] = useState(false);
 
-  // Reset state when switching recipe
   useEffect(() => {
     setCurrentIndex(0);
     setCompletedSteps({});
@@ -65,7 +64,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
     setShowRecipeSwitcher(false);
   }, [recipe.id]);
 
-  // Mantém a tela acesa durante o Modo Cozinha
   useEffect(() => {
     let wakeLock: any = null;
     async function requestWakeLock() {
@@ -86,7 +84,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
     };
   }, [stopSpeaking]);
 
-  // Navegação por teclado (Setas Esquerda/Direita)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isFinishedCelebration) return;
@@ -101,7 +98,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentIndex, steps.length, isFinishedCelebration]);
 
-  // Atualiza timer e voz ao mudar de passo
   useEffect(() => {
     if (!currentStep || isFinishedCelebration) return;
 
@@ -121,7 +117,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
     }
   }, [currentIndex, currentStep, steps.length, autoRead, isFinishedCelebration, speakText]);
 
-  // Contagem regressiva do Timer
   useEffect(() => {
     if (!timerRunning || timeLeft === null) return;
 
@@ -238,7 +233,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
 
           {/* Controles Modernos de Voz, Troca de Receita e Saída */}
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* Botão Trocar Receita (se houver lista de receitas) */}
             {allRecipes.length > 1 && onSelectDifferentRecipe && (
               <button
                 type="button"
@@ -254,7 +248,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
               </button>
             )}
 
-            {/* Toggle Leitura Automática */}
             <button
               type="button"
               onClick={() => setAutoRead((v) => !v)}
@@ -272,7 +265,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
               <span>{autoRead ? 'Ligada' : 'Pausada'}</span>
             </button>
 
-            {/* Seletor de Velocidade da Voz */}
             <button
               type="button"
               onClick={() => {
@@ -295,7 +287,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
               <span>Ritmo: {voiceRate === 0.72 ? 'Calminho (0.7x)' : 'Natural (1x)'}</span>
             </button>
 
-            {/* Botão Mobile para ver Ingredientes */}
             <button
               type="button"
               onClick={() => setShowIngredientsMobile((v) => !v)}
@@ -305,7 +296,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
               <span>Ingredientes ({recipe.ingredients?.length || 0})</span>
             </button>
 
-            {/* Botão Fechar / Voltar */}
             <button
               type="button"
               onClick={() => {
@@ -320,7 +310,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
           </div>
         </div>
 
-        {/* Seletor Rápido de Receitas (Dropdown/Drawer quando aberto) */}
+        {/* Seletor Rápido de Receitas */}
         {showRecipeSwitcher && allRecipes.length > 0 && onSelectDifferentRecipe && (
           <div
             className={`max-w-7xl mx-auto mt-4 p-4 rounded-3xl border shadow-lg animate-fadeIn ${
@@ -334,9 +324,10 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
               <button
                 type="button"
                 onClick={() => setShowRecipeSwitcher(false)}
-                className="text-xs font-bold text-stone-500 hover:text-stone-800"
+                className="text-xs font-bold text-stone-500 hover:text-stone-800 flex items-center gap-1"
               >
-                Fechar lista ✕
+                <i className="fa-solid fa-xmark" />
+                <span>Fechar lista</span>
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 max-h-60 overflow-y-auto pr-1">
@@ -380,7 +371,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
 
       {/* CORPO PRINCIPAL DO ESTÚDIO MODO COZINHA */}
       <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-6 sm:py-8">
-        {/* TRILHA HORIZONTAL DE PASSOS (BOLINHAS INTERATIVAS FOFAS) */}
+        {/* TRILHA HORIZONTAL DE PASSOS */}
         <div className="mb-7">
           <div className="flex items-center justify-between gap-2 mb-3">
             <div className="flex items-center gap-2">
@@ -393,11 +384,11 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
               </span>
             </div>
             <span className="text-xs text-stone-400 hidden sm:inline">
-              <i className="fa-regular fa-keyboard mr-1" /> Dica: use as setas ⬅️ ➡️ do teclado para navegar
+              <i className="fa-regular fa-keyboard mr-1.5" />
+              Use as setas do teclado para avançar ou voltar
             </span>
           </div>
 
-          {/* Bolinhas clicáveis de cada passo */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
             {steps.map((st, idx) => {
               const isCurrent = idx === currentIndex && !isFinishedCelebration;
@@ -440,7 +431,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
             })}
           </div>
 
-          {/* Barra contínua suave */}
           <div className="w-full h-2.5 bg-stone-200/80 rounded-full overflow-hidden mt-2">
             <div
               className="h-full bg-gradient-to-r from-[#C83E5B] via-rose-500 to-[#1E7E5A] transition-all duration-500 rounded-full"
@@ -449,12 +439,10 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
           </div>
         </div>
 
-        {/* LAYOUT DE 2 COLUNAS: CARTÃO DO PASSO ATUAL (ESQUERDA) + CESTINHA DE INGREDIENTES (DIREITA) */}
+        {/* LAYOUT DE 2 COLUNAS */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
-          {/* COLUNA PRINCIPAL (8 COLUNAS): PASSO ATUAL OU TELA DE CELEBRAÇÃO */}
           <div className="lg:col-span-8 space-y-6">
             {isFinishedCelebration ? (
-              /* TELA DE CELEBRAÇÃO FOFA QUANDO TERMINA A RECEITA */
               <div
                 className={`rounded-[2rem] border p-8 sm:p-12 text-center shadow-lg space-y-6 animate-fadeIn ${
                   highContrastDark
@@ -475,10 +463,10 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
 
                 <div className="space-y-2 max-w-xl mx-auto">
                   <span className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-emerald-100 text-[#1E7E5A] text-xs font-extrabold uppercase tracking-wider">
-                    <i className="fa-solid fa-sparkles" /> Receita Finalizada com Amor!
+                    <i className="fa-solid fa-sparkles" /> Receita Finalizada com Amor
                   </span>
                   <h3 className="font-serif-vovo text-3xl sm:text-4xl font-extrabold">
-                    Parabéns! Seu prato está pronto para servir! 🍰✨
+                    Parabéns! Seu prato está pronto para servir!
                   </h3>
                   <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
                     “Que orgulho de ver você cozinhando passo a passo! Agora é só chamar a família,
@@ -513,7 +501,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                 </div>
               </div>
             ) : currentStep ? (
-              /* CARTÃO DO PASSO ATUAL */
               <div
                 className={`relative rounded-[2rem] border p-6 sm:p-10 shadow-md transition-all ${
                   highContrastDark
@@ -521,7 +508,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                     : 'bg-white border-rose-100/90 text-stone-800'
                 }`}
               >
-                {/* Topo do Card: Badge do Passo + Botão de Voz Rápido */}
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#C83E5B] to-rose-700 text-white flex items-center justify-center text-xl font-black shadow-md">
@@ -537,7 +523,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Botão Ouvir / Parar Voz com Animação */}
                   <button
                     type="button"
                     onClick={() => {
@@ -558,7 +543,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                   </button>
                 </div>
 
-                {/* Texto Principal do Passo em Tipografia Editorial Confortável */}
                 <div
                   className={`p-6 sm:p-8 rounded-3xl border mb-6 ${
                     highContrastDark
@@ -571,7 +555,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                   </p>
                 </div>
 
-                {/* Balãozinho Fofo de Carinho da Vovó Helena */}
                 <div
                   className={`flex items-center gap-3.5 p-4 rounded-2xl border mb-6 ${
                     highContrastDark
@@ -589,7 +572,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                   </p>
                 </div>
 
-                {/* WIDGET MODERNO DE TIMER / RELÓGIO DE COZINHA */}
+                {/* WIDGET MODERNO DE TIMER */}
                 <div
                   className={`rounded-3xl border p-5 sm:p-6 transition-all ${
                     timerFinished
@@ -604,7 +587,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                       <div
                         className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm shrink-0 ${
                           timerRunning
-                            ? 'bg-[#1E7E5A] text-white animate-spin-slow'
+                            ? 'bg-[#1E7E5A] text-white'
                             : timerFinished
                             ? 'bg-[#C83E5B] text-white'
                             : 'bg-white text-[#C83E5B] border border-stone-200'
@@ -615,7 +598,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                       <div>
                         <span className="text-xs font-extrabold uppercase tracking-wider text-stone-500 block">
                           {timerFinished
-                            ? '🔔 Plim! O tempo acabou!'
+                            ? 'Atenção! O tempo deste passo terminou!'
                             : timeLeft !== null
                             ? 'Timer da Cozinha da Vovó'
                             : 'Precisa marcar um tempinho neste passo?'}
@@ -633,13 +616,12 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                           </div>
                         ) : (
                           <p className="text-sm font-bold text-stone-700 mt-0.5">
-                            Toque em um dos tempos rápidos ao lado para ativar o alarme sonoro:
+                            Toque em um dos tempos rápidos abaixo para ativar o alarme sonoro:
                           </p>
                         )}
                       </div>
                     </div>
 
-                    {/* Botões de Ação do Timer */}
                     <div className="flex flex-wrap items-center gap-2">
                       {timeLeft !== null ? (
                         <>
@@ -696,7 +678,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Atalhos Rápidos de Timer (1m, 3m, 5m, 10m, 15m, 30m) */}
                   <div className="mt-4 pt-3 border-t border-stone-200/70 flex flex-wrap items-center gap-2">
                     <span className="text-[11px] font-bold text-stone-500 mr-1">
                       <i className="fa-regular fa-bell mr-1 text-[#C83E5B]" /> Timer rápido:
@@ -721,7 +702,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                   </div>
                 </div>
 
-                {/* BARRA DE NAVEGAÇÃO INFERIOR DO CARTÃO (ANTERIOR / PRÓXIMO) */}
+                {/* BARRA DE NAVEGAÇÃO INFERIOR DO CARTÃO */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-7 pt-6 border-t border-stone-100">
                   <button
                     type="button"
@@ -752,7 +733,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                     ) : (
                       <>
                         <i className="fa-solid fa-circle-check" />
-                        <span>Finalizar Receita com Sucesso! 🎉</span>
+                        <span>Finalizar Receita com Sucesso</span>
                       </>
                     )}
                   </button>
@@ -761,7 +742,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
             ) : null}
           </div>
 
-          {/* COLUNA LATERAL (4 COLUNAS): CESTINHA DE INGREDIENTES INTERATIVA */}
+          {/* COLUNA LATERAL: CESTINHA DE INGREDIENTES INTERATIVA */}
           <aside
             className={`lg:col-span-4 rounded-[2rem] border p-6 shadow-sm transition-all ${
               showIngredientsMobile ? 'block' : 'hidden lg:block'
@@ -786,7 +767,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                 </div>
               </div>
 
-              {/* Multiplicador rápido de porções dentro do Modo Cozinha */}
               <div className="flex items-center gap-1 bg-[#F8F6F2] p-1 rounded-xl border border-stone-200">
                 {[0.5, 1, 2].map((mult) => (
                   <button
@@ -843,7 +823,6 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
               })}
             </ul>
 
-            {/* Resumo Rápido da Receita no Rodapé da Cestinha */}
             <div className="mt-5 pt-4 border-t border-stone-100 grid grid-cols-2 gap-2 text-center">
               <div className="p-2.5 rounded-2xl bg-[#F8F6F2] text-stone-700">
                 <span className="text-[10px] font-bold uppercase text-stone-400 block">

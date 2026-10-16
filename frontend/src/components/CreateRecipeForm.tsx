@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { PlusCircle, CheckCircle2 } from 'lucide-react';
 import { createManualRecipe } from '../api/client';
 import { Recipe } from '../types';
 
@@ -60,99 +59,111 @@ export const CreateRecipeForm: React.FC<CreateRecipeFormProps> = ({
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6">
+    <div className="max-w-4xl mx-auto px-4 py-4">
       <div
-        className={`rounded-3xl border-4 p-6 sm:p-8 shadow-md ${
+        className={`rounded-3xl border p-6 sm:p-10 shadow-sm ${
           highContrastDark
-            ? 'bg-stone-900 border-stone-700 text-white'
-            : 'bg-white border-stone-300 text-[#1C1917]'
+            ? 'bg-stone-900 border-stone-800 text-white'
+            : 'bg-white border-stone-200/90 text-stone-800'
         }`}
       >
-        <h2 className="text-3xl font-extrabold flex items-center gap-3 mb-2">
-          <PlusCircle className="w-8 h-8 text-[#C2410C]" />
-          <span>✍️ Anotar Nova Receita no Caderno</span>
-        </h2>
-        <p className="text-lg font-semibold opacity-90 mb-6">
-          Escreva aqui uma receita especial da sua família. O sistema criará automaticamente o Modo Cozinha com leitura em voz alta!
-        </p>
+        <div className="flex items-center gap-4 pb-6 mb-6 border-b border-stone-100 dark:border-stone-800">
+          <div className="w-12 h-12 rounded-2xl bg-rose-50 text-[#C83E5B] flex items-center justify-center text-2xl shrink-0 shadow-2xs">
+            <i className="fa-solid fa-feather-pointed" />
+          </div>
+          <div>
+            <h2 className="font-serif-vovo text-2xl sm:text-3xl font-extrabold">
+              Anotar Nova Receita no Caderno
+            </h2>
+            <p className="text-sm text-stone-500 mt-0.5">
+              Escreva uma receita especial da sua família. O Estúdio Modo Cozinha com leitura por voz será gerado automaticamente.
+            </p>
+          </div>
+        </div>
 
         {error && (
-          <div className="p-4 mb-6 rounded-2xl bg-rose-100 border-2 border-rose-600 text-rose-950 font-extrabold text-lg">
-            {error}
+          <div className="p-4 mb-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 font-bold text-sm flex items-center gap-2.5">
+            <i className="fa-solid fa-circle-exclamation text-[#C83E5B]" />
+            <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-xl font-extrabold mb-2">
-              1. Qual é o nome da receita?
+            <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+              1. Nome da Receita
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Ex: Bolo de Milho Cremoso da Tia Maria"
-              className="w-full min-h-[60px] px-5 py-3 rounded-2xl border-2 border-stone-400 text-stone-900 text-xl font-bold"
+              className="w-full px-4 py-3.5 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-base font-bold focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
               required
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-lg font-extrabold mb-2">Categoria:</label>
+              <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+                Categoria
+              </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full min-h-[60px] px-4 py-3 rounded-2xl border-2 border-stone-400 text-stone-900 text-lg font-bold"
+                className="w-full px-4 py-3.5 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm font-bold focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
               >
-                <option value="Bolos e Tortas">🍰 Bolos e Tortas</option>
-                <option value="Sopas e Caldos">🍲 Sopas e Caldos</option>
-                <option value="Almoço de Família">🍛 Almoço de Família</option>
-                <option value="Doces Caseiros">🍮 Doces Caseiros</option>
-                <option value="Lanches e Pães">🥐 Lanches e Pães</option>
-                <option value="Receitas Caseiras">📖 Receitas Caseiras</option>
+                <option value="Bolos e Tortas">Bolos e Tortas</option>
+                <option value="Sopas e Caldos">Sopas e Caldos</option>
+                <option value="Massas e Assados">Massas e Assados</option>
+                <option value="Doces Caseiros">Doces Caseiros</option>
+                <option value="Chás & Saúde">Chás & Saúde</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-lg font-extrabold mb-2">Tempo (em minutos):</label>
+              <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+                Tempo de Preparo (minutos)
+              </label>
               <input
                 type="number"
                 value={prepTimeMinutes}
                 onChange={(e) => setPrepTimeMinutes(Number(e.target.value))}
-                className="w-full min-h-[60px] px-4 py-3 rounded-2xl border-2 border-stone-400 text-stone-900 text-lg font-bold"
+                className="w-full px-4 py-3.5 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm font-bold focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
               />
             </div>
 
             <div>
-              <label className="block text-lg font-extrabold mb-2">Rendimento:</label>
+              <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+                Rendimento
+              </label>
               <input
                 type="text"
                 value={servings}
                 onChange={(e) => setServings(e.target.value)}
                 placeholder="Ex: 8 porções"
-                className="w-full min-h-[60px] px-4 py-3 rounded-2xl border-2 border-stone-400 text-stone-900 text-lg font-bold"
+                className="w-full px-4 py-3.5 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm font-bold focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xl font-extrabold mb-2">
-              2. Ingredientes (escreva um por linha):
+            <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+              2. Lista de Ingredientes (um por linha)
             </label>
             <textarea
               rows={5}
               value={ingredientsText}
               onChange={(e) => setIngredientsText(e.target.value)}
               placeholder={'3 ovos inteiros\n2 xícaras de açúcar\n1 lata de milho verde\n1 colher de sopa de fermento'}
-              className="w-full p-4 rounded-2xl border-2 border-stone-400 text-stone-900 text-xl font-bold"
+              className="w-full p-4 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm font-semibold focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xl font-extrabold mb-2">
-              3. Modo de Preparo Passo a Passo (escreva um passo por linha):
+            <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+              3. Modo de Preparo Passo a Passo (um passo por linha)
             </label>
             <textarea
               rows={5}
@@ -161,31 +172,31 @@ export const CreateRecipeForm: React.FC<CreateRecipeFormProps> = ({
               placeholder={
                 'Bata todos os ingredientes no liquidificador por 3 minutos.\nDespeje em uma forma untada e enfarinhada.\nAsse em forno médio por 40 minutos até dourar.'
               }
-              className="w-full p-4 rounded-2xl border-2 border-stone-400 text-stone-900 text-xl font-bold"
+              className="w-full p-4 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm font-semibold focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
               required
             />
           </div>
 
           <div>
-            <label className="block text-lg font-extrabold mb-2">
-              Foto da Receita (Link opcional):
+            <label className="block text-xs font-extrabold uppercase tracking-wider text-stone-500 mb-2">
+              Foto da Receita (URL opcional)
             </label>
             <input
               type="url"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               placeholder="https://..."
-              className="w-full min-h-[56px] px-4 py-2.5 rounded-2xl border-2 border-stone-400 text-stone-900 text-base font-bold"
+              className="w-full px-4 py-3 rounded-2xl bg-[#F8F6F2] border border-stone-200 text-stone-800 text-sm focus:bg-white focus:border-[#C83E5B] focus:outline-none transition"
             />
           </div>
 
           <button
             type="submit"
             disabled={saving}
-            className="w-full min-h-[70px] px-6 py-4 rounded-2xl font-extrabold text-2xl bg-[#15803D] hover:bg-[#166534] text-white flex items-center justify-center gap-3 shadow-lg transition active:scale-95"
+            className="w-full py-4 px-6 rounded-2xl font-extrabold text-base bg-[#1E7E5A] hover:bg-emerald-800 text-white flex items-center justify-center gap-2.5 shadow-md transition active:scale-98"
           >
-            <CheckCircle2 className="w-8 h-8" />
-            <span>{saving ? 'Salvando no Caderno...' : '✅ Salvar Receita no Caderno'}</span>
+            <i className="fa-solid fa-circle-check text-lg" />
+            <span>{saving ? 'Salvando no Caderno...' : 'Salvar Receita no Caderno'}</span>
           </button>
         </form>
       </div>

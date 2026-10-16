@@ -201,7 +201,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
           }`}
         >
           <i className="fa-solid fa-robot" />
-          <span>🤖 Robô Auto-Importer Sem Parar</span>
+          <span>Robô Auto-Importer Sem Parar</span>
           {autoStatus?.isRunning && (
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-ping" />
           )}
@@ -294,8 +294,9 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                   </span>
                 </div>
 
-                <h2 className="font-serif-vovo text-2xl sm:text-3xl font-bold">
-                  🤖 Crawler & Auto-Importer Contínuo TudoGostoso
+                <h2 className="font-serif-vovo text-2xl sm:text-3xl font-bold flex items-center gap-2.5">
+                  <i className="fa-solid fa-robot text-[#1E7E5A]" />
+                  <span>Crawler & Auto-Importer Contínuo TudoGostoso</span>
                 </h2>
                 <p className="text-sm text-stone-600">
                   Este robô navega sozinho pelas categorias e receitas do{' '}
@@ -471,8 +472,9 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
               <p className="text-2xl font-extrabold text-stone-900">
                 {dashboard.kpis.totalViews.toLocaleString('pt-BR')} views
               </p>
-              <span className="text-xs text-[#C83E5B] font-semibold">
-                ❤️ {dashboard.kpis.totalLikes} avaliações e curtidas
+              <span className="text-xs text-[#C83E5B] font-semibold flex items-center gap-1">
+                <i className="fa-solid fa-heart" />
+                <span>{dashboard.kpis.totalLikes} avaliações e curtidas</span>
               </span>
             </div>
           </div>
@@ -482,8 +484,9 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
               highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
             }`}
           >
-            <h3 className="font-serif-vovo text-xl font-bold mb-1">
-              👑 Transformar Receitas em Exclusivas VIP ou Gratuitas ({recipes.length})
+            <h3 className="font-serif-vovo text-xl font-bold mb-1 flex items-center gap-2">
+              <i className="fa-solid fa-crown text-amber-500" />
+              <span>Transformar Receitas em Exclusivas VIP ou Gratuitas ({recipes.length})</span>
             </h3>
             <div className="divide-y divide-stone-200 dark:divide-stone-800 max-h-96 overflow-y-auto">
               {recipes.map((r) => (
@@ -621,8 +624,9 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
       {/* ABA 4: USUÁRIOS E VIPS */}
       {activeSubTab === 'users' && dashboard && (
         <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm text-stone-900">
-          <h3 className="font-serif-vovo text-xl font-bold mb-4">
-            👥 Gestão de Usuários & Assinantes VIP ({dashboard.users.length})
+          <h3 className="font-serif-vovo text-xl font-bold mb-4 flex items-center gap-2">
+            <i className="fa-solid fa-users text-[#1E7E5A]" />
+            <span>Gestão de Usuários & Assinantes VIP ({dashboard.users.length})</span>
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
@@ -647,8 +651,9 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                     </td>
                     <td className="py-3 px-2">
                       {u.isVip ? (
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-900">
-                          👑 VIP Ativo
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-900 inline-flex items-center gap-1">
+                          <i className="fa-solid fa-crown text-amber-600" />
+                          <span>VIP Ativo</span>
                         </span>
                       ) : (
                         <span className="text-xs text-stone-400">Gratuito</span>
@@ -697,16 +702,18 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                 href="http://localhost:3333/sitemap.xml"
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs font-bold text-amber-300 underline mt-1 block"
+                className="text-xs font-bold text-amber-300 underline mt-1 inline-flex items-center gap-1"
               >
-                Abrir /sitemap.xml Dinâmico ↗
+                <span>Abrir /sitemap.xml Dinâmico</span>
+                <i className="fa-solid fa-arrow-up-right-from-square text-[10px]" />
               </a>
             </div>
           </div>
 
           <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm text-stone-900">
-            <h3 className="font-serif-vovo text-xl font-bold mb-4">
-              🔐 Log de Auditoria Criptográfica
+            <h3 className="font-serif-vovo text-xl font-bold mb-4 flex items-center gap-2">
+              <i className="fa-solid fa-lock text-[#C83E5B]" />
+              <span>Log de Auditoria Criptográfica</span>
             </h3>
             <div className="space-y-2 max-h-80 overflow-y-auto">
               {dashboard.auditLogs.map((log) => (

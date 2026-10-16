@@ -214,8 +214,9 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
         {/* Coluna Direita: Caderninho Pessoal do Usuário */}
         <div className="lg:col-span-7 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-serif-vovo text-2xl font-bold">
-              ❤️ Meu Caderninho Salvo ({favoriteRecipes.length} receitas)
+            <h2 className="font-serif-vovo text-2xl font-bold flex items-center gap-2">
+              <i className="fa-solid fa-heart text-[#C83E5B]" />
+              <span>Meu Caderninho Salvo ({favoriteRecipes.length} receitas)</span>
             </h2>
           </div>
 
@@ -233,7 +234,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
                 <SeniorRecipeCard
                   key={r.id}
                   recipe={r}
-                  onOpenRecipe={onOpenRecipe}
+                  onOpen={onOpenRecipe}
                   onToggleFavorite={onToggleFavorite}
                   onSpeakSummary={onSpeakSummary}
                   highContrastDark={highContrastDark}
