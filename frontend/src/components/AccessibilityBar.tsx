@@ -1,5 +1,6 @@
 import React from 'react';
 import { UserProfile } from '../types';
+import { useVoiceReader } from '../hooks/useVoiceReader';
 
 export type NavTab =
   | 'home'
@@ -41,6 +42,8 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
   onLogout,
 }) => {
   const isAdmin = user?.role === 'ADMIN';
+  const { selectedVoiceId, voicePack, previewVoicePreset, isSpeaking, stopSpeaking } =
+    useVoiceReader();
 
   const decreaseFont = () => {
     const next = Math.max(0.9, Number((fontScale - 0.08).toFixed(2)));
@@ -54,7 +57,7 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
 
   return (
     <header className="no-print sticky top-0 z-40 shadow-sm">
-      {/* 1. Faixa Superior de Acessibilidade & Segurança */}
+      {/* 1. Faixa Superior de Acessibilidade, Pack de Vozes da Vovó & Nuvem */}
       <div
         className={`text-xs py-1.5 px-4 border-b transition-colors ${
           highContrastDark
@@ -69,25 +72,53 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               <span>Portal de Receitas & Utilidades da Vovó</span>
             </span>
             {user ? (
-              <span className="hidden md:flex items-center gap-1.5 text-emerald-200 font-bold">
+              <span className="hidden lg:flex items-center gap-1.5 text-emerald-200 font-bold">
                 <i className="fa-solid fa-cloud-arrow-up text-emerald-300" />
-                <span>Nuvem Permanente Ativa: Seus remédios, cardápio e receitas estão salvos!</span>
+                <span>Nuvem Permanente Ativa: Seus dados estão salvos!</span>
               </span>
             ) : (
               <button
                 type="button"
                 onClick={() => onOpenAuthModal('register')}
-                className="hidden md:flex items-center gap-1.5 text-amber-300 hover:text-amber-200 font-bold underline decoration-amber-400/60 underline-offset-2"
+                className="hidden lg:flex items-center gap-1.5 text-amber-300 hover:text-amber-200 font-bold underline decoration-amber-400/60 underline-offset-2"
               >
                 <i className="fa-solid fa-cloud-arrow-up" />
                 <span>
-                  Modo Sem Login Ativo — Crie uma conta grátis para salvar remédios e cardápio permanentemente!
+                  Sem Login Ativo — Crie conta grátis para salvar remédios e cardápio!
                 </span>
               </button>
             )}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Seletor do Pack de Vozes Fofinhas da Vovó */}
+            <div className="flex items-center gap-1.5 bg-black/25 px-2.5 py-0.5 rounded-full border border-white/10">
+              <i className="fa-solid fa-volume-high text-amber-300" />
+              <span className="opacity-85 hidden sm:inline font-semibold">Voz:</span>
+              <select
+                aria-label="Selecionar voz da Vovó"
+                value={selectedVoiceId}
+                onChange={(e) => previewVoicePreset(e.target.value)}
+                className="bg-transparent text-emerald-50 font-extrabold text-[11px] focus:outline-none cursor-pointer pr-1"
+              >
+                {voicePack.map((v) => (
+                  <option key={v.id} value={v.id} className="bg-stone-900 text-white">
+                    {v.shortLabel}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() =>
+                  isSpeaking ? stopSpeaking() : previewVoicePreset(selectedVoiceId)
+                }
+                title={isSpeaking ? 'Parar demonstração de voz' : 'Ouvir voz selecionada da Vovó'}
+                className="px-1.5 py-0.2 rounded-full bg-amber-400/20 hover:bg-amber-400/35 text-amber-200 font-extrabold text-[10px] transition"
+              >
+                {isSpeaking ? 'Parar' : 'Ouvir'}
+              </button>
+            </div>
+
             <div className="flex items-center gap-1 bg-black/25 px-2.5 py-0.5 rounded-full">
               <span className="opacity-80 mr-1 hidden sm:inline">Fonte:</span>
               <button

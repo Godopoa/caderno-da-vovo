@@ -46,7 +46,16 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
   const [isFinishedCelebration, setIsFinishedCelebration] = useState(false);
 
   const [autoRead, setAutoRead] = useState(true);
-  const { isSpeaking, voiceRate, setVoiceRate, speakText, stopSpeaking } = useVoiceReader();
+  const {
+    isSpeaking,
+    voiceRate,
+    setVoiceRate,
+    selectedVoiceId,
+    voicePack,
+    previewVoicePreset,
+    speakText,
+    stopSpeaking,
+  } = useVoiceReader();
 
   const steps = recipe.steps || [];
   const currentStep = steps[currentIndex];
@@ -248,6 +257,29 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
               </button>
             )}
 
+            {/* Seletor do Pack de Vozes Fofinhas da Vovó no Estúdio */}
+            <div
+              className={`px-3 py-1.5 rounded-2xl text-xs font-extrabold border flex items-center gap-1.5 ${
+                highContrastDark
+                  ? 'bg-stone-800 border-stone-700 text-rose-300'
+                  : 'bg-rose-50/90 border-rose-200 text-[#C83E5B]'
+              }`}
+            >
+              <i className="fa-solid fa-wand-magic-sparkles" />
+              <select
+                aria-label="Escolher voz fofinha da Vovó"
+                value={selectedVoiceId}
+                onChange={(e) => previewVoicePreset(e.target.value)}
+                className="bg-transparent font-extrabold text-xs focus:outline-none cursor-pointer"
+              >
+                {voicePack.map((v) => (
+                  <option key={v.id} value={v.id} className="bg-stone-900 text-white">
+                    {v.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <button
               type="button"
               onClick={() => setAutoRead((v) => !v)}
@@ -268,10 +300,10 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
             <button
               type="button"
               onClick={() => {
-                const nextRate = voiceRate === 0.88 ? 0.72 : 0.88;
+                const nextRate = voiceRate === 0.92 ? 0.78 : 0.92;
                 setVoiceRate(nextRate);
                 speakText(
-                  nextRate === 0.72
+                  nextRate === 0.78
                     ? 'Voz da Vovó ajustada para leitura bem calminha.'
                     : 'Voz da Vovó ajustada para velocidade natural.',
                   nextRate
@@ -284,7 +316,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
               }`}
             >
               <i className="fa-solid fa-gauge-high text-amber-600" />
-              <span>Ritmo: {voiceRate === 0.72 ? 'Calminho (0.7x)' : 'Natural (1x)'}</span>
+              <span>Ritmo: {voiceRate === 0.78 ? 'Calminho (0.8x)' : 'Natural (1x)'}</span>
             </button>
 
             <button

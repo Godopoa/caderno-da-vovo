@@ -313,5 +313,79 @@ export async function communitySeoRoutes(app: FastifyInstance) {
       message: 'Seus dados foram salvos permanentemente na sua conta!',
     };
   });
+
+  // 8. SINTETIZADOR DE VOZ NEURAL FEMININA DA VOVÓ (MP3 Stream pt-BR Sem Voz Masculina Robótica)
+  app.get('/api/tts/speak', async (request, reply) => {
+    const query = request.query as { text?: string };
+    const rawText = (query.text || '').trim();
+    if (!rawText) {
+      return reply.status(400).send({ error: 'Texto vazio para síntese de voz.' });
+    }
+
+    // Divide textos longos em frases de até 175 caracteres para síntese neural contínua
+    const splitIntoChunks = (input: string, maxLen = 175): string[] => {
+      const normalized = input.replace(/\s+/g, ' ').trim();
+      const sentences = normalized.split(/(?<=[.!?।:;])\s+/);
+      const chunks: string[] = [];
+      let current = '';
+
+      for (const sentence of sentences) {
+        if ((current + ' ' + sentence).trim().length <= maxLen) {
+          current = (current + ' ' + sentence).trim();
+        } else {
+          if (current) chunks.push(current);
+          if (sentence.length <= maxLen) {
+            current = sentence;
+          } else {
+            const words = sentence.split(' ');
+            let sub = '';
+            for (const w of words) {
+              if ((sub + ' ' + w).trim().length <= maxLen) {
+                sub = (sub + ' ' + w).trim();
+              } else {
+                if (sub) chunks.push(sub);
+                sub = w;
+              }
+            }
+            current = sub;
+          }
+        }
+      }
+      if (current) chunks.push(current);
+      return chunks.slice(0, 12);
+    };
+
+    try {
+      const chunks = splitIntoChunks(rawText);
+      const buffers: Buffer[] = [];
+
+      for (const chunk of chunks) {
+        const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=pt-BR&client=tw-ob&q=${encodeURIComponent(
+          chunk
+        )}`;
+        const response = await fetch(ttsUrl, {
+          headers: {
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          },
+        });
+        if (response.ok) {
+          const arrBuf = await response.arrayBuffer();
+          buffers.push(Buffer.from(arrBuf));
+        }
+      }
+
+      if (buffers.length === 0) {
+        return reply.status(502).send({ error: 'Falha ao gerar áudio neural.' });
+      }
+
+      const combined = Buffer.concat(buffers);
+      reply.header('Content-Type', 'audio/mpeg');
+      reply.header('Cache-Control', 'public, max-age=86400');
+      return reply.send(combined);
+    } catch {
+      return reply.status(500).send({ error: 'Erro ao sintetizar voz da Vovó.' });
+    }
+  });
 }
 
