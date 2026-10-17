@@ -430,18 +430,28 @@ export async function pauseAutoImporterApi(): Promise<AutoImporterStatus> {
 export interface UserCloudDataPayload {
   medications?: unknown;
   waterCups?: number;
+  bpGlucoseLogs?: unknown;
+  sosEmergencyCard?: unknown;
   weeklyMenu?: Record<string, string>;
   checkedMarketItems?: Record<string, boolean>;
+  monthlyBills?: unknown;
   pricingCalc?: Record<string, string>;
+  familyBirthdays?: unknown;
+  memoryStats?: unknown;
   cookbookConfig?: Record<string, unknown>;
 }
 
 const CLOUD_SYNC_KEYS = {
   medications: 'caderno_vovo_pill_reminders',
   waterCups: 'caderno_vovo_water_glasses',
+  bpGlucoseLogs: 'caderno_vovo_bp_glucose_logs',
+  sosEmergencyCard: 'caderno_vovo_sos_card',
   weeklyMenu: 'caderno_vovo_weekly_menu',
   checkedMarketItems: 'caderno_vovo_checked_market',
+  monthlyBills: 'caderno_vovo_monthly_bills',
   pricingCalc: 'caderno_vovo_pricing_calc',
+  familyBirthdays: 'caderno_vovo_family_birthdays',
+  memoryStats: 'caderno_vovo_memory_stats',
   cookbookConfig: 'caderno_vovo_cookbook_config',
   lastSyncAt: 'caderno_vovo_last_cloud_sync_at',
 };
@@ -460,9 +470,14 @@ export function collectLocalUserCloudData(): UserCloudDataPayload {
   return {
     medications: parseSafe(CLOUD_SYNC_KEYS.medications),
     waterCups: waterRaw !== null ? Number(waterRaw) : undefined,
+    bpGlucoseLogs: parseSafe(CLOUD_SYNC_KEYS.bpGlucoseLogs),
+    sosEmergencyCard: parseSafe(CLOUD_SYNC_KEYS.sosEmergencyCard),
     weeklyMenu: parseSafe(CLOUD_SYNC_KEYS.weeklyMenu),
     checkedMarketItems: parseSafe(CLOUD_SYNC_KEYS.checkedMarketItems),
+    monthlyBills: parseSafe(CLOUD_SYNC_KEYS.monthlyBills),
     pricingCalc: parseSafe(CLOUD_SYNC_KEYS.pricingCalc),
+    familyBirthdays: parseSafe(CLOUD_SYNC_KEYS.familyBirthdays),
+    memoryStats: parseSafe(CLOUD_SYNC_KEYS.memoryStats),
     cookbookConfig: parseSafe(CLOUD_SYNC_KEYS.cookbookConfig),
   };
 }
@@ -474,6 +489,15 @@ export function applyCloudDataToLocalStorage(cloudData: UserCloudDataPayload): v
   if (typeof cloudData.waterCups === 'number') {
     localStorage.setItem(CLOUD_SYNC_KEYS.waterCups, String(cloudData.waterCups));
   }
+  if (cloudData.bpGlucoseLogs !== undefined) {
+    localStorage.setItem(CLOUD_SYNC_KEYS.bpGlucoseLogs, JSON.stringify(cloudData.bpGlucoseLogs));
+  }
+  if (cloudData.sosEmergencyCard !== undefined) {
+    localStorage.setItem(
+      CLOUD_SYNC_KEYS.sosEmergencyCard,
+      JSON.stringify(cloudData.sosEmergencyCard)
+    );
+  }
   if (cloudData.weeklyMenu !== undefined) {
     localStorage.setItem(CLOUD_SYNC_KEYS.weeklyMenu, JSON.stringify(cloudData.weeklyMenu));
   }
@@ -483,8 +507,20 @@ export function applyCloudDataToLocalStorage(cloudData: UserCloudDataPayload): v
       JSON.stringify(cloudData.checkedMarketItems)
     );
   }
+  if (cloudData.monthlyBills !== undefined) {
+    localStorage.setItem(CLOUD_SYNC_KEYS.monthlyBills, JSON.stringify(cloudData.monthlyBills));
+  }
   if (cloudData.pricingCalc !== undefined) {
     localStorage.setItem(CLOUD_SYNC_KEYS.pricingCalc, JSON.stringify(cloudData.pricingCalc));
+  }
+  if (cloudData.familyBirthdays !== undefined) {
+    localStorage.setItem(
+      CLOUD_SYNC_KEYS.familyBirthdays,
+      JSON.stringify(cloudData.familyBirthdays)
+    );
+  }
+  if (cloudData.memoryStats !== undefined) {
+    localStorage.setItem(CLOUD_SYNC_KEYS.memoryStats, JSON.stringify(cloudData.memoryStats));
   }
   if (cloudData.cookbookConfig !== undefined) {
     localStorage.setItem(CLOUD_SYNC_KEYS.cookbookConfig, JSON.stringify(cloudData.cookbookConfig));
@@ -535,6 +571,8 @@ export async function syncUserCloudDataOnLogin(): Promise<string | null> {
     const merged: UserCloudDataPayload = {
       medications: data.cloudData?.medications ?? localData.medications,
       waterCups: data.cloudData?.waterCups ?? localData.waterCups,
+      bpGlucoseLogs: data.cloudData?.bpGlucoseLogs ?? localData.bpGlucoseLogs,
+      sosEmergencyCard: data.cloudData?.sosEmergencyCard ?? localData.sosEmergencyCard,
       weeklyMenu: {
         ...(localData.weeklyMenu || {}),
         ...(data.cloudData?.weeklyMenu || {}),
@@ -543,7 +581,10 @@ export async function syncUserCloudDataOnLogin(): Promise<string | null> {
         ...(localData.checkedMarketItems || {}),
         ...(data.cloudData?.checkedMarketItems || {}),
       },
+      monthlyBills: data.cloudData?.monthlyBills ?? localData.monthlyBills,
       pricingCalc: data.cloudData?.pricingCalc ?? localData.pricingCalc,
+      familyBirthdays: data.cloudData?.familyBirthdays ?? localData.familyBirthdays,
+      memoryStats: data.cloudData?.memoryStats ?? localData.memoryStats,
       cookbookConfig: data.cloudData?.cookbookConfig ?? localData.cookbookConfig,
     };
 

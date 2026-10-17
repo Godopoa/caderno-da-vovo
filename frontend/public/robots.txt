@@ -1,0 +1,57 @@
+# ==========================================================================
+# Caderno da Vovó v6.0 — Robots.txt Otimizado (Google, Bing, Yahoo, DuckDuckGo, Yandex & Redes Sociais)
+# ==========================================================================
+
+User-agent: Googlebot
+Allow: /
+Allow: /?tab=*
+Allow: /?receita=*
+Disallow: /api/admin/
+Disallow: /api/user/
+
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /
+
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+Allow: /?tab=*
+Allow: /?receita=*
+Disallow: /api/admin/
+Disallow: /api/user/
+Crawl-delay: 1
+
+User-agent: msnbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+Disallow: /api/admin/
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Yandex
+Allow: /
+Disallow: /api/admin/
+
+User-agent: Applebot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: *
+Allow: /
+Disallow: /api/admin/
+Disallow: /api/user/
+
+Host: https://cadernodavovo.com.br
+Sitemap: https://cadernodavovo.com.br/sitemap.xml
+Sitemap: http://localhost:3333/sitemap.xml

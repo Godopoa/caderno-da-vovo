@@ -1,0 +1,54 @@
+{
+  "name": "Caderno da Vovó — Receitas, Economia do Lar, Saúde Sênior & Passatempos",
+  "short_name": "Caderno da Vovó",
+  "description": "Portal afetivo completo para vovós, donas de casa e famílias: receitas com voz guiada da Vovó Helena, lembrete de remédios, pressão arterial, cardápio semanal, horta, crochê e passatempos da memória.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F8F6F2",
+  "theme_color": "#C83E5B",
+  "orientation": "portrait-primary",
+  "categories": ["food", "lifestyle", "health", "utilities", "education"],
+  "icons": [
+    {
+      "src": "/images/logo-vovo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/logo-vovo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Modo Cozinha por Voz",
+      "short_name": "Modo Cozinha",
+      "url": "/?tab=cooking",
+      "description": "Passo a passo narrado pela Vovó Helena"
+    },
+    {
+      "name": "Remédios, Pressão & Chás",
+      "short_name": "Saúde & Chás",
+      "url": "/?tab=health",
+      "description": "Caixinha de remédios, pressão arterial e chás"
+    },
+    {
+      "name": "Cardápio & Economia",
+      "short_name": "Economia",
+      "url": "/?tab=economy",
+      "description": "Cardápio semanal, feira e contas da casa"
+    },
+    {
+      "name": "Passatempos da Memória",
+      "short_name": "Memória",
+      "url": "/?tab=memory",
+      "description": "Jogo da memória, quiz e Bom Dia no WhatsApp"
+    }
+  ]
+}

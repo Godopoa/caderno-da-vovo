@@ -8,6 +8,7 @@ export type NavTab =
   | 'economy'
   | 'health'
   | 'crafts'
+  | 'memory'
   | 'cookbook'
   | 'news'
   | 'favorites'
@@ -15,6 +16,7 @@ export type NavTab =
   | 'profile'
   | 'importer'
   | 'admin';
+
 
 interface AccessibilityBarProps {
   activeTab: NavTab;
@@ -446,11 +448,29 @@ export const AccessibilityBar: React.FC<AccessibilityBarProps> = ({
               <span>Casa, Horta & Crochê</span>
             </button>
 
+            <button
+              type="button"
+              onClick={() => onSelectTab('memory')}
+              className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 whitespace-nowrap transition ${
+                activeTab === 'memory'
+                  ? 'bg-gradient-to-r from-amber-600 to-[#C83E5B] text-white shadow-sm'
+                  : 'hover:bg-amber-50 dark:hover:bg-stone-800'
+              }`}
+            >
+              <i
+                className={`fa-solid fa-brain ${
+                  activeTab === 'memory' ? 'text-white' : 'text-amber-600'
+                }`}
+              />
+              <span>Passatempos</span>
+            </button>
+
             <span
               className={`h-5 w-px mx-1 shrink-0 ${
                 highContrastDark ? 'bg-stone-800' : 'bg-stone-300'
               }`}
             />
+
 
             {/* Grupo 3: Memórias & Comunidade */}
             <button

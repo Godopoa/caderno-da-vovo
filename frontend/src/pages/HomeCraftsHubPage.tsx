@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useVoiceReader } from '../hooks/useVoiceReader';
+import { pushLocalDataToCloudIfLoggedIn } from '../api/client';
+import { CloudSyncNotice } from '../components/CloudSyncNotice';
+import { UserProfile } from '../types';
 
 interface HomeCraftsHubPageProps {
   highContrastDark: boolean;
+  user?: UserProfile | null;
+  onOpenAuthModal?: (tab?: 'login' | 'register' | 'vip') => void;
 }
 
-type HomeSubTab = 'stains' | 'garden' | 'crafts';
+type HomeSubTab = 'stains' | 'garden' | 'crafts' | 'birthdays';
+
+interface FamilyBirthday {
+  id: string;
+  name: string;
+  relation: string; // Filho(a), Neto(a), Bisneto(a), Irmão(ã), etc.
+  day: number;
+  month: number; // 1 a 12
+  favoriteCake: string;
+}
 
 const STAIN_SOLUTIONS = [
   {
@@ -196,7 +210,11 @@ const CRAFTS_TUTORIALS = [
   },
 ];
 
-export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContrastDark }) => {
+export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({
+  highContrastDark,
+  user,
+  onOpenAuthModal,
+}) => {
   const [subTab, setSubTab] = useState<HomeSubTab>('stains');
   const [selectedMonth, setSelectedMonth] = useState<number>(() => new Date().getMonth());
   const [stainSearch, setStainSearch] = useState('');
@@ -211,6 +229,53 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
       s.instructions.toLowerCase().includes(stainSearch.toLowerCase())
   );
 
+  // --- Estado do Caderninho de Aniversários da Família (Local + Nuvem) ---
+  const [birthdays, setBirthdays] = useState<FamilyBirthday[]>(() => {
+    try {
+      const raw = localStorage.getItem('caderno_vovo_family_birthdays');
+      if (raw) return JSON.parse(raw);
+    } catch {
+      // ignore
+    }
+    return [
+      { id: 'b-1', name: 'Lucas (Neto Querido)', relation: 'Neto(a)', day: 14, month: new Date().getMonth() + 1, favoriteCake: 'Bolo de Cenoura com Chocolate' },
+      { id: 'b-2', name: 'Mariana (Filha)', relation: 'Filho(a)', day: 22, month: new Date().getMonth() + 1, favoriteCake: 'Bolo de Fubá Cremoso' },
+    ];
+  });
+
+  const [bName, setBName] = useState('');
+  const [bRelation, setBRelation] = useState('Neto(a)');
+  const [bDay, setBDay] = useState('15');
+  const [bMonth, setBMonth] = useState(String(new Date().getMonth() + 1));
+  const [bCake, setBCake] = useState('Bolo de Chocolate da Vovó');
+
+  useEffect(() => {
+    localStorage.setItem('caderno_vovo_family_birthdays', JSON.stringify(birthdays));
+    pushLocalDataToCloudIfLoggedIn();
+  }, [birthdays]);
+
+  const handleAddBirthday = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bName.trim()) return;
+    const nextItem: FamilyBirthday = {
+      id: `bday-${Date.now()}`,
+      name: bName.trim(),
+      relation: bRelation,
+      day: Math.min(31, Math.max(1, Number(bDay) || 1)),
+      month: Math.min(12, Math.max(1, Number(bMonth) || 1)),
+      favoriteCake: bCake.trim() || 'Bolo Caseiro',
+    };
+    setBirthdays((prev) => [...prev, nextItem]);
+    setBName('');
+  };
+
+  const deleteBirthday = (id: string) => {
+    setBirthdays((prev) => prev.filter((b) => b.id !== id));
+  };
+
+  const currentMonthNum = new Date().getMonth() + 1;
+  const currentMonthBirthdays = birthdays.filter((b) => b.month === currentMonthNum);
+
   return (
     <div className="space-y-8">
       {/* Cabeçalho Casa, Horta & Artesanato */}
@@ -224,14 +289,14 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
         <div className="space-y-2 max-w-2xl">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-extrabold uppercase tracking-wider">
             <i className="fa-solid fa-house-chimney-window" />
-            <span>Sabedoria do Lar, Horta Caseira & Crochê</span>
+            <span>Sabedoria do Lar, Horta Caseira, Crochê & Aniversários</span>
           </span>
           <h1 className="font-serif-vovo text-3xl sm:text-4xl font-extrabold">
-            SOS Tira-Manchas, Safra do Mês & Cantinho do Artesanato
+            SOS Tira-Manchas, Safra, Crochê & Aniversários da Família
           </h1>
           <p className="text-rose-50 text-sm sm:text-base leading-relaxed">
-            Os melhores segredos de dona de casa para limpar sem esforço, comprar frutas e verduras
-            na época certa e fazer lindas peças de crochê e artesanato.
+            Os melhores segredos de dona de casa para limpar sem esforço, comprar na época certa,
+            fazer artesanato e nunca esquecer o aniversário dos filhos e netos queridos.
           </p>
         </div>
 
@@ -240,6 +305,7 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
             { id: 'stains', label: 'SOS Tira-Manchas', icon: 'fa-spray-can-sparkles' },
             { id: 'garden', label: 'Safra & Horta', icon: 'fa-seedling' },
             { id: 'crafts', label: 'Crochê & Arte', icon: 'fa-scissors' },
+            { id: 'birthdays', label: 'Aniversários', icon: 'fa-cake-candles' },
           ].map((t) => (
             <button
               key={t.id}
@@ -257,6 +323,7 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
           ))}
         </div>
       </div>
+
 
       {/* SUB-ABA 1: SOS TIRA-MANCHAS & LIMPEZA CASEIRA SEGURA */}
       {subTab === 'stains' && (
@@ -510,6 +577,173 @@ export const HomeCraftsHubPage: React.FC<HomeCraftsHubPageProps> = ({ highContra
           </div>
         </div>
       )}
+
+      {/* SUB-ABA 4: CADERNINHO DE ANIVERSÁRIOS DA FAMÍLIA (FILHOS, NETOS & BISNETOS) */}
+      {subTab === 'birthdays' && (
+        <div className="space-y-6">
+          <CloudSyncNotice
+            user={user}
+            onOpenAuthModal={onOpenAuthModal}
+            moduleName="o seu Caderninho de Aniversários da Família"
+          />
+          <div
+            className={`rounded-3xl border p-6 sm:p-8 shadow-sm space-y-6 overflow-hidden ${
+              highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
+            }`}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-100 dark:border-stone-800 pb-4">
+              <div>
+                <h2 className="font-serif-vovo text-2xl font-bold flex items-center gap-2">
+                  <i className="fa-solid fa-cake-candles text-[#C83E5B]" />
+                  <span>Caderninho de Aniversários da Família</span>
+                </h2>
+                <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
+                  Guarde as datas de filhos, netos e bisnetos com sugestão de bolo favorito e botão direto para mandar parabéns no WhatsApp.
+                </p>
+              </div>
+
+              {currentMonthBirthdays.length > 0 && (
+                <div className="px-4 py-2 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-[#C83E5B] dark:text-rose-300 text-xs font-extrabold flex items-center gap-2 shrink-0">
+                  <i className="fa-solid fa-bell animate-bounce" />
+                  <span>{currentMonthBirthdays.length} aniversariante(s) neste mês!</span>
+                </div>
+              )}
+            </div>
+
+            {/* Lista de Aniversários */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {birthdays.map((item) => {
+                const isThisMonth = item.month === currentMonthNum;
+                const whatsappMsg = `Parabéns, meu amor! Que o seu dia seja repleto de paz, saúde e muitas alegrias. A Vovó já está pensando no seu bolo favorito (${item.favoriteCake})! Um beijo bem carinhoso!`;
+                return (
+                  <div
+                    key={item.id}
+                    className={`p-5 rounded-3xl border flex flex-col justify-between gap-3 transition ${
+                      isThisMonth
+                        ? 'bg-rose-50/70 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800'
+                        : highContrastDark
+                        ? 'bg-stone-950 border-stone-800 text-white'
+                        : 'bg-[#F8F6F2] border-stone-200 text-stone-800'
+                    }`}
+                  >
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="px-3 py-0.5 rounded-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs font-extrabold text-[#C83E5B] dark:text-rose-300">
+                          {item.relation}
+                        </span>
+                        <span className="font-extrabold text-sm text-[#1E7E5A] dark:text-emerald-400">
+                          <i className="fa-solid fa-calendar-day mr-1" />
+                          Dia {item.day}/{item.month < 10 ? `0${item.month}` : item.month}
+                        </span>
+                      </div>
+
+                      <h3 className="font-serif-vovo text-xl font-bold">{item.name}</h3>
+
+                      <p className="text-xs text-stone-600 dark:text-stone-300">
+                        <i className="fa-solid fa-cake-candles text-amber-500 mr-1.5" />
+                        Bolo favorito da Vovó: <strong>{item.favoriteCake}</strong>
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-stone-200/60 dark:border-stone-800">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          window.open(`https://wa.me/?text=${encodeURIComponent(whatsappMsg)}`, '_blank')
+                        }
+                        className="px-3.5 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5B] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-2xs"
+                      >
+                        <i className="fa-brands fa-whatsapp text-sm" />
+                        <span>Mandar Parabéns</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => deleteBirthday(item.id)}
+                        className="p-1.5 text-stone-400 hover:text-rose-600"
+                        title="Remover data"
+                      >
+                        <i className="fa-solid fa-trash-can text-xs" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Adicionar Aniversariante */}
+            <form
+              onSubmit={handleAddBirthday}
+              className="p-4 rounded-2xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 space-y-3"
+            >
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
+                <i className="fa-solid fa-plus text-[#C83E5B]" />
+                <span>Adicionar Novo Familiar no Caderno:</span>
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                <input
+                  type="text"
+                  required
+                  value={bName}
+                  onChange={(e) => setBName(e.target.value)}
+                  placeholder="Nome do neto, filho ou familiar"
+                  className="sm:col-span-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs font-bold"
+                />
+                <select
+                  value={bRelation}
+                  onChange={(e) => setBRelation(e.target.value)}
+                  className="px-3.5 py-2.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs font-bold"
+                >
+                  <option value="Neto(a)">Neto(a)</option>
+                  <option value="Filho(a)">Filho(a)</option>
+                  <option value="Bisneto(a)">Bisneto(a)</option>
+                  <option value="Irmão(ã)">Irmão(ã)</option>
+                  <option value="Sobrinho(a)">Sobrinho(a)</option>
+                  <option value="Amigo(a)">Amigo(a)</option>
+                </select>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    max={31}
+                    required
+                    value={bDay}
+                    onChange={(e) => setBDay(e.target.value)}
+                    placeholder="Dia"
+                    className="px-2.5 py-2.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs font-bold text-center"
+                  />
+                  <input
+                    type="number"
+                    min={1}
+                    max={12}
+                    required
+                    value={bMonth}
+                    onChange={(e) => setBMonth(e.target.value)}
+                    placeholder="Mês"
+                    className="px-2.5 py-2.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs font-bold text-center"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2.5">
+                <input
+                  type="text"
+                  value={bCake}
+                  onChange={(e) => setBCake(e.target.value)}
+                  placeholder="Bolo ou sobremesa favorita (ex: Bolo de Cenoura, Torta de Limão)"
+                  className="flex-1 min-w-0 px-3.5 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs"
+                />
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-xl bg-[#C83E5B] hover:bg-rose-700 text-white font-extrabold text-xs shadow-sm transition shrink-0"
+                >
+                  Salvar Aniversário
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

@@ -220,35 +220,306 @@ export async function communitySeoRoutes(app: FastifyInstance) {
     return autoImporterWorker.getStatus();
   });
 
-  // 6. SEO COMPLETO & INTEGRAÇÃO GOOGLE SEARCH (sitemap.xml e robots.txt dinâmicos)
+  // 6. SEO OMNI-SEARCH COMPLETO (Google, Bing, IndexNow, Yahoo, DuckDuckGo, Yandex, OpenSearch & Sitemap XML Rich Image/News)
+  const INDEXNOW_KEY = 'caderno-vovo-indexnow-2026';
+
+  const xmlEscape = (str: string) =>
+    String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+
+  app.get('/indexnow-key.txt', async (_request, reply) => {
+    reply.header('Content-Type', 'text/plain; charset=utf-8');
+    return INDEXNOW_KEY;
+  });
+
+  app.get(`/${INDEXNOW_KEY}.txt`, async (_request, reply) => {
+    reply.header('Content-Type', 'text/plain; charset=utf-8');
+    return INDEXNOW_KEY;
+  });
+
+  app.get('/opensearch.xml', async (_request, reply) => {
+    reply.header('Content-Type', 'application/opensearchdescription+xml; charset=utf-8');
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>Caderno da Vovó</ShortName>
+  <Description>Busque receitas caseiras, chás medicinais, dicas do lar e truques da Vovó Helena</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Language>pt-BR</Language>
+  <Image width="64" height="64" type="image/jpeg">https://cadernodavovo.com.br/images/logo-vovo.jpg</Image>
+  <Url type="text/html" method="get" template="https://cadernodavovo.com.br/?q={searchTerms}" />
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://cadernodavovo.com.br/opensearch.xml" />
+  <moz:SearchForm>https://cadernodavovo.com.br/</moz:SearchForm>
+</OpenSearchDescription>`;
+  });
+
   app.get('/robots.txt', async (_request, reply) => {
     reply.header('Content-Type', 'text/plain; charset=utf-8');
-    return `User-agent: *\nAllow: /\nDisallow: /api/admin/\nSitemap: http://localhost:3333/sitemap.xml\n`;
+    reply.header('Cache-Control', 'public, max-age=3600');
+    return [
+      '# ==========================================================================',
+      '# Caderno da Vovó v6.0 — Robots.txt Otimizado (Google, Bing, Yahoo, DuckDuckGo, Yandex & Redes Sociais)',
+      '# ==========================================================================',
+      '',
+      '# 1. Google Search, Google Imagens & Google Discover',
+      'User-agent: Googlebot',
+      'Allow: /',
+      'Allow: /?tab=*',
+      'Allow: /?receita=*',
+      'Disallow: /api/admin/',
+      'Disallow: /api/user/',
+      '',
+      'User-agent: Googlebot-Image',
+      'Allow: /images/',
+      'Allow: /',
+      '',
+      'User-agent: Googlebot-News',
+      'Allow: /',
+      '',
+      '# 2. Microsoft Bing, MSN, Edge & IndexNow',
+      'User-agent: Bingbot',
+      'Allow: /',
+      'Allow: /?tab=*',
+      'Allow: /?receita=*',
+      'Disallow: /api/admin/',
+      'Disallow: /api/user/',
+      'Crawl-delay: 1',
+      '',
+      'User-agent: msnbot',
+      'Allow: /',
+      '',
+      'User-agent: AdIdxBot',
+      'Allow: /',
+      '',
+      '# 3. Yahoo! Slurp, DuckDuckGo, Yandex & Apple Spotlight/Siri',
+      'User-agent: Slurp',
+      'Allow: /',
+      'Disallow: /api/admin/',
+      '',
+      'User-agent: DuckDuckBot',
+      'Allow: /',
+      '',
+      'User-agent: Yandex',
+      'Allow: /',
+      'Disallow: /api/admin/',
+      '',
+      'User-agent: Applebot',
+      'Allow: /',
+      '',
+      '# 4. Pré-visualização rica em WhatsApp, Facebook, Instagram, Pinterest e Telegram',
+      'User-agent: WhatsApp',
+      'Allow: /',
+      '',
+      'User-agent: facebookexternalhit',
+      'Allow: /',
+      '',
+      'User-agent: Pinterestbot',
+      'Allow: /',
+      '',
+      'User-agent: Twitterbot',
+      'Allow: /',
+      '',
+      '# 5. Regra Geral para Todos os Motores de Busca',
+      'User-agent: *',
+      'Allow: /',
+      'Disallow: /api/admin/',
+      'Disallow: /api/user/',
+      '',
+      '# 6. Host Principal & Sitemaps Dinâmicos (Produção + Local)',
+      'Host: https://cadernodavovo.com.br',
+      'Sitemap: https://cadernodavovo.com.br/sitemap.xml',
+      'Sitemap: http://localhost:3333/sitemap.xml',
+      '',
+    ].join('\n');
   });
 
   app.get('/sitemap.xml', async (_request, reply) => {
     const [recipes, news] = await Promise.all([
-      prisma.recipe.findMany({ select: { slug: true, updatedAt: true } }),
-      prisma.newsPost.findMany({ select: { slug: true, createdAt: true } }),
+      prisma.recipe.findMany({
+        select: {
+          slug: true,
+          title: true,
+          description: true,
+          category: true,
+          imageUrl: true,
+          updatedAt: true,
+        },
+        orderBy: { updatedAt: 'desc' },
+      }),
+      prisma.newsPost.findMany({
+        select: {
+          slug: true,
+          title: true,
+          summary: true,
+          category: true,
+          imageUrl: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
     ]);
 
     const baseUrl = 'https://cadernodavovo.com.br';
-    const urlsXml = [
-      `<url><loc>${baseUrl}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>`,
-      `<url><loc>${baseUrl}/noticias</loc><changefreq>daily</changefreq><priority>0.8</priority></url>`,
-      ...recipes.map(
-        (r) =>
-          `<url><loc>${baseUrl}/receita/${r.slug}</loc><lastmod>${r.updatedAt.toISOString()}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>`
-      ),
-      ...news.map(
-        (n) =>
-          `<url><loc>${baseUrl}/noticia/${n.slug}</loc><lastmod>${n.createdAt.toISOString()}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>`
-      ),
-    ].join('\n  ');
+    const nowIso = new Date().toISOString();
+    const defaultLogo = `${baseUrl}/images/logo-vovo.jpg`;
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  ${urlsXml}\n</urlset>`;
+    const staticHubPages = [
+      {
+        loc: `${baseUrl}/`,
+        priority: '1.0',
+        changefreq: 'daily',
+        title: 'Caderno da Vovó — Portal de Receitas Afetivas, Economia do Lar & Saúde Sênior',
+      },
+      {
+        loc: `${baseUrl}/?tab=cooking`,
+        priority: '0.9',
+        changefreq: 'daily',
+        title: 'Estúdio Modo Cozinha Guiado por Voz da Vovó Helena',
+      },
+      {
+        loc: `${baseUrl}/?tab=economy`,
+        priority: '0.9',
+        changefreq: 'daily',
+        title: 'Economia do Lar: Cardápio da Semana, Lista de Feira, Contas da Casa & Faça e Venda',
+      },
+      {
+        loc: `${baseUrl}/?tab=health`,
+        priority: '0.9',
+        changefreq: 'daily',
+        title: 'Saúde Sênior: Lembrete de Remédios, Diário de Pressão e Glicemia, Cartão SOS & Chás',
+      },
+      {
+        loc: `${baseUrl}/?tab=crafts`,
+        priority: '0.85',
+        changefreq: 'weekly',
+        title: 'Sabedoria do Lar: SOS Tira-Manchas, Safra do Mês, Horta em Vasos, Crochê & Aniversários',
+      },
+      {
+        loc: `${baseUrl}/?tab=memory`,
+        priority: '0.85',
+        changefreq: 'daily',
+        title: 'Passatempos da Vovó: Jogo da Memória Culinária, Quiz com Voz & Mensagens de Bom Dia WhatsApp',
+      },
+      {
+        loc: `${baseUrl}/?tab=cookbook`,
+        priority: '0.8',
+        changefreq: 'weekly',
+        title: 'Gerador de Livro de Receitas da Família em PDF para Imprimir',
+      },
+      {
+        loc: `${baseUrl}/?tab=news`,
+        priority: '0.85',
+        changefreq: 'daily',
+        title: 'Jornalzinho da Vovó: Dicas de Cozinha, Bem-Estar & Histórias de Família',
+      },
+    ];
+
+    const hubUrlsXml = staticHubPages.map(
+      (h) => `  <url>
+    <loc>${xmlEscape(h.loc)}</loc>
+    <lastmod>${nowIso}</lastmod>
+    <changefreq>${h.changefreq}</changefreq>
+    <priority>${h.priority}</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="${xmlEscape(h.loc)}" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(h.loc)}" />
+    <image:image>
+      <image:loc>${xmlEscape(defaultLogo)}</image:loc>
+      <image:title>${xmlEscape(h.title)}</image:title>
+    </image:image>
+  </url>`
+    );
+
+    const recipeUrlsXml = recipes.map((r) => {
+      const locUrl = `${baseUrl}/?receita=${encodeURIComponent(r.slug)}`;
+      const imgUrl = r.imageUrl && r.imageUrl.startsWith('http') ? r.imageUrl : defaultLogo;
+      const caption =
+        r.description || `Receita caseira de ${r.title} (${r.category}) passo a passo no Caderno da Vovó.`;
+      return `  <url>
+    <loc>${xmlEscape(locUrl)}</loc>
+    <lastmod>${r.updatedAt.toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="${xmlEscape(locUrl)}" />
+    <image:image>
+      <image:loc>${xmlEscape(imgUrl)}</image:loc>
+      <image:title>${xmlEscape(`${r.title} — Caderno da Vovó`)}</image:title>
+      <image:caption>${xmlEscape(caption)}</image:caption>
+    </image:image>
+  </url>`;
+    });
+
+    const newsUrlsXml = news.map((n) => {
+      const locUrl = `${baseUrl}/?tab=news&artigo=${encodeURIComponent(n.slug)}`;
+      const imgUrl = n.imageUrl && n.imageUrl.startsWith('http') ? n.imageUrl : defaultLogo;
+      return `  <url>
+    <loc>${xmlEscape(locUrl)}</loc>
+    <lastmod>${n.createdAt.toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+    <image:image>
+      <image:loc>${xmlEscape(imgUrl)}</image:loc>
+      <image:title>${xmlEscape(n.title)}</image:title>
+      <image:caption>${xmlEscape(n.summary)}</image:caption>
+    </image:image>
+    <news:news>
+      <news:publication>
+        <news:name>Caderno da Vovó</news:name>
+        <news:language>pt</news:language>
+      </news:publication>
+      <news:publication_date>${n.createdAt.toISOString()}</news:publication_date>
+      <news:title>${xmlEscape(n.title)}</news:title>
+    </news:news>
+  </url>`;
+    });
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+  xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+>
+${[...hubUrlsXml, ...recipeUrlsXml, ...newsUrlsXml].join('\n')}
+</urlset>`;
+
     reply.header('Content-Type', 'application/xml; charset=utf-8');
+    reply.header('Cache-Control', 'public, max-age=1800');
     return xml;
+  });
+
+  app.get('/api/seo/diagnostics', async () => {
+    const [recipesCount, newsCount, commentsCount] = await Promise.all([
+      prisma.recipe.count(),
+      prisma.newsPost.count(),
+      prisma.comment.count(),
+    ]);
+
+    return {
+      status: 'OPTIMAL',
+      enginesSupported: [
+        'Google Search & Google Discover',
+        'Google Images & Rich Recipe Cards',
+        'Microsoft Bing & MSN (IndexNow Active)',
+        'Yahoo! Slurp',
+        'DuckDuckGo',
+        'Yandex',
+        'WhatsApp / Facebook / Pinterest OpenGraph',
+      ],
+      indexNowKey: INDEXNOW_KEY,
+      indexedUrlsTotal: 8 + recipesCount + newsCount,
+      recipesIndexed: recipesCount,
+      newsIndexed: newsCount,
+      commentsIndexed: commentsCount,
+      endpoints: {
+        sitemapXml: 'http://localhost:3333/sitemap.xml',
+        robotsTxt: 'http://localhost:3333/robots.txt',
+        openSearchXml: 'http://localhost:3333/opensearch.xml',
+        indexNowKeyTxt: 'http://localhost:3333/indexnow-key.txt',
+      },
+    };
   });
 
   // 7. NUVEM PERMANENTE DO USUÁRIO (Remédios, Hidratômetro, Cardápio Semanal, Feira, Livro PDF e Favoritas)

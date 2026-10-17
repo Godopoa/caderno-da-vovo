@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>Caderno da Vovó</ShortName>
+  <Description>Busque receitas caseiras, chás medicinais, dicas do lar e truques da Vovó Helena</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Language>pt-BR</Language>
+  <Image width="64" height="64" type="image/jpeg">https://cadernodavovo.com.br/images/logo-vovo.jpg</Image>
+  <Url type="text/html" method="get" template="https://cadernodavovo.com.br/?q={searchTerms}" />
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://cadernodavovo.com.br/opensearch.xml" />
+  <moz:SearchForm>https://cadernodavovo.com.br/</moz:SearchForm>
+</OpenSearchDescription>

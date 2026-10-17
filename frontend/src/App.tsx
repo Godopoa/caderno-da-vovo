@@ -20,12 +20,15 @@ import { UserProfilePage } from './pages/UserProfilePage';
 import { KitchenEconomyHubPage } from './pages/KitchenEconomyHubPage';
 import { HealthWellnessHubPage } from './pages/HealthWellnessHubPage';
 import { HomeCraftsHubPage } from './pages/HomeCraftsHubPage';
+import { MemoryGamesHubPage } from './pages/MemoryGamesHubPage';
 import { FamilyCookbookGeneratorPage } from './pages/FamilyCookbookGeneratorPage';
 import { CreateRecipeForm } from './components/CreateRecipeForm';
 import { AuthVipModal } from './components/AuthVipModal';
 import { CookingModeModal } from './components/CookingModeModal';
+import { FloatingKitchenTimer } from './components/FloatingKitchenTimer';
 import { SEOHead } from './components/SEOHead';
 import { useVoiceReader } from './hooks/useVoiceReader';
+
 
 export const App: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -85,7 +88,52 @@ export const App: React.FC = () => {
     loadRecipes();
     loadMonetization();
     syncUserCloudDataOnLogin();
+
+    // Deep-linking SEO para Google, Bing e links compartilhados (?tab=... e ?receita=...)
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const requestedTab = urlParams.get('tab') as NavTab | null;
+      if (
+        requestedTab &&
+        [
+          'home',
+          'cooking',
+          'economy',
+          'health',
+          'crafts',
+          'memory',
+          'cookbook',
+          'news',
+          'favorites',
+        ].includes(requestedTab)
+      ) {
+        setActiveTab(requestedTab);
+      }
+    } catch {
+      // ignore
+    }
   }, []);
+
+  // Seleciona receita solicitada por URL (?receita=...) assim que as receitas forem carregadas
+  useEffect(() => {
+    if (recipes.length === 0) return;
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const reqSlug = urlParams.get('receita');
+      if (reqSlug) {
+        const found = recipes.find(
+          (r) => r.slug === reqSlug || r.id === reqSlug
+        );
+        if (found) {
+          setSelectedRecipe(found);
+          setCookingTabRecipe(found);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, [recipes]);
+
 
   const handleToggleFavorite = async (recipe: Recipe) => {
     try {
@@ -242,7 +290,18 @@ export const App: React.FC = () => {
             onOpenAuthModal={openAuthModal}
           />
         ) : activeTab === 'crafts' ? (
-          <HomeCraftsHubPage highContrastDark={highContrastDark} />
+          <HomeCraftsHubPage
+            highContrastDark={highContrastDark}
+            user={user}
+            onOpenAuthModal={openAuthModal}
+          />
+        ) : activeTab === 'memory' ? (
+          <MemoryGamesHubPage
+            recipes={recipes}
+            user={user}
+            highContrastDark={highContrastDark}
+            onOpenAuthModal={openAuthModal}
+          />
         ) : activeTab === 'cookbook' ? (
           <FamilyCookbookGeneratorPage
             recipes={recipes}
@@ -332,6 +391,12 @@ export const App: React.FC = () => {
         )}
       </main>
 
+      {/* Timer Flutuante Global ("Panela no Fogo") - Acompanha o usuário por qualquer aba */}
+      <FloatingKitchenTimer
+        highContrastDark={highContrastDark}
+        onOpenCookingTab={() => safeSetActiveTab('cooking')}
+      />
+
       {/* Cozy Website Footer */}
       <footer
         className={`no-print border-t mt-16 py-10 px-4 ${
@@ -346,9 +411,9 @@ export const App: React.FC = () => {
               className="w-12 h-12 rounded-2xl object-cover border border-rose-200 shadow-sm"
             />
             <div>
-              <p className="font-extrabold text-base">Caderno da Vovó v5.0</p>
+              <p className="font-extrabold text-base">Caderno da Vovó v6.0</p>
               <p className="text-xs text-stone-500">
-                Portal Completo de Receitas, Economia do Lar, Saúde Sênior, Horta & Nuvem Permanente
+                Portal Completo de Receitas, Economia do Lar, Saúde Sênior, Passatempos, Horta & Nuvem Permanente
               </p>
             </div>
           </div>
@@ -365,6 +430,9 @@ export const App: React.FC = () => {
             </button>
             <button onClick={() => safeSetActiveTab('crafts')} className="hover:text-[#C83E5B]">
               <i className="fa-solid fa-scissors mr-1 text-amber-600" /> Casa & Crochê
+            </button>
+            <button onClick={() => safeSetActiveTab('memory')} className="hover:text-[#C83E5B]">
+              <i className="fa-solid fa-puzzle-piece mr-1 text-purple-600" /> Passatempos
             </button>
             <button onClick={() => safeSetActiveTab('cookbook')} className="hover:text-[#C83E5B]">
               <i className="fa-solid fa-book-bookmark mr-1 text-[#C83E5B]" /> Livro PDF

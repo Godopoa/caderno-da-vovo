@@ -30,6 +30,58 @@ interface PillReminder {
   takenToday: boolean;
 }
 
+interface BpGlucoseEntry {
+  id: string;
+  dateLabel: string;
+  systolic: number; // ex: 120 (ou 12)
+  diastolic: number; // ex: 80 (ou 8)
+  glucoseMgDl: number; // ex: 95
+  notes: string;
+}
+
+interface SosEmergencyCardData {
+  bloodType: string;
+  allergies: string;
+  susOrPlanNumber: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  doctorNotes: string;
+}
+
+function classifyBpAndGlucose(sysRaw: number, diaRaw: number, glucose: number) {
+  // Aceita tanto 12x8 quanto 120x80
+  const sys = sysRaw < 30 ? sysRaw * 10 : sysRaw;
+  const dia = diaRaw < 20 ? diaRaw * 10 : diaRaw;
+
+  if (sys >= 140 || dia >= 90 || glucose >= 140) {
+    return {
+      level: 'alert' as const,
+      badge: 'Atenção: Acima do Ideal',
+      colorClass:
+        'bg-rose-50 dark:bg-rose-950/50 text-rose-800 dark:text-rose-200 border-rose-300 dark:border-rose-800',
+      advice:
+        'Sua medição está um pouquinho alta. Descanse, beba água, tome sua medicação no horário e mostre ao seu médico.',
+    };
+  }
+  if (sys < 90 || dia < 60 || (glucose > 0 && glucose < 70)) {
+    return {
+      level: 'warn' as const,
+      badge: 'Atenção: Pressão ou Glicose Baixa',
+      colorClass:
+        'bg-amber-50 dark:bg-amber-950/50 text-amber-900 dark:text-amber-200 border-amber-300 dark:border-amber-800',
+      advice:
+        'Medição mais baixa que o habitual. Sente-se com calma e avise um familiar se sentir tontura.',
+    };
+  }
+  return {
+    level: 'ok' as const,
+    badge: 'Medição Ótima & Controlada',
+    colorClass:
+      'bg-emerald-50 dark:bg-emerald-950/50 text-[#1E7E5A] dark:text-emerald-300 border-emerald-300 dark:border-emerald-800',
+    advice: 'Parabéns! Sua pressão e glicemia estão dentro da faixa saudável esperada.',
+  };
+}
+
 const NATURAL_TEAS: TeaGuideItem[] = [
   {
     id: 'camomila-erva-doce',
@@ -150,6 +202,118 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
     pushLocalDataToCloudIfLoggedIn();
   }, [reminders]);
 
+  // --- Estado do Diário de Pressão Arterial & Glicemia ---
+  const [bpLogs, setBpLogs] = useState<BpGlucoseEntry[]>(() => {
+    try {
+      const raw = localStorage.getItem('caderno_vovo_bp_glucose_logs');
+      if (raw) return JSON.parse(raw);
+    } catch {
+      // ignore
+    }
+    return [
+      {
+        id: 'bp-1',
+        dateLabel: 'Hoje, 08:00 (Jejum)',
+        systolic: 120,
+        diastolic: 80,
+        glucoseMgDl: 94,
+        notes: 'Sentindo-se muito bem após o café',
+      },
+    ];
+  });
+
+  const [sysInput, setSysInput] = useState('120');
+  const [diaInput, setDiaInput] = useState('80');
+  const [glucoseInput, setGlucoseInput] = useState('95');
+  const [bpNoteInput, setBpNoteInput] = useState('Medição da manhã');
+
+  useEffect(() => {
+    localStorage.setItem('caderno_vovo_bp_glucose_logs', JSON.stringify(bpLogs));
+    pushLocalDataToCloudIfLoggedIn();
+  }, [bpLogs]);
+
+  const handleAddBpLog = (e: React.FormEvent) => {
+    e.preventDefault();
+    const sys = Number(sysInput) || 120;
+    const dia = Number(diaInput) || 80;
+    const gluc = Number(glucoseInput) || 95;
+    const nowStr = new Date().toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const entry: BpGlucoseEntry = {
+      id: `bp-${Date.now()}`,
+      dateLabel: nowStr,
+      systolic: sys < 30 ? sys * 10 : sys,
+      diastolic: dia < 20 ? dia * 10 : dia,
+      glucoseMgDl: gluc,
+      notes: bpNoteInput || 'Medição anotada',
+    };
+
+    setBpLogs((prev) => [entry, ...prev.slice(0, 14)]);
+    const status = classifyBpAndGlucose(entry.systolic, entry.diastolic, entry.glucoseMgDl);
+    speakText(
+      `Medição anotada no caderno: pressão ${Math.round(entry.systolic / 10)} por ${Math.round(
+        entry.diastolic / 10
+      )} e glicemia ${entry.glucoseMgDl}. ${status.advice}`
+    );
+  };
+
+  const shareBpReportWhatsApp = () => {
+    const lines = bpLogs
+      .slice(0, 7)
+      .map(
+        (l) =>
+          `• *${l.dateLabel}*: Pressão *${l.systolic}/${l.diastolic} mmHg* | Glicemia: *${l.glucoseMgDl} mg/dL* (${l.notes})`
+      )
+      .join('\n');
+    const text = `🩺 *Relatório de Pressão e Glicemia — Caderno da Vovó*\nPaciente: ${
+      user?.name || 'Vovó / Familiar'
+    }\n\n${lines}\n\n_Gerado pelo aplicativo Caderno da Vovó_`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  // --- Estado do Cartão SOS de Emergência Médica ---
+  const [sosCard, setSosCard] = useState<SosEmergencyCardData>(() => {
+    try {
+      const raw = localStorage.getItem('caderno_vovo_sos_card');
+      if (raw) return JSON.parse(raw);
+    } catch {
+      // ignore
+    }
+    return {
+      bloodType: 'O+',
+      allergies: 'Nenhuma alergia grave conhecida',
+      susOrPlanNumber: 'Cartão SUS / Convênio Familiar',
+      emergencyContactName: 'Filho(a) / Neto(a) Responsável',
+      emergencyContactPhone: '11999999999',
+      doctorNotes: 'Hipertensão controlada com medicação diária',
+    };
+  });
+
+  useEffect(() => {
+    localStorage.setItem('caderno_vovo_sos_card', JSON.stringify(sosCard));
+    pushLocalDataToCloudIfLoggedIn();
+  }, [sosCard]);
+
+  const handleSendSosWhatsApp = () => {
+    const cleanPhone = sosCard.emergencyContactPhone.replace(/\D/g, '');
+    const msg = `🚨 *ALERTA SOS FAMÍLIA — CADERNO DA VOVÓ*\nOlá *${
+      sosCard.emergencyContactName
+    }*, preciso de atenção/ajuda agora!\n\n📋 *Ficha Rápida:*\n• Tipo Sanguíneo: ${
+      sosCard.bloodType
+    }\n• Alergias: ${sosCard.allergies}\n• Convênio/SUS: ${
+      sosCard.susOrPlanNumber
+    }\n• Observações: ${sosCard.doctorNotes}`;
+    const targetUrl = cleanPhone
+      ? `https://wa.me/55${cleanPhone}?text=${encodeURIComponent(msg)}`
+      : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+    window.open(targetUrl, '_blank');
+  };
+
   const handleAddReminder = (e: React.FormEvent) => {
     e.preventDefault();
     if (!pillName.trim()) return;
@@ -208,14 +372,14 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
       >
         <div className="max-w-3xl space-y-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-emerald-100 text-xs font-extrabold uppercase tracking-wider">
-            <i className="fa-solid fa-leaf" />
-            <span>Saúde, Chás & Cuidado Diário da Vovó</span>
+            <i className="fa-solid fa-heart-pulse" />
+            <span>Saúde Sênior, Pressão, Remédios, SOS & Chás</span>
           </span>
           <h1 className="font-serif-vovo text-3xl sm:text-4xl font-extrabold">
-            Farmacinha Natural de Chás, Lembrete de Remédios & Hidratação
+            Central de Saúde da Vovó: Remédios, Pressão, Glicemia & Chás
           </h1>
           <p className="text-emerald-50 text-sm sm:text-base leading-relaxed">
-            Cuide de quem cuida da família inteira: marque seus copos d’água do dia, cadastre o horário dos seus medicamentos com aviso por voz e consulte o guia seguro de chás caseiros.
+            Cuide de quem cuida da família inteira: anote sua pressão e glicemia para levar ao médico, configure seu Cartão SOS de Emergência, lembre dos remédios com voz e consulte chás naturais.
           </p>
         </div>
       </div>
@@ -224,7 +388,7 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
       <CloudSyncNotice
         user={user}
         onOpenAuthModal={onOpenAuthModal}
-        moduleName="sua Caixinha de Remédios, Horários e Hidratômetro"
+        moduleName="sua Caixinha de Remédios, Diário de Pressão/Glicemia, Cartão SOS e Hidratômetro"
         priorityAlert
       />
 
@@ -441,6 +605,272 @@ export const HealthWellnessHubPage: React.FC<HealthWellnessHubPageProps> = ({
             >
               <i className="fa-solid fa-plus" />
               <span>Bebi +1 Copo d’Água</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* SEÇÃO DO MEIO (NOVIDADE v6.0): DIÁRIO DE PRESSÃO & GLICEMIA + CARTÃO SOS DE EMERGÊNCIA MÉDICA */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Diário de Pressão Arterial & Glicemia (7 cols) */}
+        <div
+          className={`lg:col-span-7 rounded-3xl border p-6 sm:p-8 shadow-sm space-y-6 overflow-hidden ${
+            highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
+          }`}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-stone-100 dark:border-stone-800">
+            <div className="min-w-0 flex-1">
+              <h2 className="font-serif-vovo text-2xl font-bold flex items-center gap-2">
+                <i className="fa-solid fa-heart-pulse text-[#C83E5B]" />
+                <span>Diário de Pressão Arterial & Glicemia</span>
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
+                Anote seus valores do dia para acompanhar a saúde e enviar para o médico ou filhos no WhatsApp.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={shareBpReportWhatsApp}
+              className="px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5B] text-white font-extrabold text-xs flex items-center gap-2 shadow-sm shrink-0 transition"
+            >
+              <i className="fa-brands fa-whatsapp text-sm" />
+              <span>Enviar Relatório Médico</span>
+            </button>
+          </div>
+
+          <form
+            onSubmit={handleAddBpLog}
+            className="p-4 rounded-2xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 space-y-3"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-[11px] font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
+                  Pressão Máxima (Sistólica)
+                </label>
+                <input
+                  type="number"
+                  value={sysInput}
+                  onChange={(e) => setSysInput(e.target.value)}
+                  placeholder="Ex: 120 ou 12"
+                  className="w-full min-w-0 px-3.5 py-2.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-extrabold text-base"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
+                  Pressão Mínima (Diastólica)
+                </label>
+                <input
+                  type="number"
+                  value={diaInput}
+                  onChange={(e) => setDiaInput(e.target.value)}
+                  placeholder="Ex: 80 ou 8"
+                  className="w-full min-w-0 px-3.5 py-2.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-extrabold text-base"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
+                  Glicemia / Açúcar (mg/dL)
+                </label>
+                <input
+                  type="number"
+                  value={glucoseInput}
+                  onChange={(e) => setGlucoseInput(e.target.value)}
+                  placeholder="Ex: 95"
+                  className="w-full min-w-0 px-3.5 py-2.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-extrabold text-base"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <input
+                type="text"
+                value={bpNoteInput}
+                onChange={(e) => setBpNoteInput(e.target.value)}
+                placeholder="Como você está se sentindo? (Ex: Em jejum, após caminhada...)"
+                className="flex-1 min-w-0 px-3.5 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs"
+              />
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-xl bg-[#1E7E5A] hover:bg-emerald-800 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm shrink-0 transition"
+              >
+                <i className="fa-solid fa-notes-medical" />
+                <span>Anotar Medição</span>
+              </button>
+            </div>
+          </form>
+
+          {/* Histórico de Medições com Classificação Colorida */}
+          <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
+            {bpLogs.map((entry) => {
+              const st = classifyBpAndGlucose(entry.systolic, entry.diastolic, entry.glucoseMgDl);
+              return (
+                <div
+                  key={entry.id}
+                  className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${st.colorClass}`}
+                >
+                  <div className="space-y-1 min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-xs font-extrabold uppercase tracking-wider opacity-80">
+                        {entry.dateLabel}
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-white/80 dark:bg-stone-900/80 text-[11px] font-extrabold border border-current/20">
+                        {st.badge}
+                      </span>
+                    </div>
+                    <p className="text-base sm:text-lg font-black">
+                      Pressão: {entry.systolic}/{entry.diastolic} mmHg{' '}
+                      <span className="text-xs font-bold opacity-80">
+                        ({Math.round(entry.systolic / 10)}x{Math.round(entry.diastolic / 10)})
+                      </span>{' '}
+                      • Glicemia: {entry.glucoseMgDl} mg/dL
+                    </p>
+                    <p className="text-xs opacity-90">{entry.notes}</p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      speakText(
+                        `Medição de ${entry.dateLabel}: Pressão ${Math.round(
+                          entry.systolic / 10
+                        )} por ${Math.round(entry.diastolic / 10)}, glicemia ${
+                          entry.glucoseMgDl
+                        }. ${st.advice}`
+                      )
+                    }
+                    className="self-start sm:self-center px-3 py-1.5 rounded-xl bg-white/90 dark:bg-stone-900 text-stone-800 dark:text-stone-100 font-extrabold text-xs flex items-center gap-1.5 shrink-0 shadow-2xs"
+                  >
+                    <i className="fa-solid fa-volume-high text-[#C83E5B]" />
+                    <span>Ouvir</span>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Cartão SOS de Emergência da Vovó (5 cols) */}
+        <div
+          className={`lg:col-span-5 rounded-3xl border-2 border-rose-300 dark:border-rose-800 p-6 sm:p-8 shadow-sm space-y-4 overflow-hidden ${
+            highContrastDark ? 'bg-stone-900 text-stone-100' : 'bg-rose-50/40 text-stone-800'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-2 pb-3 border-b border-rose-200/70 dark:border-stone-800">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-11 h-11 rounded-2xl bg-[#C83E5B] text-white flex items-center justify-center text-xl shrink-0 shadow-sm">
+                <i className="fa-solid fa-kit-medical" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="font-serif-vovo text-xl sm:text-2xl font-bold leading-tight">
+                  Cartão SOS de Emergência
+                </h2>
+                <p className="text-xs text-stone-500 dark:text-stone-400">
+                  Ficha médica rápida para emergências e contato dos filhos
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[11px] font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
+                Tipo Sanguíneo:
+              </label>
+              <select
+                value={sosCard.bloodType}
+                onChange={(e) => setSosCard((p) => ({ ...p, bloodType: e.target.value }))}
+                className="w-full min-w-0 px-3 py-2 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-extrabold text-sm"
+              >
+                {['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'Não sei informar'].map(
+                  (bt) => (
+                    <option key={bt} value={bt}>
+                      Sangue {bt}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
+                Cartão SUS / Plano:
+              </label>
+              <input
+                type="text"
+                value={sosCard.susOrPlanNumber}
+                onChange={(e) => setSosCard((p) => ({ ...p, susOrPlanNumber: e.target.value }))}
+                placeholder="Nº do Cartão ou Convênio"
+                className="w-full min-w-0 px-3 py-2 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-bold text-xs"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
+              Alergias a Medicamentos ou Alimentos:
+            </label>
+            <input
+              type="text"
+              value={sosCard.allergies}
+              onChange={(e) => setSosCard((p) => ({ ...p, allergies: e.target.value }))}
+              placeholder="Ex: Dipirona, Penicilina, Camarão..."
+              className="w-full min-w-0 px-3.5 py-2 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-bold text-xs"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[11px] font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
+                Familiar de Emergência:
+              </label>
+              <input
+                type="text"
+                value={sosCard.emergencyContactName}
+                onChange={(e) =>
+                  setSosCard((p) => ({ ...p, emergencyContactName: e.target.value }))
+                }
+                placeholder="Nome do filho(a) ou neto(a)"
+                className="w-full min-w-0 px-3 py-2 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-bold text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
+                Telefone / WhatsApp (DDD):
+              </label>
+              <input
+                type="tel"
+                value={sosCard.emergencyContactPhone}
+                onChange={(e) =>
+                  setSosCard((p) => ({ ...p, emergencyContactPhone: e.target.value }))
+                }
+                placeholder="Ex: 11999999999"
+                className="w-full min-w-0 px-3 py-2 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 font-bold text-xs"
+              />
+            </div>
+          </div>
+
+          <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
+            <a
+              href={`tel:${sosCard.emergencyContactPhone.replace(/\D/g, '')}`}
+              className="flex-1 py-3 px-4 rounded-2xl bg-[#C83E5B] hover:bg-rose-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm transition"
+            >
+              <i className="fa-solid fa-phone-volume" />
+              <span>Ligar para Familiar</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={handleSendSosWhatsApp}
+              className="flex-1 py-3 px-4 rounded-2xl bg-[#25D366] hover:bg-[#1EBE5B] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm transition"
+            >
+              <i className="fa-brands fa-whatsapp text-sm" />
+              <span>Pedir Ajuda no WhatsApp</span>
             </button>
           </div>
         </div>

@@ -14,7 +14,16 @@ interface KitchenEconomyHubPageProps {
   onOpenAuthModal: (mode: 'login' | 'register' | 'vip') => void;
 }
 
-type EconomySubTab = 'planner' | 'fridge' | 'converter' | 'pricing';
+type EconomySubTab = 'planner' | 'fridge' | 'converter' | 'pricing' | 'bills';
+
+interface HouseholdBill {
+  id: string;
+  name: string;
+  dueDay: number;
+  amount: number;
+  isPaid: boolean;
+  category: 'Luz' | 'Água' | 'Gás' | 'Internet' | 'Supermercado' | 'Outro';
+}
 
 const DAYS_OF_WEEK = [
   'Segunda-feira',
@@ -253,6 +262,61 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
   const profitPerBatch = profitPerUnit * unitsYield;
   const estimatedMonthlyProfit = profitPerBatch * daysSoldPerMonth;
 
+  // --- 5. Estado das Contas da Casa do Mês (Local + Nuvem) ---
+  const [bills, setBills] = useState<HouseholdBill[]>(() => {
+    try {
+      const raw = localStorage.getItem('caderno_vovo_monthly_bills');
+      if (raw) return JSON.parse(raw);
+    } catch {
+      // ignore
+    }
+    return [
+      { id: 'b1', name: 'Conta de Luz (Energia)', dueDay: 10, amount: 160, isPaid: false, category: 'Luz' },
+      { id: 'b2', name: 'Conta de Água e Saneamento', dueDay: 15, amount: 75, isPaid: false, category: 'Água' },
+      { id: 'b3', name: 'Botijão de Gás de Cozinha', dueDay: 20, amount: 110, isPaid: false, category: 'Gás' },
+      { id: 'b4', name: 'Internet / Wi-Fi da Casa', dueDay: 25, amount: 99, isPaid: true, category: 'Internet' },
+    ];
+  });
+
+  const [newBillName, setNewBillName] = useState('');
+  const [newBillDay, setNewBillDay] = useState('10');
+  const [newBillAmount, setNewBillAmount] = useState('100');
+  const [newBillCategory, setNewBillCategory] = useState<HouseholdBill['category']>('Outro');
+
+  useEffect(() => {
+    localStorage.setItem('caderno_vovo_monthly_bills', JSON.stringify(bills));
+    pushLocalDataToCloudIfLoggedIn();
+  }, [bills]);
+
+  const handleAddBill = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newBillName.trim()) return;
+    const nextBill: HouseholdBill = {
+      id: `bill-${Date.now()}`,
+      name: newBillName.trim(),
+      dueDay: Math.min(31, Math.max(1, Number(newBillDay) || 10)),
+      amount: Math.max(0, Number(newBillAmount) || 0),
+      isPaid: false,
+      category: newBillCategory,
+    };
+    setBills((prev) => [...prev, nextBill]);
+    setNewBillName('');
+  };
+
+  const toggleBillPaid = (id: string) => {
+    setBills((prev) =>
+      prev.map((b) => (b.id === id ? { ...b, isPaid: !b.isPaid } : b))
+    );
+  };
+
+  const deleteBill = (id: string) => {
+    setBills((prev) => prev.filter((b) => b.id !== id));
+  };
+
+  const totalBillsAmount = bills.reduce((acc, b) => acc + b.amount, 0);
+  const paidBillsAmount = bills.filter((b) => b.isPaid).reduce((acc, b) => acc + b.amount, 0);
+  const pendingBillsAmount = totalBillsAmount - paidBillsAmount;
+
   return (
     <div className="space-y-8">
       {/* Cabeçalho da Central de Economia Doméstica */}
@@ -278,29 +342,31 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
         </div>
 
         {/* Sub-abas da Central */}
-        <div className="grid grid-cols-2 gap-2 shrink-0">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 shrink-0">
           {[
             { id: 'planner', label: 'Cardápio & Feira', icon: 'fa-calendar-check' },
             { id: 'fridge', label: 'Na Geladeira', icon: 'fa-temperature-arrow-down' },
             { id: 'converter', label: 'Medidas & Trocas', icon: 'fa-scale-balanced' },
             { id: 'pricing', label: 'Faça e Venda', icon: 'fa-hand-holding-dollar' },
+            { id: 'bills', label: 'Contas do Mês', icon: 'fa-file-invoice-dollar' },
           ].map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => setSubTab(t.id as EconomySubTab)}
-              className={`px-4 py-3 rounded-2xl font-extrabold text-xs sm:text-sm flex items-center gap-2 transition ${
+              className={`px-3 py-2.5 rounded-2xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition ${
                 subTab === t.id
                   ? 'bg-white text-[#C83E5B] shadow-md'
                   : 'bg-black/20 hover:bg-black/30 text-white'
               }`}
             >
               <i className={`fa-solid ${t.icon}`} />
-              <span>{t.label}</span>
+              <span className="truncate">{t.label}</span>
             </button>
           ))}
         </div>
       </div>
+
 
       {/* Aviso de Salvamento Permanente na Nuvem vs. Modo Sem Login */}
       <CloudSyncNotice
@@ -784,6 +850,135 @@ export const KitchenEconomyHubPage: React.FC<KitchenEconomyHubPageProps> = ({
           </div>
         </div>
       )}
+
+      {/* SUB-ABA 5: CONTAS DA CASA DO MÊS (CHECKLIST SEM JUROS) */}
+      {subTab === 'bills' && (
+        <div className="space-y-6">
+          <div
+            className={`rounded-3xl border p-6 sm:p-8 shadow-sm space-y-6 overflow-hidden ${
+              highContrastDark ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'
+            }`}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-100 dark:border-stone-800 pb-4">
+              <div>
+                <h2 className="font-serif-vovo text-2xl font-bold flex items-center gap-2">
+                  <i className="fa-solid fa-file-invoice-dollar text-[#C83E5B]" />
+                  <span>Contas da Casa & Despesas do Mês</span>
+                </h2>
+                <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
+                  Acompanhe os vencimentos de luz, água, gás e feira para não pagar juros ou multas por esquecimento.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs font-bold">
+                  A Pagar: <strong>R$ {pendingBillsAmount.toFixed(2).replace('.', ',')}</strong>
+                </div>
+                <div className="px-3.5 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[#1E7E5A] dark:text-emerald-300 text-xs font-bold">
+                  Já Pago: <strong>R$ {paidBillsAmount.toFixed(2).replace('.', ',')}</strong>
+                </div>
+              </div>
+            </div>
+
+            {/* Lista de Contas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {bills.map((bill) => (
+                <div
+                  key={bill.id}
+                  className={`p-4 rounded-2xl border flex items-center justify-between gap-3 transition ${
+                    bill.isPaid
+                      ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 text-stone-600 dark:text-stone-300'
+                      : highContrastDark
+                      ? 'bg-stone-950 border-stone-800 text-white'
+                      : 'bg-[#F8F6F2] border-stone-200 text-stone-900'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <button
+                      type="button"
+                      onClick={() => toggleBillPaid(bill.id)}
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0 transition ${
+                        bill.isPaid
+                          ? 'bg-[#1E7E5A] text-white shadow-xs'
+                          : 'bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-400'
+                      }`}
+                    >
+                      <i className={`fa-solid ${bill.isPaid ? 'fa-check' : 'fa-circle'}`} />
+                    </button>
+                    <div className="min-w-0 flex-1">
+                      <p className={`font-extrabold text-sm truncate ${bill.isPaid ? 'line-through opacity-70' : ''}`}>
+                        {bill.name}
+                      </p>
+                      <p className="text-xs text-stone-500 dark:text-stone-400">
+                        Vence todo dia <strong>{bill.dueDay}</strong> • R$ {bill.amount.toFixed(2).replace('.', ',')}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => deleteBill(bill.id)}
+                    className="p-2 text-stone-400 hover:text-rose-600 shrink-0"
+                    title="Excluir conta"
+                  >
+                    <i className="fa-solid fa-trash-can text-xs" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Adicionar nova conta */}
+            <form
+              onSubmit={handleAddBill}
+              className="p-4 rounded-2xl bg-[#F8F6F2] dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 space-y-3"
+            >
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
+                <i className="fa-solid fa-plus text-[#C83E5B]" />
+                <span>Adicionar Nova Conta ou Despesa Recorrente:</span>
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                <input
+                  type="text"
+                  required
+                  value={newBillName}
+                  onChange={(e) => setNewBillName(e.target.value)}
+                  placeholder="Nome da conta (ex: Farmácia, Telefone)"
+                  className="sm:col-span-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs font-bold"
+                />
+                <input
+                  type="number"
+                  min={1}
+                  max={31}
+                  required
+                  value={newBillDay}
+                  onChange={(e) => setNewBillDay(e.target.value)}
+                  placeholder="Dia do vencimento"
+                  className="px-3.5 py-2.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs font-bold"
+                />
+                <input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  required
+                  value={newBillAmount}
+                  onChange={(e) => setNewBillAmount(e.target.value)}
+                  placeholder="Valor R$"
+                  className="px-3.5 py-2.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-100 text-xs font-bold"
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-xl bg-[#1E7E5A] hover:bg-emerald-800 text-white font-extrabold text-xs shadow-sm transition"
+                >
+                  Salvar Conta no Caderno
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
